@@ -1,2 +1,4 @@
 연성대학교 여름방학 AI브랜드마케팅 특강 4주차
 바이브코딩 실습 예제
+
+https://yeonsung-ac.github.io/2026/
