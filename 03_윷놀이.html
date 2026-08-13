@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>윷놀이 챔피언십</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --text-color: #f8fafc;
+      --p1-color: #ef4444;
+      --p2-color: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      border: 1px solid #334155;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: var(--accent-color);
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-around;
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid #334155;
+    }
+
+    .player-score {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .player-score.active {
+      background: #334155;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+
+    .player-name {
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .p1-name { color: var(--p1-color); }
+    .p2-name { color: var(--p2-color); }
+
+    .score-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    /* 윷가락 표시 영역 */
+    .yut-arena {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: 30px 0;
+      height: 120px;
+      align-items: center;
+    }
+
+    .yut-stick {
+      width: 30px;
+      height: 110px;
+      background: #f59e0b;
+      border-radius: 15px;
+      border: 3px solid #78350f;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      transition: transform 0.5s ease;
+    }
+
+    /* 윷의 평평한 면 (등/X 표시) */
+    .yut-stick.flat {
+      background: #fef3c7;
+    }
+
+    .yut-stick.flat::after {
+      content: '✕';
+      font-weight: bold;
+      color: #b45309;
+      font-size: 1.2rem;
+    }
+
+    /* 뒷도 윷가락 구분 */
+    .yut-stick.back-do.flat::after {
+      content: '●';
+      color: #dc2626;
+      font-size: 1rem;
+    }
+
+    .yut-stick.rolling {
+      animation: flip 0.5s infinite linear;
+    }
+
+    @keyframes flip {
+      0% { transform: rotateX(0deg); }
+      100% { transform: rotateX(360deg); }
+    }
+
+    .status-banner {
+      min-height: 48px;
+      line-height: 48px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 10px;
+      background-color: #0f172a;
+      margin-bottom: 20px;
+      color: #94a3b8;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-throw {
+      background-color: var(--accent-color);
+      color: #0f172a;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-throw:active { transform: scale(0.98); }
+    .btn-throw:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #94a3b8;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .btn-reset:hover { color: var(--text-color); border-color: #64748b; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🪁 윷놀이 챔피언십</h1>
+  <p class="subtitle">20 칸을 먼저 전진하는 사람이 챔피언!</p>
+
+  <div class="scoreboard">
+    <div class="player-score active" id="p1Card">
+      <span class="player-name p1-name">PLAYER 1</span>
+      <span class="score-val" id="p1Score">0 / 20</span>
+    </div>
+    <div class="player-score" id="p2Card">
+      <span class="player-name p2-name">PLAYER 2</span>
+      <span class="score-val" id="p2Score">0 / 20</span>
+    </div>
+  </div>
+
+  <div class="yut-arena">
+    <div class="yut-stick back-do" id="yut0"></div>
+    <div class="yut-stick" id="yut1"></div>
+    <div class="yut-stick" id="yut2"></div>
+    <div class="yut-stick" id="yut3"></div>
+  </div>
+
+  <div class="status-banner" id="statusBanner">Player 1 차례입니다!</div>
+
+  <div class="controls">
+    <button class="btn-throw" id="throwBtn" onclick="throwYut()">윷 던지기!</button>
+    <button class="btn-reset" onclick="resetGame()">게임 초기화</button>
+  </div>
+</div>
+
+<script>
+  let scores = [0, 0];
+  let currentPlayer = 0;
+  const targetScore = 20;
+  let isThrowing = false;
+
+  const yuts = [
+    document.getElementById('yut0'),
+    document.getElementById('yut1'),
+    document.getElementById('yut2'),
+    document.getElementById('yut3')
+  ];
+
+  const throwBtn = document.getElementById('throwBtn');
+  const statusBanner = document.getElementById('statusBanner');
+  const p1ScoreEl = document.getElementById('p1Score');
+  const p2ScoreEl = document.getElementById('p2Score');
+  const p1Card = document.getElementById('p1Card');
+  const p2Card = document.getElementById('p2Card');
+
+  function throwYut() {
+    if (isThrowing) return;
+    isThrowing = true;
+    throwBtn.disabled = true;
+
+    // 회전 애니메이션 적용
+    yuts.forEach(yut => {
+      yut.className = yut.id === 'yut0' ? 'yut-stick back-do rolling' : 'yut-stick rolling';
+    });
+
+    statusBanner.textContent = '윷이야~! 구르는 중...';
+
+    setTimeout(() => {
+      // 윷가락 4개의 앞/뒤 결정 (true: 평평한 면, false: 둥근 면)
+      // 실제 윷놀이 확률 반영 (평평한 면이 나올 확률 약 60%)
+      const results = yuts.map(() => Math.random() < 0.6);
+
+      // UI에 결과 적용
+      results.forEach((isFlat, i) => {
+        let className = i === 0 ? 'yut-stick back-do' : 'yut-stick';
+        if (isFlat) className += ' flat';
+        yuts[i].className = className;
+      });
+
+      // 윷 결과 계산
+      const flatCount = results.filter(Boolean).length;
+      let move = 0;
+      let resultText = '';
+      let extraTurn = false;
+
+      if (flatCount === 1) {
+        if (results[0]) { // 첫 번째(특수 표시) 윷가락만 평평한 면일 때
+          move = -1;
+          resultText = '뒷도! (-1칸)';
+        } else {
+          move = 1;
+          resultText = '도! (+1칸)';
+        }
+      } else if (flatCount === 2) {
+        move = 2;
+        resultText = '개! (+2칸)';
+      } else if (flatCount === 3) {
+        move = 3;
+        resultText = '걸! (+3칸)';
+      } else if (flatCount === 4) {
+        move = 4;
+        resultText = '윷! (+4칸, 한 번 더!)';
+        extraTurn = true;
+      } else if (flatCount === 0) {
+        move = 5;
+        resultText = '모! (+5칸, 한 번 더!)';
+        extraTurn = true;
+      }
+
+      // 점수 반영 (0 밑으로는 내려가지 않음)
+      scores[currentPlayer] = Math.max(0, scores[currentPlayer] + move);
+      updateUI();
+
+      if (scores[currentPlayer] >= targetScore) {
+        statusBanner.textContent = `🎉 PLAYER ${currentPlayer + 1} 승리! 챔피언 등극!`;
+        throwBtn.disabled = true;
+      } else {
+        if (extraTurn) {
+          statusBanner.textContent = `${resultText} - 한 번 더 던지세요!`;
+        } else {
+          statusBanner.textContent = `${resultText}`;
+          setTimeout(() => {
+            currentPlayer = currentPlayer === 0 ? 1 : 0;
+            statusBanner.textContent = `Player ${currentPlayer + 1} 차례입니다!`;
+            updateActiveCard();
+          }, 1200);
+        }
+        isThrowing = false;
+        throwBtn.disabled = false;
+      }
+    }, 1000);
+  }
+
+  function updateUI() {
+    p1ScoreEl.textContent = `${scores[0]} / ${targetScore}`;
+    p2ScoreEl.textContent = `${scores[1]} / ${targetScore}`;
+  }
+
+  function updateActiveCard() {
+    if (currentPlayer === 0) {
+      p1Card.classList.add('active');
+      p2Card.classList.remove('active');
+    } else {
+      p2Card.classList.add('active');
+      p1Card.classList.remove('active');
+    }
+  }
+
+  function resetGame() {
+    scores = [0, 0];
+    currentPlayer = 0;
+    isThrowing = false;
+    yuts.forEach((yut, i) => {
+      yut.className = i === 0 ? 'yut-stick back-do' : 'yut-stick';
+    });
+    updateUI();
+    updateActiveCard();
+    statusBanner.textContent = 'Player 1 차례입니다!';
+    throwBtn.disabled = false;
+  }
+</script>
+
+</body>
+</html>

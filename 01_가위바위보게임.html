@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>가위바위보 챔피언십</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --text-color: #f8fafc;
+      --win-color: #22c55e;
+      --lose-color: #ef4444;
+      --draw-color: #eab308;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 480px;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      border: 1px solid #334155;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: var(--accent-color);
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-around;
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid #334155;
+    }
+
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .score-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .score-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .arena {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .fighter-box {
+      flex: 1;
+      background: #0f172a;
+      border-radius: 16px;
+      padding: 16px;
+      border: 2px solid #334155;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .fighter-title {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .hand-display {
+      font-size: 3.5rem;
+      height: 80px;
+      line-height: 80px;
+      user-select: none;
+    }
+
+    .vs {
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: var(--accent-color);
+      margin: 0 12px;
+      font-style: italic;
+    }
+
+    .result-banner {
+      height: 48px;
+      line-height: 48px;
+      font-size: 1.25rem;
+      font-weight: bold;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      background-color: #0f172a;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+
+    .result-banner.win {
+      background-color: var(--win-color);
+      color: #fff;
+    }
+
+    .result-banner.lose {
+      background-color: var(--lose-color);
+      color: #fff;
+    }
+
+    .result-banner.draw {
+      background-color: var(--draw-color);
+      color: #000;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-action {
+      background-color: var(--accent-color);
+      color: #0f172a;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+
+    .btn-action:active {
+      transform: scale(0.98);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #94a3b8;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .btn-reset:hover {
+      color: var(--text-color);
+      border-color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🏆 가위바위보 챔피언십</h1>
+  <p class="subtitle">움직이는 이모지가 멈추는 순간, 승자가 가려집니다!</p>
+
+  <div class="scoreboard">
+    <div class="score-item">
+      <span class="score-label">현재 연승</span>
+      <span class="score-value" id="streak" style="color: var(--accent-color);">0</span>
+    </div>
+    <div class="score-item">
+      <span class="score-label">최고 연승</span>
+      <span class="score-value" id="maxStreak">0</span>
+    </div>
+    <div class="score-item">
+      <span class="score-label">전적 (승/무/패)</span>
+      <span class="score-value" id="record">0 / 0 / 0</span>
+    </div>
+  </div>
+
+  <div class="arena">
+    <div class="fighter-box">
+      <span class="fighter-title">도전자 (PLAYER)</span>
+      <div class="hand-display" id="playerDisplay">✌️</div>
+    </div>
+    <div class="vs">VS</div>
+    <div class="fighter-box">
+      <span class="fighter-title">챔피언 (CPU)</span>
+      <div class="hand-display" id="cpuDisplay">✊</div>
+    </div>
+  </div>
+
+  <div class="result-banner" id="resultBanner">대결 버튼을 눌러 승부하세요!</div>
+
+  <div class="controls">
+    <button class="btn-action" id="actionBtn" onclick="toggleGame()">승부하기!</button>
+    <button class="btn-reset" onclick="resetStats()">전적 초기화</button>
+  </div>
+</div>
+
+<script>
+  const hands = ['✌️', '✊', '🖐️'];
+  let isRunning = false;
+  let intervalId = null;
+
+  let playerIndex = 0;
+  let cpuIndex = 1;
+
+  let wins = 0;
+  let draws = 0;
+  let losses = 0;
+  let currentStreak = 0;
+  let maxStreak = 0;
+
+  const playerDisplay = document.getElementById('playerDisplay');
+  const cpuDisplay = document.getElementById('cpuDisplay');
+  const actionBtn = document.getElementById('actionBtn');
+  const resultBanner = document.getElementById('resultBanner');
+
+  const streakEl = document.getElementById('streak');
+  const maxStreakEl = document.getElementById('maxStreak');
+  const recordEl = document.getElementById('record');
+
+  function startMoving() {
+    isRunning = true;
+    actionBtn.textContent = 'STOP!';
+    resultBanner.textContent = '경기 진행 중...';
+    resultBanner.className = 'result-banner';
+
+    intervalId = setInterval(() => {
+      playerIndex = (playerIndex + 1) % 3;
+      cpuIndex = (cpuIndex + 2) % 3; // 서로 다르게 순환하도록 설정
+      
+      playerDisplay.textContent = hands[playerIndex];
+      cpuDisplay.textContent = hands[cpuIndex];
+    }, 80);
+  }
+
+  function stopGame() {
+    clearInterval(intervalId);
+    isRunning = false;
+    actionBtn.textContent = '다시 승부하기';
+
+    evaluateWinner();
+    updateScoreboard();
+  }
+
+  function toggleGame() {
+    if (isRunning) {
+      stopGame();
+    } else {
+      startMoving();
+    }
+  }
+
+  function evaluateWinner() {
+    // 0: 가위(✌️), 1: 바위(✊), 2: 보(🖐️)
+    if (playerIndex === cpuIndex) {
+      draws++;
+      currentStreak = 0;
+      resultBanner.textContent = '무승부!';
+      resultBanner.className = 'result-banner draw';
+    } else if (
+      (playerIndex === 0 && cpuIndex === 2) || // 가위 vs 보
+      (playerIndex === 1 && cpuIndex === 0) || // 바위 vs 가위
+      (playerIndex === 2 && cpuIndex === 1)    // 보 vs 바위
+    ) {
+      wins++;
+      currentStreak++;
+      if (currentStreak > maxStreak) maxStreak = currentStreak;
+      resultBanner.textContent = '🎉 승리했습니다!';
+      resultBanner.className = 'result-banner win';
+    } else {
+      losses++;
+      currentStreak = 0;
+      resultBanner.textContent = '💀 패배했습니다...';
+      resultBanner.className = 'result-banner lose';
+    }
+  }
+
+  function updateScoreboard() {
+    streakEl.textContent = currentStreak;
+    maxStreakEl.textContent = maxStreak;
+    recordEl.textContent = `${wins} / ${draws} / ${losses}`;
+  }
+
+  function resetStats() {
+    if (isRunning) stopGame();
+    wins = 0;
+    draws = 0;
+    losses = 0;
+    currentStreak = 0;
+    maxStreak = 0;
+    updateScoreboard();
+    resultBanner.textContent = '대결 버튼을 눌러 승부하세요!';
+    resultBanner.className = 'result-banner';
+    actionBtn.textContent = '승부하기!';
+  }
+
+  // 초기 자동 회전 시작
+  startMoving();
+</script>
+
+</body>
+</html>

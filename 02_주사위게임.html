@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 주사위 챔피언십</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --text-color: #f8fafc;
+      --dice-size: 100px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 480px;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      border: 1px solid #334155;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: var(--accent-color);
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-around;
+      background: #0f172a;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid #334155;
+    }
+
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .score-label {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .score-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    /* 3D Dice Stage */
+    .scene {
+      width: var(--dice-size);
+      height: var(--dice-size);
+      margin: 30px auto 40px;
+      perspective: 600px;
+    }
+
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+
+    .cube-face {
+      position: absolute;
+      width: var(--dice-size);
+      height: var(--dice-size);
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      display: grid;
+      grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+      padding: 8px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Dot positioning */
+    .dot {
+      display: block;
+      background-color: #1e293b;
+      border-radius: 50%;
+      align-self: center;
+      justify-self: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .dot.red {
+      background-color: #ef4444;
+    }
+
+    /* Face orientations */
+    .face-1 { transform: rotateY(  0deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-2 { transform: rotateY( 90deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-3 { transform: rotateY(180deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-4 { transform: rotateY(-90deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-5 { transform: rotateX( 90deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-6 { transform: rotateX(-90deg) translateZ(calc(var(--dice-size) / 2)); }
+
+    /* Dot Alignment inside Face grids */
+    .face-1 .dot { grid-area: 2 / 2; }
+
+    .face-2 .dot:nth-child(1) { grid-area: 1 / 1; }
+    .face-2 .dot:nth-child(2) { grid-area: 3 / 3; }
+
+    .face-3 .dot:nth-child(1) { grid-area: 1 / 1; }
+    .face-3 .dot:nth-child(2) { grid-area: 2 / 2; }
+    .face-3 .dot:nth-child(3) { grid-area: 3 / 3; }
+
+    .face-4 .dot:nth-child(1) { grid-area: 1 / 1; }
+    .face-4 .dot:nth-child(2) { grid-area: 1 / 3; }
+    .face-4 .dot:nth-child(3) { grid-area: 3 / 1; }
+    .face-4 .dot:nth-child(4) { grid-area: 3 / 3; }
+
+    .face-5 .dot:nth-child(1) { grid-area: 1 / 1; }
+    .face-5 .dot:nth-child(2) { grid-area: 1 / 3; }
+    .face-5 .dot:nth-child(3) { grid-area: 2 / 2; }
+    .face-5 .dot:nth-child(4) { grid-area: 3 / 1; }
+    .face-5 .dot:nth-child(5) { grid-area: 3 / 3; }
+
+    .face-6 .dot:nth-child(1) { grid-area: 1 / 1; }
+    .face-6 .dot:nth-child(2) { grid-area: 1 / 3; }
+    .face-6 .dot:nth-child(3) { grid-area: 2 / 1; }
+    .face-6 .dot:nth-child(4) { grid-area: 2 / 3; }
+    .face-6 .dot:nth-child(5) { grid-area: 3 / 1; }
+    .face-6 .dot:nth# 3D 주사위 챔피언십 (3D Dice Championship)
+
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 주사위 챔피언십</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent-color: #38bdf8;
+      --text-color: #f8fafc;
+      --p1-color: #ef4444;
+      --p2-color: #3b82f6;
+      --dice-size: 80px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      border: 1px solid #334155;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: var(--accent-color);
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-bottom: 20px;
+    }
+
+    /* 점수판 디자인 */
+    .scoreboard {
+      display: flex;
+      justify-content: space-around;
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      border: 1px solid #334155;
+    }
+
+    .player-score {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .player-score.active {
+      background: #334155;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+
+    .player-name {
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+
+    .p1-name { color: var(--p1-color); }
+    .p2-name { color: var(--p2-color); }
+
+    .score-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    /* 경기장 및 3D 주사위 영역 */
+    .arena {
+      perspective: 600px;
+      height: 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .cube {
+      width: var(--dice-size);
+      height: var(--dice-size);
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.5s cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+
+    .face {
+      position: absolute;
+      width: var(--dice-size);
+      height: var(--dice-size);
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      display: grid;
+      grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+      padding: 6px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 주사위 점(dot) 구현 */
+    .dot {
+      background-color: #1e293b;
+      border-radius: 50%;
+      align-self: center;
+      justify-self: center;
+      width: 12px;
+      height: 12px;
+      display: none;
+    }
+
+    /* 1번 면의 빨간 점 */
+    .face-1 .dot { background-color: #ef4444; width: 16px; height: 16px; }
+
+    /* 면별 배치 위치 (3D Transform) */
+    .face-1 { transform: rotateY(0deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-6 { transform: rotateY(180deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-2 { transform: rotateY(-90deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-5 { transform: rotateY(90deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-3 { transform: rotateX(90deg) translateZ(calc(var(--dice-size) / 2)); }
+    .face-4 { transform: rotateX(-90deg) translateZ(calc(var(--dice-size) / 2)); }
+
+    /* 주사위 눈금별 점 위치 레이아웃 */
+    .face-1 .dot:nth-child(5) { display: block; }
+
+    .face-2 .dot:nth-child(1),
+    .face-2 .dot:nth-child(9) { display: block; }
+
+    .face-3 .dot:nth-child(1),
+    .face-3 .dot:nth-child(5),
+    .face-3 .dot:nth-child(9) { display: block; }
+
+    .face-4 .dot:nth-child(1),
+    .face-4 .dot:nth-child(3),
+    .face-4 .dot:nth-child(7),
+    .face-4 .dot:nth-child(9) { display: block; }
+
+    .face-5 .dot:nth-child(1),
+    .face-5 .dot:nth-child(3),
+    .face-5 .dot:nth-child(5),
+    .face-5 .dot:nth-child(7),
+    .face-5 .dot:nth-child(9) { display: block; }
+
+    .face-6 .dot:nth-child(1),
+    .face-6 .dot:nth-child(3),
+    .face-6 .dot:nth-child(4),
+    .face-6 .dot:nth-child(6),
+    .face-6 .dot:nth-child(7),
+    .face-6 .dot:nth-child(9) { display: block; }
+
+    /* 상태 및 메시지 */
+    .status-banner {
+      min-height: 40px;
+      line-height: 40px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 10px;
+      background-color: #0f172a;
+      margin-bottom: 20px;
+      color: #94a3b8;
+    }
+
+    /* 컨트롤 버튼 */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-roll {
+      background-color: var(--accent-color);
+      color: #0f172a;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-roll:active { transform: scale(0.98); }
+    .btn-roll:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid #475569;
+      color: #94a3b8;
+      padding: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .btn-reset:hover { color: var(--text-color); border-color: #64748b; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🎲 3D 주사위 챔피언십</h1>
+  <p class="subtitle">30점에 먼저 도달하는 사람이 챔피언!</p>
+
+  <div class="scoreboard">
+    <div class="player-score active" id="p1Card">
+      <span class="player-name p1-name">PLAYER 1</span>
+      <span class="score-val" id="p1Score">0</span>
+    </div>
+    <div class="player-score" id="p2Card">
+      <span class="player-name p2-name">PLAYER 2</span>
+      <span class="score-val" id="p2Score">0</span>
+    </div>
+  </div>
+
+  <div class="arena">
+    <div class="cube" id="cube">
+      <!-- 6개의 주사위 면과 9개의 그리드 구역 -->
+      <div class="face face-1"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="face face-2"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div class="face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+
+  <div class="status-banner" id="statusBanner">Player 1 차례입니다!</div>
+
+  <div class="controls">
+    <button class="btn-roll" id="rollBtn" onclick="rollDice()">주사위 굴리기</button>
+    <button class="btn-reset" onclick="resetGame()">게임 초기화</button>
+  </div>
+</div>
+
+<script>
+  let scores = [0, 0];
+  let currentPlayer = 0; // 0: Player 1, 1: Player 2
+  const targetScore = 30;
+  let isRolling = false;
+
+  // 눈금별 3D 회전 각도 좌표
+  const rotationMap = {
+    1: { x: 0, y: 0 },
+    2: { x: 0, y: 90 },
+    3: { x: -90, y: 0 },
+    4: { x: 90, y: 0 },
+    5: { x: 0, y: -90 },
+    6: { x: 0, y: 180 }
+  };
+
+  let xRotation = 0;
+  let yRotation = 0;
+
+  const cube = document.getElementById('cube');
+  const rollBtn = document.getElementById('rollBtn');
+  const statusBanner = document.getElementById('statusBanner');
+  const p1ScoreEl = document.getElementById('p1Score');
+  const p2ScoreEl = document.getElementById('p2Score');
+  const p1Card = document.getElementById('p1Card');
+  const p2Card = document.getElementById('p2Card');
+
+  function rollDice() {
+    if (isRolling) return;
+    isRolling = true;
+    rollBtn.disabled = true;
+
+    const rolledValue = Math.floor(Math.random() * 6) + 1;
+    
+    // 회전 애니메이션 연출 (최소 4바퀴 이상 돌도록 멀티 회전 추가)
+    const extraRotations = 360 * 4;
+    const target = rotationMap[rolledValue];
+
+    xRotation += extraRotations + target.x;
+    yRotation += extraRotations + target.y;
+
+    cube.style.transform = `rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
+
+    statusBanner.textContent = '주사위가 구르는 중...';
+
+    setTimeout(() => {
+      scores[currentPlayer] += rolledValue;
+      updateUI();
+
+      if (scores[currentPlayer] >= targetScore) {
+        statusBanner.textContent = `🎉 PLAYER ${currentPlayer + 1} 승리! 챔피언 등극!`;
+        rollBtn.disabled = true;
+      } else {
+        // 차례 변경
+        currentPlayer = currentPlayer === 0 ? 1 : 0;
+        statusBanner.textContent = `Player ${currentPlayer + 1} 차례입니다! (+${rolledValue} 획득)`;
+        updateActiveCard();
+        isRolling = false;
+        rollBtn.disabled = false;
+      }
+    }, 1500);
+  }
+
+  function updateUI() {
+    p1ScoreEl.textContent = scores[0];
+    p2ScoreEl.textContent = scores[1];
+  }
+
+  function updateActiveCard() {
+    if (currentPlayer === 0) {
+      p1Card.classList.add('active');
+      p2Card.classList.remove('active');
+    } else {
+      p2Card.classList.add('active');
+      p1Card.classList.remove('active');
+    }
+  }
+
+  function resetGame() {
+    scores = [0, 0];
+    currentPlayer = 0;
+    isRolling = false;
+    xRotation = 0;
+    yRotation = 0;
+    cube.style.transform = 'rotateX(0deg) rotateY(0deg)';
+    updateUI();
+    updateActiveCard();
+    statusBanner.textContent = 'Player 1 차례입니다!';
+    rollBtn.disabled = false;
+  }
+</script>
+
+</body>
+</html>

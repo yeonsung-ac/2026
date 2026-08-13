@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>80일간의 세계일주</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Nanum+Gothic:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --paper: #EFE7D3;
+    --paper-deep: #E3D8BB;
+    --ink: #23302E;
+    --navy: #223A52;
+    --navy-deep: #16283B;
+    --teal: #1F5C56;
+    --stamp: #B8412B;
+    --stamp-light: #F0D2C4;
+    --gold: #C79A2E;
+    --card: #FBF7EC;
+    --radius: 18px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:transparent;}
+  .pe-root{
+    font-family:'Nanum Gothic', sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    min-height:100%;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .pe-shell{ width:100%; max-width: 640px; padding: 20px 18px 40px; }
+
+  /* ---------- Passport header (signature element) ---------- */
+  .passport-strip{
+    position:relative;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 14px),
+      linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-radius: var(--radius);
+    border: 3px solid var(--navy-deep);
+    box-shadow: 0 4px 0 var(--navy-deep);
+    padding: 14px 14px 12px;
+    margin-bottom: 18px;
+    overflow:hidden;
+  }
+  .passport-top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap: 10px;
+  }
+  .passport-title{
+    font-family:'Special Elite', monospace;
+    font-size: 19px;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    line-height:1.25;
+  }
+  .passport-sub{
+    margin-top:4px;
+    font-size: 12px;
+    font-weight:700;
+    color: #CFE0D8;
+  }
+  .stamp-count{
+    flex: 0 0 auto;
+    width: 46px; height:46px;
+    border-radius:50%;
+    border: 2px dashed var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Special Elite', monospace;
+    color: var(--gold);
+    font-size: 12.5px;
+    letter-spacing: -0.3px;
+  }
+  .route-track{
+    position:relative;
+    height: 22px;
+    margin-top: 10px;
+  }
+  .route-line{
+    position:absolute; top:50%; left:2px; right:2px; height:2px;
+    background-image: repeating-linear-gradient(90deg, rgba(199,154,46,0.55) 0 6px, transparent 6px 12px);
+    transform: translateY(-50%);
+  }
+  .route-balloon{
+    position:absolute; top:50%; left:0%;
+    transform: translate(-50%,-50%);
+    font-size: 17px;
+    transition: left 0.45s ease;
+  }
+  .stamp-row{
+    margin-top: 8px;
+    height: 56px;
+    display:flex; align-items:center; gap: 8px;
+    overflow: hidden;
+    padding: 2px 2px;
+  }
+  .stamp{
+    flex: 0 0 auto;
+    width: 46px; height:46px;
+    border-radius: 50%;
+    border: 2px solid var(--stamp-light);
+    background: rgba(240,210,196,0.08);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family:'Space Mono', monospace;
+    color: var(--stamp-light);
+    font-size: 9px;
+    font-weight:700;
+    letter-spacing: 0.5px;
+    animation: stampIn .35s ease both;
+  }
+  .stamp img{ width:22px; height:15px; object-fit:cover; border-radius:2px; margin-bottom:2px; }
+  @keyframes stampIn{
+    0%{ transform: scale(1.8) rotate(var(--r,0deg)); opacity:0; }
+    100%{ transform: scale(1) rotate(var(--r,0deg)); opacity:1; }
+  }
+  .reset-btn{
+    position:absolute; bottom:8px; right:10px;
+    display:flex; align-items:center; gap:5px;
+    background: var(--card);
+    border: 2px solid var(--navy-deep);
+    border-radius: 999px;
+    padding: 5px 11px 5px 9px;
+    font-family:'Nanum Gothic', sans-serif;
+    font-weight:800;
+    font-size: 11.5px;
+    color: var(--navy-deep);
+    cursor:pointer;
+    z-index: 6;
+    box-shadow: 0 2px 0 var(--navy-deep);
+  }
+  .reset-btn:active{ transform: translateY(1px); box-shadow:none; }
+
+  /* ---------- Panels ---------- */
+  .panel{
+    background: var(--card);
+    border: 3px solid var(--navy-deep);
+    border-radius: var(--radius);
+    box-shadow: 0 5px 0 var(--navy-deep);
+    padding: 20px 18px;
+  }
+  .panel + .panel{ margin-top:16px; }
+  h2.section-label{
+    font-family:'Special Elite', monospace;
+    font-size: 15.5px;
+    font-weight: 400;
+    margin: 0 0 12px;
+    color: var(--teal);
+    display:flex; align-items:center; gap:8px;
+  }
+  h2.section-label .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%;
+    background: var(--teal); color:#fff; font-size:12px; font-family:'Nanum Gothic',sans-serif; font-weight:800;
+  }
+  .mode-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode-btn{
+    font-family:'Nanum Gothic', sans-serif;
+    font-weight: 800;
+    font-size: 13.5px;
+    padding: 14px 8px;
+    border-radius: 12px;
+    border: 2.5px solid var(--navy-deep);
+    background: #fff;
+    color: var(--ink);
+    cursor:pointer;
+    text-align:center;
+    line-height:1.35;
+  }
+  .mode-btn .emo{ display:block; font-size:20px; margin-bottom:4px; }
+  .mode-btn.active{ background: var(--teal); color:#fff; box-shadow: 0 3px 0 var(--navy-deep); }
+  .choice-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .choice-btn{
+    font-family:'Nanum Gothic', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 12px 6px;
+    border-radius: 12px;
+    border: 2.5px solid var(--navy-deep);
+    background: #fff;
+    color: var(--ink);
+    cursor:pointer;
+  }
+  .choice-btn.active{ background: var(--teal); color:#fff; box-shadow: 0 3px 0 var(--navy-deep); }
+  .start-btn{
+    margin-top:18px; width:100%;
+    font-family:'Special Elite', monospace;
+    font-size: 17px;
+    padding: 15px;
+    border-radius: 14px;
+    border: 3px solid var(--navy-deep);
+    background: var(--stamp);
+    color:#fff;
+    cursor:pointer;
+    box-shadow: 0 4px 0 var(--navy-deep);
+  }
+  .start-btn:active{ transform: translateY(3px); box-shadow:none; }
+  .empty-note{ font-size:12.5px; color:#6b6558; text-align:center; margin-top:10px; font-weight:700; }
+
+  /* ---------- Quiz ---------- */
+  .stat-row{ display:flex; gap:10px; margin-bottom:14px; }
+  .stat-chip{ flex:1; background:#fff; border:2.5px solid var(--navy-deep); border-radius:12px; padding:8px 10px; text-align:center; }
+  .stat-chip .v{ font-family:'Special Elite', monospace; font-size:17px; color: var(--teal); }
+  .stat-chip .l{ font-size: 10px; color:#6b6558; font-weight:700; }
+
+  .question-card{
+    background: linear-gradient(180deg,#fff,var(--paper-deep));
+    border: 3px solid var(--navy-deep);
+    border-radius: var(--radius);
+    box-shadow: 0 5px 0 var(--navy-deep);
+    padding: 22px 18px;
+    text-align:center;
+    margin-bottom:16px;
+  }
+  .q-label{ font-size:12.5px; font-weight:800; color: var(--teal); margin-bottom:10px; }
+
+  .flag-block, .capital-block, .map-block{ display:none; }
+  .question-card.mode-flag .flag-block{ display:block; }
+  .question-card.mode-capital .capital-block{ display:block; }
+  .question-card.mode-map .map-block{ display:block; }
+
+  .flag-wrap{
+    display:flex; align-items:center; justify-content:center; gap: 14px;
+  }
+  .flag-img{
+    width: 140px; max-width: 60%; aspect-ratio: 4/3; object-fit: cover;
+    border: 3px solid var(--navy-deep); border-radius: 10px;
+    background: #fff;
+  }
+  .flag-fallback{
+    width: 140px; max-width:60%; aspect-ratio:4/3;
+    border: 3px solid var(--navy-deep); border-radius: 10px;
+    background: var(--paper-deep);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono', monospace; font-weight:700; font-size: 22px; color: var(--navy-deep);
+  }
+  .speak-btn{
+    flex: 0 0 auto;
+    width: 44px; height: 44px; border-radius:50%;
+    border: 2.5px solid var(--navy-deep);
+    background: #FCE9BF;
+    color: var(--navy-deep);
+    font-size: 19px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    box-shadow: 0 3px 0 var(--navy-deep);
+  }
+  .speak-btn.speaking{ background: #B7DCC9; animation: pulseSpeak .6s ease-in-out infinite alternate; }
+  @keyframes pulseSpeak{ from{transform:scale(1);} to{transform:scale(1.08);} }
+
+  .capital-country{
+    font-family:'Special Elite', monospace;
+    font-size: 26px;
+    color: var(--ink);
+  }
+  .capital-flag-mini{ width:34px; height:24px; object-fit:cover; border-radius:4px; border:2px solid var(--navy-deep); vertical-align:middle; margin-right:8px; }
+
+  .map-hint{ font-size:12px; color:#6b6558; font-weight:700; margin-top:8px; }
+  #leafletMap{
+    width:100%; height: 190px;
+    border-radius: 12px;
+    border: 3px solid var(--navy-deep);
+    background: #cfe3f0;
+  }
+
+  .answer-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .answer-btn{
+    font-family:'Nanum Gothic', sans-serif;
+    font-weight:800; font-size: 15px;
+    padding: 15px 8px;
+    border-radius: 14px;
+    border: 2.5px solid var(--navy-deep);
+    background:#fff;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .answer-btn img{ width:22px; height:15px; object-fit:cover; border-radius:2px; flex:0 0 auto; }
+  .answer-btn:disabled{ cursor:default; }
+  .answer-btn.correct{ background:#CFE7CE; border-color:#3E7A4A; color:#1c2b1f; }
+  .answer-btn.wrong{ background:#F3D2C6; border-color:var(--stamp); color:#6b2414; }
+  .answer-btn.dim{ opacity:.4; }
+
+  .feedback{ min-height:24px; text-align:center; font-weight:800; font-family:'Special Elite',monospace; font-size:14px; margin-top:12px; color: var(--teal); }
+
+  /* ---------- Result ---------- */
+  .result-hero{ text-align:center; padding: 8px 0 4px; }
+  .result-hero .big{ font-family:'Special Elite', monospace; font-size:42px; color: var(--teal); }
+  .result-hero .cap{ font-size:12.5px; font-weight:700; color:#6b6558; }
+  .miss-list{ margin-top:14px; }
+  .miss-item{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 12px; background:#fff; border:2px solid var(--navy-deep); border-radius:10px; margin-bottom:8px; font-weight:700; font-size:13.5px; }
+  .miss-item img{ width:24px; height:16px; object-fit:cover; border-radius:3px; }
+  .miss-item .qmode{ color:#6b6558; font-size:11px; font-weight:700; }
+  .miss-item .ans{ color: var(--teal); }
+  .btn-row{ display:flex; gap:10px; margin-top:18px; }
+  .btn-row .start-btn{ margin-top:0; }
+  .secondary-btn{
+    flex:1; font-family:'Special Elite', monospace; font-size:15px; padding:15px;
+    border-radius:14px; border:3px solid var(--navy-deep); background:#fff; color: var(--navy-deep);
+    cursor:pointer; box-shadow: 0 4px 0 var(--navy-deep);
+  }
+  .secondary-btn:active{ transform: translateY(3px); box-shadow:none; }
+
+  @media (max-width:380px){
+    .capital-country{ font-size:21px; }
+    .mode-grid{ grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="pe-root">
+  <div class="pe-shell">
+
+    <div class="passport-strip">
+      <div class="passport-top">
+        <div>
+          <div class="passport-title">🎈 80일간의 세계일주</div>
+          <div class="passport-sub" id="passportSub">필리어스 포그처럼 80일 안에 세계를 한 바퀴 돌아보세요</div>
+        </div>
+        <div class="stamp-count" id="stampCount">D-80</div>
+      </div>
+      <div class="route-track">
+        <div class="route-line"></div>
+        <div class="route-balloon" id="routeBalloon">🎈</div>
+      </div>
+      <div class="stamp-row" id="stampRow"></div>
+      <button class="reset-btn" id="globalResetBtn" type="button" title="처음부터 다시 시작"><span>↺</span>처음부터</button>
+    </div>
+
+    <!-- SETUP -->
+    <div id="setupScreen">
+      <div class="panel">
+        <h2 class="section-label"><span class="num">1</span>도전 유형 선택</h2>
+        <div class="mode-grid" id="modeGrid">
+          <button class="mode-btn" data-mode="flag"><span class="emo">🏳️</span>국기 보고<br>나라 맞히기</button>
+          <button class="mode-btn" data-mode="capital"><span class="emo">🏛️</span>나라 보고<br>수도 맞히기</button>
+          <button class="mode-btn" data-mode="map"><span class="emo">📍</span>지도 위치 보고<br>나라 맞히기</button>
+          <button class="mode-btn" data-mode="mix"><span class="emo">🔀</span>세 가지<br>랜덤 섞기</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2 class="section-label"><span class="num">2</span>문제 수</h2>
+        <div class="choice-grid" id="countGrid">
+          <button class="choice-btn" data-count="8">8문제</button>
+          <button class="choice-btn" data-count="12">12문제</button>
+          <button class="choice-btn" data-count="20">20문제</button>
+        </div>
+      </div>
+      <button class="start-btn" id="startBtn">세계일주 출발 🎈</button>
+      <div class="empty-note">80일의 여정 동안 나라를 하나씩 방문해요</div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quizScreen" style="display:none;">
+      <div class="stat-row">
+        <div class="stat-chip"><div class="v" id="qIndex">1/8</div><div class="l">문제</div></div>
+        <div class="stat-chip"><div class="v" id="qScore">0</div><div class="l">점수</div></div>
+        <div class="stat-chip"><div class="v" id="qStreak">0</div><div class="l">연속 정답</div></div>
+      </div>
+
+      <div class="question-card" id="questionCard">
+        <div class="flag-block">
+          <div class="q-label">이 국기는 어느 나라일까요?</div>
+          <div class="flag-wrap">
+            <span id="flagImgWrap"></span>
+            <button class="speak-btn" id="speakBtn" type="button" title="영어 발음 듣기">🔊</button>
+          </div>
+        </div>
+
+        <div class="capital-block">
+          <div class="q-label">이 나라의 수도는 어디일까요?</div>
+          <div class="capital-country"><img class="capital-flag-mini" id="capitalFlagMini" alt=""><span id="capitalCountryName">대한민국</span></div>
+        </div>
+
+        <div class="map-block">
+          <div class="q-label">지도 위 핀은 어느 나라일까요?</div>
+          <div id="leafletMap"></div>
+          <div class="map-hint">세계지도 속 위치를 잘 보고 골라보세요 · 확대/축소 및 이동 가능</div>
+        </div>
+      </div>
+
+      <div class="answer-grid" id="answerGrid"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="resultScreen" style="display:none;">
+      <div class="panel">
+        <div class="result-hero">
+          <div class="cap">최종 점수</div>
+          <div class="big" id="finalScore">0</div>
+          <div class="cap" id="finalMsg">수고했어요!</div>
+        </div>
+        <div class="miss-list" id="missList"></div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="retryMissBtn">틀린 문제만 다시</button>
+        <button class="start-btn" id="restartBtn">처음으로</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const COUNTRIES = [
+    {code:'kr', ko:'대한민국', en:'South Korea', capitalKo:'서울', lat:37.5665, lon:126.9780},
+    {code:'us', ko:'미국', en:'United States', capitalKo:'워싱턴 D.C.', lat:38.9072, lon:-77.0369},
+    {code:'jp', ko:'일본', en:'Japan', capitalKo:'도쿄', lat:35.6762, lon:139.6503},
+    {code:'cn', ko:'중국', en:'China', capitalKo:'베이징', lat:39.9042, lon:116.4074},
+    {code:'fr', ko:'프랑스', en:'France', capitalKo:'파리', lat:48.8566, lon:2.3522},
+    {code:'de', ko:'독일', en:'Germany', capitalKo:'베를린', lat:52.5200, lon:13.4050},
+    {code:'gb', ko:'영국', en:'United Kingdom', capitalKo:'런던', lat:51.5074, lon:-0.1278},
+    {code:'it', ko:'이탈리아', en:'Italy', capitalKo:'로마', lat:41.9028, lon:12.4964},
+    {code:'es', ko:'스페인', en:'Spain', capitalKo:'마드리드', lat:40.4168, lon:-3.7038},
+    {code:'ca', ko:'캐나다', en:'Canada', capitalKo:'오타와', lat:45.4215, lon:-75.6972},
+    {code:'au', ko:'호주', en:'Australia', capitalKo:'캔버라', lat:-35.2809, lon:149.1300},
+    {code:'br', ko:'브라질', en:'Brazil', capitalKo:'브라질리아', lat:-15.8267, lon:-47.9218},
+    {code:'mx', ko:'멕시코', en:'Mexico', capitalKo:'멕시코시티', lat:19.4326, lon:-99.1332},
+    {code:'ru', ko:'러시아', en:'Russia', capitalKo:'모스크바', lat:55.7558, lon:37.6173},
+    {code:'in', ko:'인도', en:'India', capitalKo:'뉴델리', lat:28.6139, lon:77.2090},
+    {code:'eg', ko:'이집트', en:'Egypt', capitalKo:'카이로', lat:30.0444, lon:31.2357},
+    {code:'ke', ko:'케냐', en:'Kenya', capitalKo:'나이로비', lat:-1.2921, lon:36.8219},
+    {code:'za', ko:'남아프리카공화국', en:'South Africa', capitalKo:'프리토리아', lat:-25.7461, lon:28.1881},
+    {code:'tr', ko:'튀르키예', en:'Turkey', capitalKo:'앙카라', lat:39.9334, lon:32.8597},
+    {code:'gr', ko:'그리스', en:'Greece', capitalKo:'아테네', lat:37.9838, lon:23.7275},
+    {code:'nl', ko:'네덜란드', en:'Netherlands', capitalKo:'암스테르담', lat:52.3676, lon:4.9041},
+    {code:'se', ko:'스웨덴', en:'Sweden', capitalKo:'스톡홀름', lat:59.3293, lon:18.0686},
+    {code:'ch', ko:'스위스', en:'Switzerland', capitalKo:'베른', lat:46.9480, lon:7.4474},
+    {code:'th', ko:'태국', en:'Thailand', capitalKo:'방콕', lat:13.7563, lon:100.5018},
+    {code:'vn', ko:'베트남', en:'Vietnam', capitalKo:'하노이', lat:21.0285, lon:105.8542},
+    {code:'ar', ko:'아르헨티나', en:'Argentina', capitalKo:'부에노스아이레스', lat:-34.6037, lon:-58.3816},
+    {code:'nz', ko:'뉴질랜드', en:'New Zealand', capitalKo:'웰링턴', lat:-41.2865, lon:174.7762}
+  ];
+
+  let state = {
+    modeSel: null,
+    count: null,
+    pool: [],       // [{country, mode}]
+    idx: 0,
+    score: 0,
+    streak: 0,
+    misses: [],
+    locked: false,
+    stampTotal: 0
+  };
+
+  const el = id => document.getElementById(id);
+  const setupScreen = el('setupScreen');
+  const quizScreen = el('quizScreen');
+  const resultScreen = el('resultScreen');
+
+  // ---------- TTS ----------
+  const ttsSupported = 'speechSynthesis' in window;
+  let voices = [], preferredVoice = null;
+  function loadVoices(){
+    voices = window.speechSynthesis.getVoices();
+    preferredVoice = voices.find(v=>v.lang==='en-US') || voices.find(v=>v.lang && v.lang.startsWith('en')) || null;
+  }
+  if(ttsSupported){ loadVoices(); window.speechSynthesis.onvoiceschanged = loadVoices; }
+  function speakText(text){
+    if(!ttsSupported || !text) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.9;
+    if(preferredVoice) u.voice = preferredVoice;
+    const btn = el('speakBtn');
+    u.onstart = ()=> btn && btn.classList.add('speaking');
+    u.onend = ()=> btn && btn.classList.remove('speaking');
+    u.onerror = ()=> btn && btn.classList.remove('speaking');
+    window.speechSynthesis.speak(u);
+  }
+
+  // ---------- flag image with graceful fallback ----------
+  function buildFlagEl(code, cls, size){
+    const wrap = document.createElement('span');
+    const img = document.createElement('img');
+    img.className = cls;
+    img.alt = code.toUpperCase();
+    img.src = `https://flagcdn.com/${size}/${code}.png`;
+    img.onerror = function(){
+      const fb = document.createElement('span');
+      fb.className = 'flag-fallback';
+      fb.textContent = code.toUpperCase();
+      if(cls === 'flag-img'){
+        img.replaceWith(fb);
+      } else {
+        // small inline fallback badge
+        fb.style.width = '24px'; fb.style.height='16px'; fb.style.fontSize='8px';
+        fb.style.display='inline-flex';
+        img.replaceWith(fb);
+      }
+    };
+    wrap.appendChild(img);
+    return wrap;
+  }
+
+  // ---------- setup interactions ----------
+  el('modeGrid').addEventListener('click', e=>{
+    const btn = e.target.closest('.mode-btn');
+    if(!btn) return;
+    [...el('modeGrid').children].forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.modeSel = btn.dataset.mode;
+  });
+  el('countGrid').addEventListener('click', e=>{
+    const btn = e.target.closest('.choice-btn');
+    if(!btn) return;
+    [...el('countGrid').children].forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.count = parseInt(btn.dataset.count,10);
+  });
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+  function flash(node){
+    node.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}], {duration:280});
+  }
+  function pickMode(){
+    if(state.modeSel !== 'mix') return state.modeSel;
+    const opts = ['flag','capital','map'];
+    return opts[Math.floor(Math.random()*opts.length)];
+  }
+
+  el('startBtn').addEventListener('click', ()=>{
+    if(!state.modeSel){ flash(el('modeGrid')); return; }
+    if(!state.count){ flash(el('countGrid')); return; }
+    const countries = shuffle(COUNTRIES).slice(0, Math.min(state.count, COUNTRIES.length));
+    const pool = countries.map(c => ({ country: c, mode: pickMode() }));
+    startGame(pool);
+  });
+
+  function startGame(pool){
+    state.pool = pool;
+    state.idx = 0; state.score = 0; state.streak = 0; state.misses = []; state.stampTotal = 0;
+    resetPassport();
+    setupScreen.style.display = 'none';
+    resultScreen.style.display = 'none';
+    quizScreen.style.display = 'block';
+    renderQuestion();
+  }
+
+  function resetPassport(){
+    el('stampRow').innerHTML = '';
+    el('stampCount').textContent = 'D-80';
+    el('routeBalloon').style.left = '0%';
+    el('passportSub').textContent = '필리어스 포그처럼 80일 안에 세계를 한 바퀴 돌아보세요';
+  }
+
+  function updateJourneyProgress(idx, total){
+    const pct = total > 0 ? (idx / total) * 100 : 0;
+    const daysRemaining = total > 0 ? Math.max(0, 80 - Math.round((idx/total)*80)) : 80;
+    el('routeBalloon').style.left = pct + '%';
+    el('stampCount').textContent = 'D-' + daysRemaining;
+  }
+
+  // ---------- Leaflet map (created once, reused) ----------
+  let leafletMap = null, leafletMarker = null;
+  function ensureMap(){
+    if(leafletMap) return leafletMap;
+    leafletMap = L.map('leafletMap', {
+      zoomControl:true, dragging:true, scrollWheelZoom:true,
+      doubleClickZoom:true, boxZoom:false, keyboard:false, touchZoom:true,
+      attributionControl:true
+    }).setView([20,0], 1);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 6,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(leafletMap);
+    leafletMarker = L.circleMarker([0,0], {
+      radius: 10, color:'#B8412B', weight:3, fillColor:'#B8412B', fillOpacity:0.85
+    }).addTo(leafletMap);
+    return leafletMap;
+  }
+  function showMapFor(country){
+    const map = ensureMap();
+    setTimeout(()=>{
+      map.invalidateSize();
+      map.setView([country.lat, country.lon], 2.4);
+      leafletMarker.setLatLng([country.lat, country.lon]);
+    }, 30);
+  }
+
+  function distractorCountries(exclude, n){
+    return shuffle(COUNTRIES.filter(c=>c.code!==exclude.code)).slice(0,n);
+  }
+
+  function renderQuestion(){
+    state.locked = false;
+    el('feedback').textContent = '';
+    const total = state.pool.length;
+    el('qIndex').textContent = `${state.idx+1}/${total}`;
+    el('qScore').textContent = state.score;
+    el('qStreak').textContent = state.streak;
+    updateJourneyProgress(state.idx, total);
+
+    const { country, mode } = state.pool[state.idx];
+    const card = el('questionCard');
+    card.className = 'question-card mode-' + mode;
+
+    const grid = el('answerGrid');
+    grid.innerHTML = '';
+
+    if(mode === 'flag'){
+      const wrap = el('flagImgWrap');
+      wrap.innerHTML = '';
+      wrap.appendChild(buildFlagEl(country.code, 'flag-img', 'w160'));
+      const options = shuffle([country, ...distractorCountries(country,3)]);
+      options.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = opt.ko;
+        btn.addEventListener('click', ()=> handleAnswer(btn, opt.code, country.code, country, mode, ()=>opt.ko));
+        grid.appendChild(btn);
+      });
+      el('speakBtn').onclick = ()=> speakText(country.en);
+
+    } else if(mode === 'capital'){
+      const miniWrap = document.getElementById('capitalFlagMini').parentNode;
+      const oldImg = document.getElementById('capitalFlagMini');
+      const newImg = document.createElement('img');
+      newImg.id = 'capitalFlagMini'; newImg.className='capital-flag-mini'; newImg.alt = country.code;
+      newImg.src = `https://flagcdn.com/w40/${country.code}.png`;
+      newImg.onerror = function(){ newImg.style.display='none'; };
+      oldImg.replaceWith(newImg);
+      el('capitalCountryName').textContent = country.ko;
+
+      const otherCapitals = distractorCountries(country,3).map(c=>c.capitalKo);
+      const options = shuffle([country.capitalKo, ...otherCapitals]);
+      options.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', ()=> handleAnswer(btn, opt, country.capitalKo, country, mode, ()=>opt));
+        grid.appendChild(btn);
+      });
+
+    } else { // map
+      showMapFor(country);
+      const options = shuffle([country, ...distractorCountries(country,3)]);
+      options.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        const flagSpan = buildFlagEl(opt.code, '', 'w40');
+        const img = flagSpan.querySelector('img');
+        if(img) btn.appendChild(img);
+        const label = document.createElement('span');
+        label.textContent = opt.ko;
+        btn.appendChild(label);
+        btn.addEventListener('click', ()=> handleAnswer(btn, opt.code, country.code, country, mode, ()=>opt.ko));
+        grid.appendChild(btn);
+      });
+    }
+  }
+
+  function handleAnswer(btn, chosenKey, correctKey, country, mode, labelFn){
+    if(state.locked) return;
+    state.locked = true;
+    const isCorrect = chosenKey === correctKey;
+    const allBtns = [...el('answerGrid').children];
+    allBtns.forEach(b=>{ b.disabled = true; if(b!==btn) b.classList.add('dim'); });
+    btn.classList.add(isCorrect ? 'correct':'wrong');
+
+    if(isCorrect){
+      state.score += 10 + Math.min(state.streak,5)*2;
+      state.streak += 1;
+      el('feedback').textContent = '정답이에요! 🎉';
+      el('feedback').style.color = 'var(--teal)';
+      addStamp(country);
+    } else {
+      state.streak = 0;
+      const correctLabel = mode === 'flag' ? country.ko : (mode === 'capital' ? country.capitalKo : country.ko);
+      state.misses.push({ country, mode });
+      el('feedback').textContent = `아쉬워요! 정답은 "${correctLabel}" 이에요.`;
+      el('feedback').style.color = 'var(--stamp)';
+    }
+
+    setTimeout(()=>{
+      state.idx += 1;
+      if(state.idx >= state.pool.length){ showResult(); }
+      else { renderQuestion(); }
+    }, isCorrect ? 700 : 1400);
+  }
+
+  function addStamp(country){
+    state.stampTotal += 1;
+    el('passportSub').textContent = `지금까지 ${state.stampTotal}개국을 방문했어요 🌍`;
+    const row = el('stampRow');
+    const s = document.createElement('div');
+    s.className = 'stamp';
+    s.style.setProperty('--r', (Math.random()*24-12)+'deg');
+    const img = document.createElement('img');
+    img.src = `https://flagcdn.com/w40/${country.code}.png`;
+    img.alt = country.code;
+    img.onerror = function(){ img.remove(); };
+    s.appendChild(img);
+    const codeText = document.createElement('div');
+    codeText.textContent = country.code.toUpperCase();
+    s.appendChild(codeText);
+    row.appendChild(s);
+    if(row.children.length > 16){ row.removeChild(row.firstChild); }
+  }
+
+  function modeLabel(mode){
+    return mode==='flag' ? '국기→나라' : (mode==='capital' ? '나라→수도' : '지도→나라');
+  }
+
+  function showResult(){
+    quizScreen.style.display = 'none';
+    resultScreen.style.display = 'block';
+    updateJourneyProgress(state.pool.length, state.pool.length);
+    el('finalScore').textContent = state.score;
+    const total = state.pool.length;
+    const correctCount = total - state.misses.length;
+    let msg = '';
+    if(state.misses.length === 0) msg = `${total}문제 전부 정답! 80일 만에 완벽한 세계일주를 마쳤어요 🎈`;
+    else if(correctCount/total >= 0.7) msg = `${total}문제 중 ${correctCount}개 정답, 80일간의 여정을 무사히 마쳤어요!`;
+    else msg = `${total}문제 중 ${correctCount}개 정답, 다음 여정에서 다시 도전해봐요!`;
+    el('finalMsg').textContent = msg;
+
+    const missList = el('missList');
+    missList.innerHTML = '';
+    if(state.misses.length === 0){
+      const p = document.createElement('div');
+      p.className = 'empty-note';
+      p.textContent = '틀린 문제가 없어요. 완벽한 여행가네요!';
+      missList.appendChild(p);
+    } else {
+      state.misses.forEach(({country, mode})=>{
+        const row = document.createElement('div');
+        row.className = 'miss-item';
+        const img = document.createElement('img');
+        img.src = `https://flagcdn.com/w40/${country.code}.png`;
+        img.alt = country.code;
+        img.onerror = function(){ img.remove(); };
+        const ansText = mode === 'capital' ? country.capitalKo : country.ko;
+        row.appendChild(img);
+        const mid = document.createElement('span');
+        mid.className = 'qmode';
+        mid.textContent = modeLabel(mode);
+        const ans = document.createElement('span');
+        ans.className = 'ans';
+        ans.textContent = ansText;
+        row.appendChild(mid);
+        row.appendChild(ans);
+        missList.appendChild(row);
+      });
+    }
+    el('retryMissBtn').style.display = state.misses.length === 0 ? 'none' : 'block';
+  }
+
+  el('retryMissBtn').addEventListener('click', ()=>{
+    const missPool = state.misses.map(m => ({country:m.country, mode:m.mode}));
+    resultScreen.style.display = 'none';
+    startGame(missPool);
+  });
+  el('restartBtn').addEventListener('click', ()=>{
+    resultScreen.style.display = 'none';
+    setupScreen.style.display = 'block';
+  });
+
+  el('globalResetBtn').addEventListener('click', ()=>{
+    const quizInProgress = quizScreen.style.display !== 'none';
+    if(quizInProgress){
+      const ok = confirm('진행 중인 여정을 종료하고 처음부터 다시 시작할까요?');
+      if(!ok) return;
+    }
+    if(ttsSupported) window.speechSynthesis.cancel();
+    state = { modeSel:null, count:null, pool:[], idx:0, score:0, streak:0, misses:[], locked:false, stampTotal:0 };
+    resetPassport();
+    [...el('modeGrid').children].forEach(b=>b.classList.remove('active'));
+    [...el('countGrid').children].forEach(b=>b.classList.remove('active'));
+    quizScreen.style.display = 'none';
+    resultScreen.style.display = 'none';
+    setupScreen.style.display = 'block';
+  });
+})();
+</script>
+</body>
+</html>

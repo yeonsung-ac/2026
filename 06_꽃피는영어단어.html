@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단어 정원 · Word Garden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --soil: #40311F;
+    --soil-light: #6B5233;
+    --moss: #4F7A5A;
+    --moss-dark: #375745;
+    --leaf: #8FBF6F;
+    --sun: #F2B33D;
+    --sun-light: #FCE2A0;
+    --sky: #E9F1E6;
+    --sky-deep: #D7E6D2;
+    --paper: #FBF9F3;
+    --ink: #29332B;
+    --coral: #E8694A;
+    --coral-light: #F6D9CF;
+    --radius: 20px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;padding:0;background:transparent;}
+  .wg-root{
+    font-family: 'Nanum Gothic', sans-serif;
+    color: var(--ink);
+    background: var(--sky);
+    min-height: 100%;
+    padding: 0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .wg-shell{
+    width:100%;
+    max-width: 640px;
+    padding: 20px 18px 40px;
+  }
+
+  /* ---------- Header / Garden strip (signature element) ---------- */
+  .garden-strip{
+    position:relative;
+    background: linear-gradient(180deg, #CDE7D8 0%, #B9DCC4 55%, var(--moss) 100%);
+    border-radius: var(--radius);
+    height: 132px;
+    overflow: hidden;
+    border: 3px solid var(--soil);
+    box-shadow: 0 4px 0 var(--soil);
+    margin-bottom: 18px;
+  }
+  .garden-strip::before{
+    content:"";
+    position:absolute; left:0; right:0; bottom:0; height:34px;
+    background: var(--soil-light);
+    border-top: 3px solid var(--soil);
+  }
+  .garden-label{
+    position:absolute; top:8px; left:10px;
+    background: rgba(251,249,243,0.88);
+    border-radius: 10px;
+    padding: 6px 10px 7px;
+    z-index: 6;
+    max-width: 62%;
+  }
+  .garden-title{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 18px;
+    color: var(--soil);
+    letter-spacing: 0.3px;
+    line-height:1.2;
+  }
+  .garden-sub{
+    margin-top: 2px;
+    font-size: 11.5px;
+    color: var(--moss-dark);
+    font-weight:700;
+    line-height:1.2;
+  }
+  .flower-row{
+    position:absolute; left:0; right:0; bottom:30px;
+    height: 62px;
+    display:flex;
+    align-items:flex-end;
+    padding: 0 10px;
+    gap: 2px;
+    overflow: hidden;
+    z-index: 2;
+  }
+  .flower{
+    flex: 0 0 auto;
+    width: 26px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    transform-origin: bottom center;
+    animation: sprout 0.5s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes sprout{
+    0%{ transform: scaleY(0) translateY(10px); opacity:0; }
+    100%{ transform: scaleY(1) translateY(0); opacity:1; }
+  }
+  .flower .stem{ width:3px; background: var(--moss-dark); border-radius: 2px; }
+  .flower .bloom{ font-size: 18px; line-height:1; margin-bottom:-2px; }
+  .sun-badge{
+    position:absolute; top:12px; right:14px;
+    width:44px; height:44px;
+    background: radial-gradient(circle at 35% 35%, var(--sun-light), var(--sun));
+    border-radius:50%;
+    border: 2.5px solid var(--soil);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 14px;
+    color: var(--soil);
+    z-index:5;
+  }
+  .reset-btn{
+    position:absolute; bottom:8px; right:10px;
+    display:flex; align-items:center; gap:5px;
+    background: var(--paper);
+    border: 2px solid var(--soil);
+    border-radius: 999px;
+    padding: 5px 11px 5px 9px;
+    font-family:'Nanum Gothic', sans-serif;
+    font-weight:800;
+    font-size: 11.5px;
+    color: var(--soil);
+    cursor:pointer;
+    z-index: 6;
+    box-shadow: 0 2px 0 var(--soil);
+    transition: transform .1s ease;
+  }
+  .reset-btn:hover{ transform: translateY(-1px); }
+  .reset-btn:active{ transform: translateY(1px); box-shadow:none; }
+  .reset-btn .ic{ font-size: 13px; }
+
+  /* ---------- Setup screen ---------- */
+  .panel{
+    background: var(--paper);
+    border: 3px solid var(--soil);
+    border-radius: var(--radius);
+    box-shadow: 0 5px 0 var(--soil);
+    padding: 22px 20px;
+  }
+  .panel + .panel{ margin-top:16px; }
+  h2.section-label{
+    font-family:'Baloo 2', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: var(--moss-dark);
+    display:flex; align-items:center; gap:8px;
+  }
+  h2.section-label .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%;
+    background: var(--moss); color:#fff; font-size:12px;
+  }
+  .choice-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .choice-btn{
+    font-family:'Nanum Gothic', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 12px 6px;
+    border-radius: 12px;
+    border: 2.5px solid var(--soil);
+    background: #fff;
+    color: var(--ink);
+    cursor:pointer;
+    transition: transform .12s ease, background .12s ease;
+  }
+  .choice-btn:hover{ transform: translateY(-2px); }
+  .choice-btn.active{
+    background: var(--moss);
+    color: #fff;
+    box-shadow: 0 3px 0 var(--soil);
+  }
+  .start-btn{
+    margin-top:18px;
+    width:100%;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 18px;
+    padding: 15px;
+    border-radius: 14px;
+    border: 3px solid var(--soil);
+    background: var(--coral);
+    color:#fff;
+    cursor:pointer;
+    box-shadow: 0 4px 0 var(--soil);
+    transition: transform .1s ease;
+  }
+  .start-btn:active{ transform: translateY(3px); box-shadow:none; }
+
+  /* ---------- Quiz screen ---------- */
+  .stat-row{
+    display:flex; gap:10px; margin-bottom:14px;
+  }
+  .stat-chip{
+    flex:1;
+    background:#fff;
+    border:2.5px solid var(--soil);
+    border-radius: 12px;
+    padding: 8px 10px;
+    text-align:center;
+  }
+  .stat-chip .v{ font-family:'Baloo 2',sans-serif; font-weight:800; font-size:18px; color: var(--moss-dark); }
+  .stat-chip .l{ font-size: 10.5px; color:#6b6558; font-weight:700; }
+
+  .word-card{
+    background: linear-gradient(180deg,#fff, var(--sky-deep));
+    border: 3px solid var(--soil);
+    border-radius: var(--radius);
+    box-shadow: 0 5px 0 var(--soil);
+    padding: 34px 20px;
+    text-align:center;
+    margin-bottom: 16px;
+  }
+  .word-en{
+    font-family:'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 40px;
+    color: var(--ink);
+    word-break: break-word;
+  }
+  .word-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 12px;
+  }
+  .speak-btn{
+    flex: 0 0 auto;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 2.5px solid var(--soil);
+    background: var(--sun-light);
+    color: var(--soil);
+    font-size: 20px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    box-shadow: 0 3px 0 var(--soil);
+    transition: transform .1s ease;
+  }
+  .speak-btn:hover{ transform: translateY(-1px); }
+  .speak-btn:active{ transform: translateY(2px); box-shadow:none; }
+  .speak-btn.speaking{
+    background: var(--leaf);
+    animation: pulseSpeak 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes pulseSpeak{
+    from{ transform: scale(1); }
+    to{ transform: scale(1.08); }
+  }
+  .word-hint{
+    margin-top:8px;
+    font-size: 12.5px;
+    color: var(--moss-dark);
+    font-weight:700;
+  }
+  .no-tts-note{
+    margin-top:6px;
+    font-size: 11.5px;
+    color: var(--coral);
+    font-weight:700;
+    display:none;
+  }
+
+  .answer-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .answer-btn{
+    font-family:'Nanum Gothic', sans-serif;
+    font-weight:800;
+    font-size: 15.5px;
+    padding: 16px 10px;
+    border-radius: 14px;
+    border: 2.5px solid var(--soil);
+    background:#fff;
+    cursor:pointer;
+    transition: transform .1s ease;
+  }
+  .answer-btn:hover{ transform: translateY(-2px); }
+  .answer-btn:disabled{ cursor:default; }
+  .answer-btn.correct{ background: var(--leaf); border-color: var(--moss-dark); color:#1c2b1f; }
+  .answer-btn.wrong{ background: var(--coral-light); border-color: var(--coral); color:#7a2f1a; }
+  .answer-btn.dim{ opacity: .45; }
+
+  .feedback{
+    min-height: 26px;
+    text-align:center;
+    font-weight:800;
+    font-family:'Baloo 2', sans-serif;
+    font-size: 15px;
+    margin-top: 12px;
+    color: var(--moss-dark);
+  }
+
+  /* ---------- Result screen ---------- */
+  .result-hero{
+    text-align:center;
+    padding: 10px 0 6px;
+  }
+  .result-hero .big{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 46px;
+    color: var(--moss-dark);
+  }
+  .result-hero .cap{
+    font-size: 13px; font-weight:700; color:#6b6558;
+  }
+  .miss-list{ margin-top: 14px; }
+  .miss-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 10px 12px;
+    background:#fff;
+    border:2px solid var(--soil);
+    border-radius: 10px;
+    margin-bottom:8px;
+    font-weight:700;
+    font-size: 14px;
+  }
+  .miss-item .en{ color: var(--coral); }
+  .miss-item .kr{ color: var(--moss-dark); }
+  .btn-row{ display:flex; gap:10px; margin-top: 18px; }
+  .btn-row .start-btn{ margin-top:0; }
+  .secondary-btn{
+    flex:1;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 16px;
+    padding: 15px;
+    border-radius: 14px;
+    border: 3px solid var(--soil);
+    background: #fff;
+    color: var(--soil);
+    cursor:pointer;
+    box-shadow: 0 4px 0 var(--soil);
+    transition: transform .1s ease;
+  }
+  .secondary-btn:active{ transform: translateY(3px); box-shadow:none; }
+
+  .empty-note{
+    font-size: 13px;
+    color:#6b6558;
+    text-align:center;
+    margin-top: 10px;
+    font-weight:700;
+  }
+
+  @media (max-width: 380px){
+    .word-en{ font-size: 32px; }
+    .choice-grid{ grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="wg-root">
+  <div class="wg-shell">
+
+    <div class="garden-strip">
+      <div class="garden-label">
+        <div class="garden-title">🌱 단어 정원</div>
+        <div class="garden-sub" id="gardenSub">맞힌 단어마다 꽃이 피어나요</div>
+      </div>
+      <div class="sun-badge" id="sunBadge">0</div>
+      <div class="flower-row" id="flowerRow"></div>
+      <button class="reset-btn" id="globalResetBtn" type="button" title="처음부터 다시 시작"><span class="ic">↺</span>처음부터</button>
+    </div>
+
+    <!-- SETUP SCREEN -->
+    <div id="setupScreen">
+      <div class="panel">
+        <h2 class="section-label"><span class="num">1</span>난이도 선택</h2>
+        <div class="choice-grid" id="diffGrid">
+          <button class="choice-btn" data-diff="easy">쉬움</button>
+          <button class="choice-btn" data-diff="medium">보통</button>
+          <button class="choice-btn" data-diff="hard">어려움</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2 class="section-label"><span class="num">2</span>문제 수</h2>
+        <div class="choice-grid" id="countGrid">
+          <button class="choice-btn" data-count="8">8문제</button>
+          <button class="choice-btn" data-count="12">12문제</button>
+          <button class="choice-btn" data-count="20">20문제</button>
+        </div>
+      </div>
+      <button class="start-btn" id="startBtn">게임 시작 🌼</button>
+      <div class="empty-note">뜻 4개 중 정답을 골라 단어를 맞혀보세요</div>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="quizScreen" style="display:none;">
+      <div class="stat-row">
+        <div class="stat-chip"><div class="v" id="qIndex">1/8</div><div class="l">문제</div></div>
+        <div class="stat-chip"><div class="v" id="qScore">0</div><div class="l">점수</div></div>
+        <div class="stat-chip"><div class="v" id="qStreak">0</div><div class="l">연속 정답</div></div>
+      </div>
+      <div class="word-card">
+        <div class="word-row">
+          <div class="word-en" id="wordEn">apple</div>
+          <button class="speak-btn" id="speakBtn" type="button" aria-label="발음 듣기" title="발음 듣기">🔊</button>
+        </div>
+        <div class="word-hint">이 단어의 뜻은 무엇일까요?</div>
+        <div class="no-tts-note" id="noTtsNote">이 브라우저는 음성 재생을 지원하지 않아요</div>
+      </div>
+      <div class="answer-grid" id="answerGrid"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="resultScreen" style="display:none;">
+      <div class="panel">
+        <div class="result-hero">
+          <div class="cap">최종 점수</div>
+          <div class="big" id="finalScore">0</div>
+          <div class="cap" id="finalMsg">수고했어요!</div>
+        </div>
+        <div class="miss-list" id="missList"></div>
+      </div>
+      <div class="btn-row">
+        <button class="secondary-btn" id="retryMissBtn">틀린 단어만 다시</button>
+        <button class="start-btn" id="restartBtn">처음으로</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const WORDS = {
+    easy: [
+      ["apple","사과"], ["book","책"], ["water","물"], ["house","집"], ["friend","친구"],
+      ["happy","행복한"], ["school","학교"], ["dog","개"], ["cat","고양이"], ["family","가족"],
+      ["morning","아침"], ["food","음식"], ["big","큰"], ["small","작은"], ["run","달리다"],
+      ["sleep","자다"], ["red","빨간색"], ["blue","파란색"], ["day","날, 하루"], ["night","밤"]
+    ],
+    medium: [
+      ["decide","결정하다"], ["improve","개선하다"], ["opinion","의견"], ["environment","환경"],
+      ["compare","비교하다"], ["explain","설명하다"], ["ability","능력"], ["complete","완료하다"],
+      ["society","사회"], ["increase","증가하다"], ["opposite","반대의"], ["habit","습관"],
+      ["achieve","성취하다"], ["describe","묘사하다"], ["reason","이유"], ["various","다양한"],
+      ["purpose","목적"], ["require","요구하다"], ["benefit","이익, 혜택"], ["challenge","도전"]
+    ],
+    hard: [
+      ["ambiguous","애매모호한"], ["meticulous","꼼꼼한"], ["inevitable","불가피한"],
+      ["contradict","모순되다"], ["profound","심오한"], ["persistent","끈질긴"],
+      ["substantial","상당한"], ["arbitrary","임의의"], ["coherent","일관성 있는"],
+      ["prevalent","널리 퍼진"], ["skeptical","회의적인"], ["subtle","미묘한"],
+      ["plausible","그럴듯한"], ["reluctant","꺼리는"], ["comprehensive","포괄적인"],
+      ["deliberate","의도적인, 신중한"], ["notion","개념"], ["intricate","복잡한"],
+      ["dispute","논쟁하다"], ["compelling","설득력 있는"]
+    ]
+  };
+  const FLOWERS = ["🌸","🌼","🌷","🌻","🌹","💮"];
+
+  let state = {
+    diff: null,
+    count: null,
+    pool: [],
+    idx: 0,
+    score: 0,
+    streak: 0,
+    misses: [],
+    locked: false
+  };
+
+  const el = id => document.getElementById(id);
+  const setupScreen = el('setupScreen');
+  const quizScreen = el('quizScreen');
+  const resultScreen = el('resultScreen');
+
+  // ---- TTS (Web Speech API) ----
+  const ttsSupported = 'speechSynthesis' in window;
+  let voices = [];
+  let preferredVoice = null;
+
+  function loadVoices(){
+    voices = window.speechSynthesis.getVoices();
+    preferredVoice =
+      voices.find(v => v.lang === 'en-US' && /female/i.test(v.name)) ||
+      voices.find(v => v.lang === 'en-US') ||
+      voices.find(v => v.lang && v.lang.startsWith('en')) ||
+      null;
+  }
+  if(ttsSupported){
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  } else {
+    el('speakBtn').style.display = 'none';
+    el('noTtsNote').style.display = 'block';
+  }
+
+  function speakWord(word){
+    if(!ttsSupported || !word) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(word);
+    utter.lang = 'en-US';
+    utter.rate = 0.85;
+    utter.pitch = 1;
+    if(preferredVoice) utter.voice = preferredVoice;
+    const btn = el('speakBtn');
+    utter.onstart = () => btn.classList.add('speaking');
+    utter.onend = () => btn.classList.remove('speaking');
+    utter.onerror = () => btn.classList.remove('speaking');
+    window.speechSynthesis.speak(utter);
+  }
+
+  el('speakBtn').addEventListener('click', ()=>{
+    speakWord(el('wordEn').textContent);
+  });
+
+  // ---- setup interactions ----
+  el('diffGrid').addEventListener('click', e=>{
+    const btn = e.target.closest('.choice-btn');
+    if(!btn) return;
+    [...el('diffGrid').children].forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.diff = btn.dataset.diff;
+  });
+  el('countGrid').addEventListener('click', e=>{
+    const btn = e.target.closest('.choice-btn');
+    if(!btn) return;
+    [...el('countGrid').children].forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    state.count = parseInt(btn.dataset.count,10);
+  });
+
+  el('startBtn').addEventListener('click', ()=>{
+    if(!state.diff){ flashRequirement(el('diffGrid')); return; }
+    if(!state.count){ flashRequirement(el('countGrid')); return; }
+    startGame(shuffle(WORDS[state.diff]).slice(0, Math.min(state.count, WORDS[state.diff].length)));
+  });
+
+  function flashRequirement(node){
+    node.style.transition = 'none';
+    node.style.filter = 'drop-shadow(0 0 0 rgba(232,105,74,0))';
+    node.animate([
+      {transform:'translateX(0)'},{transform:'translateX(-6px)'},
+      {transform:'translateX(6px)'},{transform:'translateX(0)'}
+    ], {duration:280});
+  }
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function startGame(pool){
+    state.pool = pool;
+    state.idx = 0;
+    state.score = 0;
+    state.streak = 0;
+    state.misses = [];
+    resetGarden();
+    setupScreen.style.display = 'none';
+    resultScreen.style.display = 'none';
+    quizScreen.style.display = 'block';
+    renderQuestion();
+  }
+
+  function resetGarden(){
+    el('flowerRow').innerHTML = '';
+    el('sunBadge').textContent = '0';
+    el('gardenSub').textContent = '맞힌 단어마다 꽃이 피어나요';
+  }
+
+  function allWordsExcept(currentPool){
+    // pull distractor meanings from the whole difficulty bank (fallback to all banks)
+    const bank = WORDS[state.diff] && WORDS[state.diff].length >= 4 ? WORDS[state.diff] : [...WORDS.easy, ...WORDS.medium, ...WORDS.hard];
+    return bank;
+  }
+
+  function renderQuestion(){
+    state.locked = false;
+    el('feedback').textContent = '';
+    const total = state.pool.length;
+    el('qIndex').textContent = `${state.idx+1}/${total}`;
+    el('qScore').textContent = state.score;
+    el('qStreak').textContent = state.streak;
+
+    const [word, meaning] = state.pool[state.idx];
+    el('wordEn').textContent = word;
+    speakWord(word);
+
+    const bank = allWordsExcept(state.pool);
+    const distractorPool = bank.filter(([w]) => w !== word);
+    const distractors = shuffle(distractorPool).slice(0,3).map(p=>p[1]);
+    const options = shuffle([meaning, ...distractors]);
+
+    const grid = el('answerGrid');
+    grid.innerHTML = '';
+    options.forEach(opt=>{
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn';
+      btn.textContent = opt;
+      btn.addEventListener('click', ()=> handleAnswer(btn, opt, meaning, word));
+      grid.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(btn, chosen, correctMeaning, word){
+    if(state.locked) return;
+    state.locked = true;
+    const allBtns = [...el('answerGrid').children];
+    const isCorrect = chosen === correctMeaning;
+
+    allBtns.forEach(b=>{
+      if(b.textContent === correctMeaning) b.classList.add('correct');
+      else b.classList.add(b===btn ? 'wrong' : 'dim');
+      b.disabled = true;
+    });
+
+    if(isCorrect){
+      state.score += 10 + Math.min(state.streak,5)*2;
+      state.streak += 1;
+      el('feedback').textContent = '정답이에요! 🌼';
+      el('feedback').style.color = 'var(--moss-dark)';
+      plantFlower();
+    } else {
+      state.streak = 0;
+      state.misses.push([word, correctMeaning]);
+      el('feedback').textContent = `아쉬워요! 정답은 "${correctMeaning}" 이에요.`;
+      el('feedback').style.color = 'var(--coral)';
+    }
+
+    setTimeout(()=>{
+      state.idx += 1;
+      if(state.idx >= state.pool.length){
+        showResult();
+      } else {
+        renderQuestion();
+      }
+    }, isCorrect ? 700 : 1300);
+  }
+
+  function plantFlower(){
+    const row = el('flowerRow');
+    const f = document.createElement('div');
+    f.className = 'flower';
+    const height = 12 + Math.floor(Math.random()*16);
+    f.innerHTML = `<div class="bloom">${FLOWERS[Math.floor(Math.random()*FLOWERS.length)]}</div><div class="stem" style="height:${height}px"></div>`;
+    row.appendChild(f);
+    if(row.children.length > 22){ row.removeChild(row.firstChild); }
+    el('sunBadge').textContent = row.dataset.total = (parseInt(row.dataset.total||'0',10)+1);
+    el('gardenSub').textContent = `지금까지 ${row.dataset.total}송이를 피웠어요`;
+  }
+
+  function showResult(){
+    quizScreen.style.display = 'none';
+    resultScreen.style.display = 'block';
+    el('finalScore').textContent = state.score;
+    const total = state.pool.length;
+    const correctCount = total - state.misses.length;
+    let msg = '';
+    if(state.misses.length === 0) msg = `${total}문제 전부 정답! 완벽해요 🌟`;
+    else if(correctCount/total >= 0.7) msg = `${total}문제 중 ${correctCount}개 정답, 잘했어요!`;
+    else msg = `${total}문제 중 ${correctCount}개 정답, 다시 도전해봐요!`;
+    el('finalMsg').textContent = msg;
+
+    const missList = el('missList');
+    missList.innerHTML = '';
+    if(state.misses.length === 0){
+      const p = document.createElement('div');
+      p.className = 'empty-note';
+      p.textContent = '틀린 단어가 없어요. 정원이 활짝 폈네요!';
+      missList.appendChild(p);
+    } else {
+      state.misses.forEach(([w,m])=>{
+        const row = document.createElement('div');
+        row.className = 'miss-item';
+        row.innerHTML = `<span class="en">${w}</span><span class="kr">${m}</span>`;
+        missList.appendChild(row);
+      });
+    }
+    el('retryMissBtn').style.display = state.misses.length === 0 ? 'none' : 'block';
+  }
+
+  el('retryMissBtn').addEventListener('click', ()=>{
+    const missPool = state.misses.slice();
+    resultScreen.style.display = 'none';
+    startGame(missPool);
+  });
+
+  el('restartBtn').addEventListener('click', ()=>{
+    resultScreen.style.display = 'none';
+    setupScreen.style.display = 'block';
+  });
+
+  // ---- Global "start over from anywhere" button ----
+  el('globalResetBtn').addEventListener('click', ()=>{
+    const quizInProgress = quizScreen.style.display !== 'none';
+    if(quizInProgress){
+      const ok = confirm('진행 중인 게임을 종료하고 처음부터 다시 시작할까요?');
+      if(!ok) return;
+    }
+    if(ttsSupported) window.speechSynthesis.cancel();
+
+    // reset all state
+    state = {
+      diff: null, count: null, pool: [], idx: 0,
+      score: 0, streak: 0, misses: [], locked: false
+    };
+    resetGarden();
+
+    // reset setup screen selections
+    [...el('diffGrid').children].forEach(b=>b.classList.remove('active'));
+    [...el('countGrid').children].forEach(b=>b.classList.remove('active'));
+
+    quizScreen.style.display = 'none';
+    resultScreen.style.display = 'none';
+    setupScreen.style.display = 'block';
+  });
+})();
+</script>
+</body>
+</html>

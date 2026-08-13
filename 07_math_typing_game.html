@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>계산 타자왕</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f4f6f8;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .wrap {
+    width: min(1000px, 96vw);
+  }
+  .topbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .card {
+    background: white;
+    border: 1px solid #dfe3e8;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+  .label {
+    font-size: 12px;
+    color: #667085;
+    margin-bottom: 4px;
+  }
+  .value {
+    font-weight: 800;
+    font-size: 22px;
+  }
+  .game {
+    position: relative;
+    height: 620px;
+    background:
+      linear-gradient(#ffffff, #fbfcfd);
+    border: 2px solid #d0d5dd;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.07);
+  }
+  .danger-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 78px;
+    border-top: 2px dashed #98a2b3;
+    opacity: .7;
+  }
+  .falling {
+    position: absolute;
+    top: 0;
+    min-width: 96px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: white;
+    border: 2px solid #344054;
+    font-size: 26px;
+    font-weight: 800;
+    text-align: center;
+    box-shadow: 0 5px 12px rgba(0,0,0,.08);
+    user-select: none;
+  }
+  .input-zone {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 78px;
+    background: #111827;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+  #answer {
+    width: 230px;
+    font-size: 30px;
+    font-weight: 800;
+    text-align: center;
+    border: 0;
+    outline: 0;
+    border-radius: 12px;
+    padding: 8px 12px;
+  }
+  .btn {
+    border: 0;
+    border-radius: 10px;
+    padding: 11px 16px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .start { background: white; color: #111827; }
+  .modebar {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  select, .modebar button {
+    border: 1px solid #d0d5dd;
+    background: white;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-weight: 700;
+  }
+  .message {
+    margin-left: auto;
+    min-width: 180px;
+    font-weight: 700;
+    color: #475467;
+    align-self: center;
+  }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 24, 39, .75);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  .overlay-box {
+    text-align: center;
+    background: rgba(0,0,0,.25);
+    padding: 28px;
+    border-radius: 18px;
+    width: min(420px, 90%);
+  }
+  .overlay h1 {
+    margin: 0 0 10px;
+    font-size: 38px;
+  }
+  .overlay p {
+    margin: 6px 0 18px;
+    line-height: 1.5;
+  }
+  .hidden { display: none; }
+  @media (max-width: 700px) {
+    .topbar { grid-template-columns: repeat(2, 1fr); }
+    .game { height: 560px; }
+    .falling { font-size: 22px; min-width: 82px; }
+    .message { width: 100%; margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="card"><div class="label">점수</div><div class="value" id="score">0</div></div>
+    <div class="card"><div class="label">콤보</div><div class="value" id="combo">0</div></div>
+    <div class="card"><div class="label">목숨</div><div class="value" id="lives">3</div></div>
+    <div class="card"><div class="label">레벨</div><div class="value" id="level">1</div></div>
+    <div class="card"><div class="label">최고점수</div><div class="value" id="best">0</div></div>
+  </div>
+
+  <div class="modebar">
+    <select id="mode">
+      <option value="mixed">덧셈 + 뺄셈 혼합</option>
+      <option value="add">덧셈만</option>
+      <option value="sub">뺄셈만</option>
+    </select>
+    <select id="difficulty">
+      <option value="easy">쉬움 (1~10)</option>
+      <option value="normal" selected>보통 (1~20)</option>
+      <option value="hard">어려움 (1~50)</option>
+    </select>
+    <button id="pauseBtn">일시정지</button>
+    <div class="message" id="message">Enter로 시작할 수 있습니다.</div>
+  </div>
+
+  <div class="game" id="game">
+    <div class="danger-line"></div>
+
+    <div class="overlay" id="overlay">
+      <div class="overlay-box">
+        <h1>계산 타자왕</h1>
+        <p>떨어지는 수식의 정답을 입력하고 <b>Enter</b>를 누르세요.<br>
+        바닥에 닿으면 목숨이 1개 줄어듭니다.</p>
+        <button class="btn start" id="startBtn">게임 시작</button>
+      </div>
+    </div>
+
+    <div class="input-zone">
+      <input id="answer" type="number" inputmode="numeric" placeholder="정답 입력" autocomplete="off"/>
+      <button class="btn start" id="submitBtn">Enter</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const game = document.getElementById('game');
+  const answer = document.getElementById('answer');
+  const scoreEl = document.getElementById('score');
+  const comboEl = document.getElementById('combo');
+  const livesEl = document.getElementById('lives');
+  const levelEl = document.getElementById('level');
+  const bestEl = document.getElementById('best');
+  const overlay = document.getElementById('overlay');
+  const startBtn = document.getElementById('startBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const modeSelect = document.getElementById('mode');
+  const difficultySelect = document.getElementById('difficulty');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const message = document.getElementById('message');
+
+  let items = [];
+  let score = 0;
+  let combo = 0;
+  let lives = 3;
+  let level = 1;
+  let running = false;
+  let paused = false;
+  let lastTime = 0;
+  let spawnTimer = 0;
+  let best = Number(localStorage.getItem('mathTypingBest') || 0);
+  bestEl.textContent = best;
+
+  function rangeMax() {
+    const d = difficultySelect.value;
+    return d === 'easy' ? 10 : d === 'hard' ? 50 : 20;
+  }
+
+  function makeProblem() {
+    const max = rangeMax();
+    const mode = modeSelect.value;
+    const op = mode === 'mixed'
+      ? (Math.random() < .5 ? '+' : '-')
+      : (mode === 'add' ? '+' : '-');
+
+    let a = 1 + Math.floor(Math.random() * max);
+    let b = 1 + Math.floor(Math.random() * max);
+
+    if (op === '-' && b > a) [a, b] = [b, a];
+
+    const result = op === '+' ? a + b : a - b;
+    return { text: `${a} ${op} ${b}`, result };
+  }
+
+  function spawn() {
+    const p = makeProblem();
+    const el = document.createElement('div');
+    el.className = 'falling';
+    el.textContent = p.text;
+    game.appendChild(el);
+
+    const maxX = Math.max(10, game.clientWidth - 120);
+    const x = 10 + Math.random() * (maxX - 10);
+    el.style.left = `${x}px`;
+
+    const speed = 45 + (level - 1) * 8 + Math.random() * 18;
+    items.push({ el, y: -50, speed, result: p.result });
+  }
+
+  function removeItem(item) {
+    item.el.remove();
+    items = items.filter(x => x !== item);
+  }
+
+  function flash(text, ok=true) {
+    message.textContent = text;
+    message.style.color = ok ? '#067647' : '#b42318';
+    setTimeout(() => {
+      if (running) {
+        message.textContent = '정답을 입력하고 Enter!';
+        message.style.color = '#475467';
+      }
+    }, 700);
+  }
+
+  function submitAnswer() {
+    if (!running) {
+      startGame();
+      return;
+    }
+    const raw = answer.value.trim();
+    if (raw === '') return;
+    const val = Number(raw);
+
+    const matching = items
+      .filter(item => item.result === val)
+      .sort((a,b) => b.y - a.y);
+
+    if (matching.length) {
+      const item = matching[0];
+      removeItem(item);
+      combo++;
+      score += 10 + Math.min(combo, 20) * 2;
+      level = 1 + Math.floor(score / 250);
+      flash(`정답! +${10 + Math.min(combo,20)*2}점`);
+    } else {
+      combo = 0;
+      score = Math.max(0, score - 5);
+      flash('오답! -5점', false);
+    }
+
+    answer.value = '';
+    updateHUD();
+  }
+
+  function updateHUD() {
+    scoreEl.textContent = score;
+    comboEl.textContent = combo;
+    livesEl.textContent = lives;
+    levelEl.textContent = level;
+    if (score > best) {
+      best = score;
+      bestEl.textContent = best;
+      localStorage.setItem('mathTypingBest', String(best));
+    }
+  }
+
+  function startGame() {
+    items.forEach(i => i.el.remove());
+    items = [];
+    score = 0;
+    combo = 0;
+    lives = 3;
+    level = 1;
+    running = true;
+    paused = false;
+    pauseBtn.textContent = '일시정지';
+    lastTime = performance.now();
+    spawnTimer = 0;
+    overlay.classList.add('hidden');
+    message.textContent = '정답을 입력하고 Enter!';
+    message.style.color = '#475467';
+    updateHUD();
+    answer.value = '';
+    answer.focus();
+    requestAnimationFrame(loop);
+  }
+
+  function togglePause() {
+    if (!running) return;
+
+    paused = !paused;
+
+    if (paused) {
+      pauseBtn.textContent = '다시 시작';
+      message.textContent = '일시정지 중';
+      message.style.color = '#475467';
+      answer.disabled = true;
+    } else {
+      pauseBtn.textContent = '일시정지';
+      message.textContent = '정답을 입력하고 Enter!';
+      message.style.color = '#475467';
+      answer.disabled = false;
+      answer.focus();
+      lastTime = performance.now();
+      requestAnimationFrame(loop);
+    }
+  }
+
+  function gameOver() {
+    running = false;
+    paused = false;
+    pauseBtn.textContent = '일시정지';
+    answer.disabled = false;
+    overlay.classList.remove('hidden');
+    overlay.querySelector('h1').textContent = '게임 종료';
+    overlay.querySelector('p').innerHTML =
+      `최종 점수 <b>${score}</b>점<br>최고 점수 <b>${best}</b>점`;
+    startBtn.textContent = '다시 시작';
+    answer.blur();
+  }
+
+  function loop(now) {
+    if (!running || paused) return;
+    const dt = Math.min((now - lastTime) / 1000, 0.05);
+    lastTime = now;
+
+    const spawnInterval = Math.max(0.7, 2.0 - (level - 1) * 0.08);
+    spawnTimer += dt;
+    if (spawnTimer >= spawnInterval) {
+      spawnTimer = 0;
+      spawn();
+    }
+
+    const floorY = game.clientHeight - 78 - 50;
+    for (const item of [...items]) {
+      item.y += item.speed * dt;
+      item.el.style.transform = `translateY(${item.y}px)`;
+
+      if (item.y >= floorY) {
+        removeItem(item);
+        lives--;
+        combo = 0;
+        flash('놓쳤습니다! 목숨 -1', false);
+        updateHUD();
+        if (lives <= 0) {
+          gameOver();
+          return;
+        }
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+
+  answer.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitAnswer();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!running && e.key === 'Enter') {
+      e.preventDefault();
+      startGame();
+    }
+  });
+
+  startBtn.addEventListener('click', startGame);
+  submitBtn.addEventListener('click', submitAnswer);
+  pauseBtn.addEventListener('click', togglePause);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lotto 6/45 가챠 추첨기</title>
+  <style>
+    :root {
+      --gold-primary: #ffd700;
+      --gold-secondary: #ffa500;
+      --bg-gradient: radial-gradient(circle, #2a0845 0%, #0c0214 100%);
+      --card-bg: rgba(255, 255, 255, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .glass-container {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      width: 100%;
+      max-width: 520px;
+      border-radius: 28px;
+      padding: 32px 24px;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
+                  inset 0 0 15px rgba(255, 215, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #fff 0%, var(--gold-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 28px;
+    }
+
+    /* 공 추첨 머신 디스플레이 */
+    .machine-display {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      padding: 24px 12px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 110px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 로또 공 스타일 */
+    .ball {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+      box-shadow: inset -4px -4px 8px rgba(0, 0, 0, 0.4),
+                  inset 4px 4px 8px rgba(255, 255, 255, 0.4),
+                  0 6px 12px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(30px) scale(0.5);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .ball.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* 공식 로또 번호 대역별 색상 지정 */
+    .ball.yellow { background: radial-gradient(circle at 35% 35%, #fadb14, #d48806); }
+    .ball.blue   { background: radial-gradient(circle at 35% 35%, #4096ff, #0958d9); }
+    .ball.red    { background: radial-gradient(circle at 35% 35%, #ff4d4f, #cf1322); }
+    .ball.gray   { background: radial-gradient(circle at 35% 35%, #8c8c8c, #434343); }
+    .ball.green  { background: radial-gradient(circle at 35% 35%, #52c41a, #237804); }
+
+    /* 상태 텍스트 */
+    .status-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gold-primary);
+      margin-bottom: 24px;
+      height: 24px;
+    }
+
+    /* 버튼 스타일 */
+    .btn-draw {
+      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-secondary) 100%);
+      color: #120321;
+      border: none;
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 165, 0, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-draw:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-draw:active {
+      transform: translateY(1px);
+    }
+
+    .btn-draw:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* 히스토리 기록 */
+    .history-section {
+      margin-top: 28px;
+      text-align: left;
+    }
+
+    .history-title {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 10px 14px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+    }
+
+    .mini-balls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mini-ball {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="glass-container">
+  <h1>✨ LOTTO 6/45</h1>
+  <p class="subtitle">행운의 번호 6개를 추첨해 드립니다</p>
+
+  <div class="machine-display" id="display">
+    <span style="color: rgba(255,255,255,0.3); font-size: 0.95rem;">버튼을 누르면 추첨이 시작됩니다</span>
+  </div>
+
+  <div class="status-text" id="statusText">당신의 행운을 테스트해보세요!</div>
+
+  <button class="btn-draw" id="drawBtn" onclick="startDraw()">행운의 번호 뽑기 🎰</button>
+
+  <div class="history-section">
+    <div class="history-title">
+      <span>최근 추첨 기록</span>
+      <span style="cursor: pointer;" onclick="clearHistory()">기록 삭제</span>
+    </div>
+    <ul class="history-list" id="historyList"></ul>
+  </div>
+</div>
+
+<script>
+  let isDrawing = false;
+  const display = document.getElementById('display');
+  const statusText = document.getElementById('statusText');
+  const drawBtn = document.getElementById('drawBtn');
+  const historyList = document.getElementById('historyList');
+
+  // 번호별 색상 구하기 (실제 로또 색상)
+  function getBallColorClass(num) {
+    if (num <= 10) return 'yellow';
+    if (num <= 20) return 'blue';
+    if (num <= 30) return 'red';
+    if (num <= 40) return 'gray';
+    return 'green';
+  }
+
+  // 로또 번호 6개 생성 (오름차순 정렬)
+  function generateLottoNumbers() {
+    const numbers = new Set();
+    while (numbers.size < 6) {
+      const rand = Math.floor(Math.random() * 45) + 1;
+      numbers.add(rand);
+    }
+    return Array.from(numbers).sort((a, b) => a - b);
+  }
+
+  function startDraw() {
+    if (isDrawing) return;
+    isDrawing = true;
+    drawBtn.disabled = true;
+    display.innerHTML = '';
+    statusText.textContent = '추첨기 작동 중... 🔮';
+
+    const numbers = generateLottoNumbers();
+    
+    // 빈 공 6개 생성
+    const ballEls = [];
+    for (let i = 0; i < 6; i++) {
+      const ball = document.createElement('div');
+      ball.className = 'ball';
+      display.appendChild(ball);
+      ballEls.push(ball);
+    }
+
+    // 0.4초 간격으로 공이 하나씩 튀어나오는 연출
+    numbers.forEach((num, index) => {
+      setTimeout(() => {
+        const ball = ballEls[index];
+        ball.textContent = num;
+        ball.classList.add(getBallColorClass(num), 'show');
+
+        if (index === 5) {
+          setTimeout(() => {
+            statusText.textContent = '🎉 이번 주의 추천 번호입니다!';
+            saveHistory(numbers);
+            isDrawing = false;
+            drawBtn.disabled = false;
+          }, 300);
+        }
+      }, (index + 1) * 400);
+    });
+  }
+
+  function saveHistory(numbers) {
+    const li = document.createElement('li');
+    li.className = 'history-item';
+
+    const timeStr = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    let ballsHtml = '<div class="mini-balls">';
+    numbers.forEach(num => {
+      const colorClass = getBallColorClass(num);
+      ballsHtml += `<div class="mini-ball ${colorClass}">${num}</div>`;
+    });
+    ballsHtml += '</div>';
+
+    li.innerHTML = `<span>${timeStr}</span> ${ballsHtml}`;
+    historyList.prepend(li);
+  }
+
+  function clearHistory() {
+    historyList.innerHTML = '';
+  }
+</script>
+
+</body>
+</html>
