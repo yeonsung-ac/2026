@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>80일간의 세계일주</title>
+  <meta name="description" content="세계를 여행하며 미션을 수행하는 80일간의 세계일주">
+  <link rel="canonical" href="https://yeonsung-ac.github.io/2026/08-around-the-world.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Nanum+Gothic:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -309,6 +311,24 @@
 </style>
 </head>
 <body>
+<!-- site nav (added 2026-08-16) -->
+<style>
+.sitebar{position:fixed;top:12px;left:12px;z-index:99999;display:flex;gap:6px;
+  font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;font-size:13px;line-height:1}
+.sitebar a{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;
+  background:rgba(255,255,255,.94);color:#17233b;text-decoration:none;font-weight:700;
+  border:1px solid rgba(23,35,59,.12);box-shadow:0 3px 10px rgba(0,0,0,.18);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,box-shadow .15s}
+.sitebar a:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.24)}
+.sitebar a.ghost{background:rgba(255,255,255,.72);font-weight:600;color:#53617d}
+@media (max-width:520px){.sitebar{top:8px;left:8px;font-size:12px}.sitebar a{padding:7px 11px}}
+@media print{.sitebar{display:none}}
+</style>
+<nav class="sitebar" aria-label="사이트 이동">
+  <a href="./" aria-label="웹게임 놀이터 목록으로 이동"><span aria-hidden="true">←</span> 놀이터</a>
+  <a class="ghost" href="https://yeonsung-ac.github.io/" aria-label="홈페이지로 이동">홈</a>
+</nav>
+
 <div class="pe-root">
   <div class="pe-shell">
 
