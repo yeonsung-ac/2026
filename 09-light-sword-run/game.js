@@ -13,6 +13,10 @@ const HEROES = {
 };
 // 칼 색 — 칼날은 흰색으로 따로 구워 두고 여기서 칠한다
 const SWORDS = { white: "#ffffff", green: "#4dff7a", blue: "#4fb8ff", red: "#ff4a4a", yellow: "#ffd23f" };
+// 점화 화면에서 벌린 손의 위치(front_ 그림 안 비율 x,y) — 그 손에 칼자루를 놓는다
+const HANDS = { victor: [0.90, 0.61], grace: [0.97, 0.64], nabi: [0.88, 0.57], hazel: [0.97, 0.60], drlee: [0.98, 0.62] };  // 팔 벌린 중간 자세 / 이박사는 앞으로 내민 깨끗한 자세(날개 없음)
+// 캐릭터별 기본 배경음악(번호 순서) — 게임 중 ♪로 바꿀 수 있음
+const HERO_TRACK = { victor: 0, grace: 1, nabi: 2, hazel: 3, drlee: 4 };
 let swordKey = "blue", swordCol = SWORDS.blue;
 // 던질 것마다 움직임: arc 포물선 · roll 땅으로 굴러옴/종종걸음 · float 둥실 거품 · flutter 팔랑 · fast 곧장 날아옴
 const ITEMS = {
@@ -46,8 +50,10 @@ const IMG = {};
 let heroKey = "victor", S = null;   // S = 한 판의 모든 상태
 
 function preload() {
-  for (const k of ["victor", "grace", "hazel", "drlee", "nabi"])
+  for (const k of ["victor", "grace", "hazel", "drlee", "nabi"]) {
     for (const a of Object.keys(HEROES[k].n)) for (const b of ["", "_b"]) IMG[k + "_" + a + b] = loadImage(`sprites/${k}_${a}${b}.webp`);
+    IMG["front_" + k] = loadImage(`img/front_${k}.png`);   // 3D 정면 렌더(점화 화면용 — 카메라를 본다)
+  }
   for (const k of ["crab", "snake", "owl"]) IMG["king_" + k] = loadImage(`sprites/king_${k}.webp`);
   for (const p of PROPS) IMG["p_" + p] = loadImage(`sprites/p_${p}.webp`);
   IMG.crown = loadImage("sprites/crown.webp");
@@ -65,6 +71,20 @@ function setup() {
   $("pickAgain").onclick = backToSelect; $("pickAgain2").onclick = backToSelect;
   choose(Q.get("hero") || "victor");
   newGame(); S.mode = "menu";
+  // 배경음악 음소거 버튼 (오른쪽 아래)
+  const mb = document.createElement("button");
+  mb.id = "mute"; mb.type = "button"; mb.textContent = BGM_OFF ? "🔇" : "🔊";
+  mb.setAttribute("aria-label", "배경음악 켜기·끄기");
+  mb.style.cssText = "position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:99999;width:44px;height:44px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(20,28,48,.72);color:#fff;font-size:20px;cursor:pointer;backdrop-filter:blur(4px);box-shadow:0 3px 10px rgba(0,0,0,.3)";
+  mb.onclick = () => { mb.textContent = BGM.toggle() ? "🔊" : "🔇"; };
+  document.body.appendChild(mb);
+  // 배경음악 곡 바꾸기 버튼 (음소거 버튼 왼쪽) — 3곡 순환
+  const tb = document.createElement("button");
+  tb.id = "track"; tb.type = "button"; tb.textContent = "♪ " + TRACKS[BGM_TRACK].name;
+  tb.setAttribute("aria-label", "배경음악 곡 바꾸기");
+  tb.style.cssText = "position:fixed;right:max(64px,calc(env(safe-area-inset-right,0px) + 64px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:99999;height:44px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(20,28,48,.72);color:#fff;font:700 14px 'GmarketSans',sans-serif;cursor:pointer;backdrop-filter:blur(4px);box-shadow:0 3px 10px rgba(0,0,0,.3)";
+  tb.onclick = () => { tb.textContent = "♪ " + BGM.next_track(); };
+  document.body.appendChild(tb);
 }
 function windowResized() { resizeCanvas(windowWidth, windowHeight); }
 
@@ -73,6 +93,13 @@ function choose(k) {
   heroKey = k;
   document.querySelectorAll(".pick").forEach((b) => b.setAttribute("aria-pressed", b.dataset.k === k));
   $("go").textContent = `Start with ${HEROES[k].name} · 시작`;
+  // 캐릭터 고르면 그 캐릭터 기본 음악으로 (게임 중 ♪로 변경 가능)
+  if (k in HERO_TRACK) {
+    BGM_TRACK = HERO_TRACK[k];
+    try { localStorage.setItem("sword_track", BGM_TRACK); } catch (e) {}
+    const tb = document.getElementById("track"); if (tb) tb.textContent = "♪ " + TRACKS[BGM_TRACK].name;
+    if (BGM.on) { BGM.stop(); setTimeout(() => { if (!BGM_OFF) BGM.start(); }, 130); }
+  }
 }
 function pickSword(c) {
   if (!SWORDS[c]) c = "blue";
@@ -81,7 +108,7 @@ function pickSword(c) {
   document.documentElement.style.setProperty("--hero", swordCol);
   try { localStorage.setItem("sword_color", c); } catch (e) {}
 }
-function backToSelect() { show("over", false); show("clear", false); show("select"); S.mode = "menu"; }
+function backToSelect() { BGM.stop(); show("over", false); show("clear", false); show("select"); S.mode = "menu"; }
 
 /* ── 크기 ─────────────────────────────────────── */
 const GROUND = () => height * (height > width ? 0.74 : 0.8);
@@ -96,12 +123,21 @@ function newGame() {
         hero: { slash: 0, hurt: 0, win: 0 }, boss: null, banner: null, shake: 0, scroll: 0, end: null, crown: null };
 }
 function startGame() {
-  tone([[1, 0.01, "sine", 0.0001]]);
+  tone([[1, 0.01, "sine", 0.0001]]);               // 소리 잠금 풀기
   newGame();
   show("select", false); show("over", false); show("clear", false);
+  document.body.classList.add("igniting");
+  S.mode = "ignite"; S.ignite = { t: 0 };          // 광선검 점화 인트로 먼저
+  saberSound();
+}
+function beginPlay() {
+  if (S.mode !== "ignite") return;
+  document.body.classList.remove("igniting");
   enterStage(0);
+  BGM.start();              // 게임 시작과 함께 배경음악
 }
 function enterStage(i) {
+  document.body.classList.remove("igniting");
   S.stage = i; S.runT = 0; S.items = []; S.halves = []; S.boss = null; S.crown = null; S.spawn = 1.4; S.mode = "play";
   const st = STAGES[i];
   S.banner = { t: 0, big: `Stage ${i + 1} · ${st.title}`, small: `${st.ko} — ${st.kingKo}이 기다려요` };
@@ -114,13 +150,13 @@ function hud() {
 }
 
 /* ── 그리기 도우미 ───────────────────────────── */
-function heroSprite(anim, x, feetY, h, t, flipFace = false) {  // v2: 그림이 원래 오른쪽을 본다 — 뒤집지 않는다
+function heroSprite(anim, x, feetY, h, t, flipFace = false, hideBlade = false) {  // v2: 그림이 원래 오른쪽을 본다 — 뒤집지 않는다
   const H = HEROES[heroKey];
   let key = anim, f, bob = 0, wob = 0;
   if (H.one && anim !== "slash") {      // 나비: run 묶음 안에서 자세를 고른다
     key = "run";
     f = anim === "win" ? 4 + Math.floor(t * 10) % 6 : 0;
-    if (anim === "run") bob = Math.abs(Math.sin(t * 9)) * h * 0.04;
+    if (anim === "run") bob = Math.sin(t * 2.2) * h * 0.01;   // 깡총깡총 금지 — 가만히 숨쉬듯 아주 조금만
     if (anim === "hurt") wob = Math.sin(t * 40) * 0.08;
   } else {
     const n = H.n[anim];
@@ -132,7 +168,7 @@ function heroSprite(anim, x, feetY, h, t, flipFace = false) {  // v2: 그림이 
   const fw = img.width / H.n[key];
   push(); translate(x, feetY - bob); if (flipFace) scale(-1, 1); if (wob) rotate(wob);
   image(img, -h / 2, -h * 0.867, h, h, f * fw, 0, fw, img.height);
-  if (blade && blade.width) {
+  if (blade && blade.width && !hideBlade) {
     const c = color(swordCol), ctx = drawingContext;
     ctx.save(); ctx.globalCompositeOperation = "lighter";            // 빛 번짐
     if ("filter" in ctx) ctx.filter = "blur(" + Math.max(2, h * 0.012) + "px)";
@@ -232,6 +268,7 @@ function segHits(ax, ay, bx, by, cx, cy, r) {
 }
 let down = false, last = null;
 function pDown(x, y) {
+  if (S.mode === "ignite") { if (S.ignite.t > 0.97) beginPlay(); return; }   // 점화가 끝나고 '시작' 눌러야 시작
   if (S.mode !== "play" && S.mode !== "boss") return;
   down = true; last = { x, y }; S.trail.push({ x, y, t: S.t });
   cutAlong(x, y, x, y);
@@ -390,7 +427,7 @@ function drawBoss() {
 
 /* ── 끝 ─────────────────────────────────────── */
 function gameOver() {
-  S.mode = "over";
+  S.mode = "over"; BGM.stop();
   const best = setBest("sword", S.score);
   $("o-title").innerHTML = S.end.why === "bomb" ? "Boom!<small>폭탄을 잘랐어요 — 폭탄은 그냥 두세요</small>" : "Ouch!<small>하트를 다 썼어요</small>";
   $("o-score").textContent = S.score;
@@ -398,7 +435,7 @@ function gameOver() {
   show("over");
 }
 function allClear() {
-  S.mode = "clear";
+  S.mode = "clear"; BGM.stop();
   const best = setBest("sword", S.score);
   $("c-score").textContent = S.score;
   $("c-best").textContent = `최고 ${best}점 · 왕 셋과 친구가 됐어요`;
@@ -410,6 +447,7 @@ function allClear() {
 function draw() {
   const dt = Math.min(deltaTime / 1000, 0.05);
   S.t += dt;
+  if (S.mode === "ignite") { drawIgnite(dt); return; }
   const playing = S.mode === "play" || S.mode === "boss";
   if (playing) update(dt);
   if (S.mode === "boom") { S.end.t += dt; updateBits(dt); if (S.end.t > 1.5) gameOver(); }
@@ -552,3 +590,196 @@ function drawFx(dt) {
   }
   S.fx = S.fx.filter((f) => f.t < 1.3);
 }
+
+/* ── 광선검 점화 인트로 ───────────────────────────
+   Start 를 누르면 바로 싸우지 않고, 고른 캐릭터가 광선검을 켠다:
+   점화 섬광 → 칼날이 쭉 자라남 → "윙 윙 윙" 소리 → 게임 시작. 탭하면 건너뛴다. */
+const IGNITE_DUR = 2.6;
+function drawIgnite(dt) {
+  const ig = S.ignite; ig.t += dt; const T = ig.t;
+  const col = color(swordCol);
+  const g = GROUND(), H = HERO_H() * 1.06, hx = width / 2;
+  background(8, 12, 26);
+  // 점화할수록 번지는 검 색 글로우
+  const lit = constrain((T - 0.1) / 0.8, 0, 1);
+  const rg = drawingContext.createRadialGradient(hx, g - H * 0.5, 10, hx, g - H * 0.5, Math.max(width, height) * 0.65);
+  rg.addColorStop(0, `rgba(${red(col)},${green(col)},${blue(col)},${0.22 * lit})`);
+  rg.addColorStop(1, "rgba(8,12,26,0)");
+  drawingContext.fillStyle = rg; noStroke(); rect(0, 0, width, height);
+  // 바닥 그림자 + 정면을 보고 가만히 선 주인공(다리 안 움직임)
+  fill(0, 0, 0, 90); ellipse(hx, g, H * 0.34, H * 0.06);
+  const grow = constrain((T - 0.12) / 0.8, 0, 1), eased = 1 - Math.pow(1 - grow, 3);
+  const sel = IMG["front_" + heroKey], ih = H * 0.82;
+  const iw = ih * (sel && sel.height ? sel.width / sel.height : 0.58);
+  const ix = hx - iw / 2, iy = g - ih;              // 그림 왼위 모서리
+  if (sel && sel.width) { imageMode(CORNER); image(sel, ix, iy, iw, ih); }
+  // 벌린 손 위치(그림 안 비율) — 자루를 그 손에 놓고 칼날이 위로 자란다
+  const hand = HANDS[heroKey] || [0.90, 0.60];
+  const hiltX = ix + iw * hand[0], hiltY = iy + ih * hand[1], bladeMax = ih * 0.60, L = bladeMax * eased;
+  stroke(58, 62, 76); strokeCap(PROJECT); strokeWeight(ih * 0.05);              // 손잡이
+  line(hiltX, hiltY + ih * 0.08, hiltX, hiltY);
+  stroke(168, 172, 186); strokeWeight(ih * 0.028); line(hiltX, hiltY + ih * 0.06, hiltX, hiltY + ih * 0.008);
+  if (L > 2) {
+    const tipY = hiltY - L, c = color(swordCol), ctx = drawingContext;
+    ctx.save(); ctx.globalCompositeOperation = "lighter"; strokeCap(ROUND);
+    for (const [w, br] of [[ih * 0.085, false], [ih * 0.046, false], [ih * 0.016, true]]) {
+      stroke(br ? 255 : red(c), br ? 255 : green(c), br ? 255 : blue(c), br ? 255 : 150);
+      strokeWeight(w); line(hiltX, hiltY, hiltX, tipY);
+    }
+    noStroke(); fill(red(c), green(c), blue(c), 150); ellipse(hiltX, tipY, ih * 0.11);
+    fill(255, 255, 255, 230); ellipse(hiltX, tipY, ih * 0.05 * (grow < 1 ? 1.6 : 1));
+    ctx.restore();
+  }
+  if (T < 0.2) { noStroke(); fill(255, 255, 255, 255 * (1 - T / 0.2) * 0.85); rect(0, 0, width, height); } // 점화 섬광
+  // 글자
+  textAlign(CENTER, CENTER); textStyle(BOLD);
+  fill(255); textSize(Math.max(22, Math.min(width, height) * 0.055));
+  text("광선검 점화!", width / 2, Math.max(40, height * 0.12));
+  fill(lerp(red(col), 255, 0.3), lerp(green(col), 255, 0.3), lerp(blue(col), 255, 0.3));
+  textSize(Math.max(15, Math.min(width, height) * 0.034));
+  text(HEROES[heroKey].name + " · " + HEROES[heroKey].ko, width / 2, Math.max(40, height * 0.12) + Math.min(width, height) * 0.055);
+  if (grow >= 1) {   // 점화가 끝나면 시작 단추를 띄운다 — 교수가 눌러야 시작
+    const pulse = 0.5 + 0.5 * Math.sin(T * 4);
+    const bw = Math.min(width * 0.8, Math.max(220, Math.min(width, height) * 0.42));
+    const bh = Math.max(46, Math.min(width, height) * 0.085);
+    const by = g + (height - g) * 0.5, bx = width / 2;
+    const ctx = drawingContext; ctx.save();
+    ctx.shadowColor = `rgba(${red(col)},${green(col)},${blue(col)},${0.55 + 0.35 * pulse})`;
+    ctx.shadowBlur = bh * (0.6 + 0.5 * pulse);
+    noStroke(); fill(red(col), green(col), blue(col), 235);
+    rect(bx - bw / 2, by - bh / 2, bw, bh, bh / 2);
+    ctx.restore();
+    textStyle(BOLD); fill(8, 12, 26); textSize(Math.max(16, bh * 0.4));
+    text("게임 시작 · Tap to start", bx, by + 1);
+  }
+  // 자동으로 넘어가지 않는다 — 교수가 탭/클릭해서 시작한다
+}
+// 광선검 소리: 내려받을 것 없이 바로 합성 — 점화 스냅 + 흔들리는 허밍 + 윙 윙 윙 3회
+function saberSound() {
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === "suspended") AC.resume();
+    const t0 = AC.currentTime, dur = 2.35;
+    const master = AC.createGain(); master.gain.value = 0.9; master.connect(AC.destination);
+    // 점화 스냅-히스
+    const snap = AC.createOscillator(), sg = AC.createGain();
+    snap.type = "square"; snap.frequency.setValueAtTime(1500, t0); snap.frequency.exponentialRampToValueAtTime(170, t0 + 0.13);
+    sg.gain.setValueAtTime(0.0001, t0); sg.gain.exponentialRampToValueAtTime(0.26, t0 + 0.012); sg.gain.exponentialRampToValueAtTime(0.001, t0 + 0.17);
+    snap.connect(sg).connect(master); snap.start(t0); snap.stop(t0 + 0.2);
+    // 지속 허밍(디튠 사워투스 + 로우패스 + LFO 흔들림)
+    const humG = AC.createGain();
+    humG.gain.setValueAtTime(0.0001, t0); humG.gain.exponentialRampToValueAtTime(0.13, t0 + 0.18);
+    humG.gain.setValueAtTime(0.13, t0 + dur - 0.5); humG.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    const lp = AC.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1300; lp.Q.value = 7;
+    humG.connect(lp).connect(master);
+    for (const f of [87, 90.5, 174]) { const o = AC.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.connect(humG); o.start(t0); o.stop(t0 + dur); }
+    const lfo = AC.createOscillator(), lfoG = AC.createGain(); lfo.type = "sine"; lfo.frequency.value = 6.2; lfoG.gain.value = 0.03;
+    lfo.connect(lfoG).connect(humG.gain); lfo.start(t0); lfo.stop(t0 + dur);
+    // 윙 윙 윙 — 세 번 휘두르는 스윕
+    [0.55, 1.05, 1.55].forEach((ts) => {
+      const o = AC.createOscillator(), g = AC.createGain(), bp = AC.createBiquadFilter();
+      bp.type = "bandpass"; bp.frequency.value = 600; bp.Q.value = 4; o.type = "sawtooth";
+      o.frequency.setValueAtTime(230, t0 + ts); o.frequency.exponentialRampToValueAtTime(780, t0 + ts + 0.12); o.frequency.exponentialRampToValueAtTime(230, t0 + ts + 0.3);
+      g.gain.setValueAtTime(0.0001, t0 + ts); g.gain.exponentialRampToValueAtTime(0.17, t0 + ts + 0.06); g.gain.exponentialRampToValueAtTime(0.001, t0 + ts + 0.32);
+      o.connect(bp).connect(g).connect(master); o.start(t0 + ts); o.stop(t0 + ts + 0.36);
+    });
+  } catch (e) { /* 소리가 막혀 있어도 게임은 돈다 */ }
+}
+
+// ── 배경음악: 스타워즈 풍(오리지널) 웅장한 행진 테마 — 브라우저에서 바로 연주, 루프 ──
+// 저작권 있는 실제 곡(임페리얼 마치 등)은 베끼지 않고, 그 분위기(5도·옥타브 도약·행진 리듬·단조 긴장)만.
+let BGM_OFF = false;
+try { BGM_OFF = localStorage.getItem("sword_bgm") === "off"; } catch (e) {}
+const nf = (m) => 440 * Math.pow(2, (m - 69) / 12);
+// 3곡 — 서로 다른 분위기. ♪ 버튼으로 바꿔 듣는다. (스타워즈 느낌 포함, 저작권 곡은 안 베낌)
+// 유명 고전(퍼블릭 도메인) 멜로디를 직접 시퀀싱. mel: 8분음표 격자, 0=쉼, -1=앞 음 이어짐.
+const TRACKS = [
+  { name: "캉캉", tempo: 144, lead: "square", bassType: "sawtooth", cut: 2700, drum: "gallop", leadVol: 0.12,
+    mel: [69, 0, 69, 0, 74, 74, 74, 74, 76, 76, 78, 78, 76, 74, -1, 0, 69, 0, 69, 0, 74, 74, 74, 74, 79, 78, 76, 74, 73, 74, -1, 0], // 오펜바흐 「캉캉」(천국과 지옥 갈롭)
+    bass: [38, 0, 45, 0, 38, 0, 45, 0, 38, 0, 45, 0, 38, 0, 45, 0, 38, 0, 45, 0, 38, 0, 45, 0, 38, 0, 45, 0, 38, 0, 45, 0] },
+  { name: "엘리제", tempo: 118, lead: "triangle", bassType: "triangle", cut: 2000, drum: "none", leadVol: 0.13,
+    mel: [76, 75, 76, 75, 76, 71, 74, 72, 69, -1, 0, 60, 64, 69, 71, -1, 72, -1, 0, 64, 68, 71, 72, -1, 69, -1, -1, -1, 0, 0, 0, 0], // 베토벤 「엘리제를 위하여」
+    bass: [45, 0, 0, 0, 40, 0, 0, 0, 45, 0, 0, 0, 40, 0, 0, 0, 48, 0, 0, 0, 40, 0, 0, 0, 45, 0, 0, 0, 45, 0, 0, 0] },
+  { name: "윌리엄텔", tempo: 138, lead: "square", bassType: "sawtooth", cut: 2600, drum: "gallop", leadVol: 0.12,
+    mel: [64, 0, 64, 64, 0, 64, 64, 64, 64, 0, 64, 64, 0, 64, 64, 64, 71, 0, 71, 69, 68, 0, 64, 0, 68, 0, 68, 69, 71, -1, -1, 0], // 로시니 「윌리엄 텔」 질주
+    bass: [40, 0, 40, 0, 40, 0, 40, 0, 40, 0, 40, 0, 40, 0, 40, 0, 35, 0, 35, 0, 40, 0, 40, 0, 40, 0, 40, 0, 40, 0, 40, 0] },
+  { name: "환희의송가", tempo: 120, lead: "triangle", bassType: "triangle", cut: 2100, drum: "march", leadVol: 0.13,
+    mel: [64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 64, -1, 62, -1, 64, 64, 65, 67, 67, 65, 64, 62, 60, 60, 62, 64, 62, -1, 60, -1], // 베토벤 「환희의 송가」
+    bass: [48, 0, 0, 0, 43, 0, 0, 0, 48, 0, 0, 0, 43, 0, 0, 0, 48, 0, 0, 0, 43, 0, 0, 0, 48, 0, 0, 0, 43, 0, 0, 0] },
+  { name: "작은별", tempo: 120, lead: "triangle", bassType: "triangle", cut: 2000, drum: "soft", leadVol: 0.13,
+    mel: [60, 60, 67, 67, 69, 69, 67, -1, 65, 65, 64, 64, 62, 62, 60, -1, 67, 67, 65, 65, 64, 64, 62, -1, 67, 67, 65, 65, 64, 64, 62, -1, 60, 60, 67, 67, 69, 69, 67, -1, 65, 65, 64, 64, 62, 62, 60, -1], // 「반짝반짝 작은 별」
+    bass: [48, 0, 48, 0, 41, 0, 43, 0, 41, 0, 48, 0, 43, 0, 48, 0, 48, 0, 41, 0, 43, 0, 43, 0, 48, 0, 41, 0, 43, 0, 43, 0, 48, 0, 48, 0, 41, 0, 43, 0, 41, 0, 48, 0, 43, 0, 48, 0] },
+];
+let BGM_TRACK = 0;
+try { BGM_TRACK = Math.max(0, Math.min(TRACKS.length - 1, parseInt(localStorage.getItem("sword_track"), 10) || 0)); } catch (e) {}
+const BGM = {
+  on: false, master: null, step: 0, next: 0, timer: null, eighth: 60 / 112 / 2, loopLen: 32,
+  _osc(freq, t, dur, type, vol, cut) {
+    const o = AC.createOscillator(), g = AC.createGain(), f = AC.createBiquadFilter();
+    o.type = type; o.frequency.value = freq; f.type = "lowpass"; f.frequency.value = cut;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(f).connect(g).connect(this.master); o.start(t); o.stop(t + dur + 0.02);
+  },
+  _noise(t, dur, vol, cut) {
+    const n = Math.max(1, Math.floor(AC.sampleRate * dur)), buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    const s = AC.createBufferSource(); s.buffer = buf;
+    const g = AC.createGain(), f = AC.createBiquadFilter(); f.type = "highpass"; f.frequency.value = cut;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(f).connect(g).connect(this.master); s.start(t); s.stop(t + dur);
+  },
+  _kick(t) {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.12);
+    g.gain.setValueAtTime(0.55, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    o.connect(g).connect(this.master); o.start(t); o.stop(t + 0.18);
+  },
+  _playStep(i, t) {
+    const tr = TRACKS[BGM_TRACK], L = tr.mel.length;
+    const m = tr.mel[i % L];
+    if (m > 0) {                                   // 멜로디: 이어짐(-1)만큼 길게
+      let d = 1, j = (i + 1) % L;
+      while (tr.mel[j] === -1 && d < L) { d++; j = (j + 1) % L; }
+      this._osc(nf(m), t, d * this.eighth * 0.9, tr.lead, tr.leadVol || 0.12, tr.cut);
+    }
+    const bl = tr.bass.length, bm = tr.bass[i % bl];
+    if (bm > 0) this._osc(nf(bm), t, this.eighth * 1.7, tr.bassType || "triangle", 0.22, 430);
+    const d4 = i % 4;                              // 드럼
+    if (tr.drum === "march") { if (d4 === 0) this._kick(t); if (d4 === 2) this._noise(t, 0.12, 0.14, 3000); }
+    else if (tr.drum === "gallop") { if (i % 2 === 0) this._kick(t); if (d4 === 2) this._noise(t, 0.1, 0.12, 3000); }
+    else if (tr.drum === "soft") { if (d4 === 0) this._kick(t); }
+  },
+  start() {
+    if (this.on || BGM_OFF) return;
+    try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); } catch (e) { return; }
+    this.eighth = 60 / TRACKS[BGM_TRACK].tempo / 2;
+    this.loopLen = TRACKS[BGM_TRACK].mel.length;
+    this.on = true; this.step = 0; this.next = AC.currentTime + 0.12;
+    this.master = AC.createGain(); this.master.gain.value = 0.0001; this.master.connect(AC.destination);
+    this.master.gain.exponentialRampToValueAtTime(0.42, AC.currentTime + 1.2);    // 서서히 커짐
+    this.timer = setInterval(() => this._sched(), 25);
+  },
+  _sched() {
+    if (!this.on) return;
+    while (this.next < AC.currentTime + 0.12) { this._playStep(this.step, this.next); this.next += this.eighth; this.step = (this.step + 1) % this.loopLen; }
+  },
+  stop() {
+    this.on = false; if (this.timer) { clearInterval(this.timer); this.timer = null; }
+    try { if (this.master) { const g = this.master.gain; g.cancelScheduledValues(AC.currentTime); g.setValueAtTime(Math.max(0.0001, g.value), AC.currentTime); g.exponentialRampToValueAtTime(0.0001, AC.currentTime + 0.4); } } catch (e) {}
+  },
+  toggle() {
+    BGM_OFF = !BGM_OFF;
+    try { localStorage.setItem("sword_bgm", BGM_OFF ? "off" : "on"); } catch (e) {}
+    if (BGM_OFF) this.stop();
+    else if (S && (S.mode === "play" || S.mode === "boss")) this.start();
+    return !BGM_OFF;
+  },
+  next_track() {
+    BGM_TRACK = (BGM_TRACK + 1) % TRACKS.length;
+    try { localStorage.setItem("sword_track", BGM_TRACK); } catch (e) {}
+    const was = this.on;
+    if (was) { this.stop(); setTimeout(() => { if (!BGM_OFF) this.start(); }, 130); }
+    return TRACKS[BGM_TRACK].name;
+  },
+};

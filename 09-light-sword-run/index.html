@@ -30,6 +30,7 @@
 .kings img { height: 64px; display: block; margin: 0 auto 2px; }
 #go { background: var(--hero); }
 body:has(#select:not(.hidden)) .bar { display: none; }
+body.igniting .bar { display: none; }
 @media (max-width: 560px) {
   .cast { grid-template-columns: repeat(3, 1fr); }
   .rules { grid-template-columns: 1fr; }
@@ -38,7 +39,7 @@ body:has(#select:not(.hidden)) .bar { display: none; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
 <script src="common.js"></script>
-<script src="game.js"></script>
+<script src="game.js?v=21"></script>
 </head>
 <body>
 <style>
