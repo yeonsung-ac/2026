@@ -42,6 +42,25 @@
     .home-link:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(23,35,59,.22); }
     @media (max-width:520px){ .home-link { top:8px; left:8px; font-size:12px; padding:8px 12px; } header { padding-top:72px; } }
     footer { padding:4px 24px 42px; text-align:center; color:#77839b; font-size:13px; }
+    /* 캐릭터 웹게임 카드: 이모지 대신 그림 썸네일 */
+    .art img { width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; }
+    .game.wide { grid-column:span 2; }
+    @media (max-width:560px){ .game.wide { grid-column:auto; } }
+    /* 학생 작품 전시 — 상자로 구분한 작은 목록 */
+    .showcase { margin-top:44px; padding:26px 26px 22px; border:2px dashed rgba(23,35,59,.18); border-radius:25px; background:rgba(255,255,255,.62); }
+    .showcase-head { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:6px 16px; margin-bottom:16px; }
+    .showcase-head h2 { margin:0; font-size:24px; letter-spacing:-.05em; }
+    .showcase-head p { margin:0; color:#67728a; font-size:14px; }
+    .works { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:8px 14px; }
+    .works a { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; background:white; border:1px solid rgba(23,35,59,.08); color:inherit; text-decoration:none; transition:transform .15s,box-shadow .15s; }
+    .works a:hover { transform:translateY(-2px); box-shadow:0 8px 18px rgba(23,35,59,.12); }
+    .works .no { color:#77839b; font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; }
+    .works span { min-width:0; }
+    .works strong { display:block; font-size:15px; letter-spacing:-.03em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .works small { display:block; color:#77839b; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .works .go { color:var(--accent); font-size:13px; font-weight:800; }
+    .works-empty { margin:0; padding:18px; border-radius:14px; background:white; color:#67728a; font-size:14px; text-align:center; }
+    @media (max-width:520px){ .showcase { padding:20px 16px 16px; } }
   </style>
 </head>
 <body>
@@ -61,8 +80,39 @@
       <a class="game" style="--card:linear-gradient(135deg,#f8b3cf,#bdebbb)" href="06-word-garden.html"><div class="art">🌷</div><div class="copy"><span class="number">GAME 06</span><h2>단어 정원</h2><p>꽃처럼 피어나는 영어 단어를 익혀보세요.</p><div class="play">게임 시작 →</div></div></a>
       <a class="game" style="--card:linear-gradient(135deg,#bfe6ff,#f0ddff)" href="07-math-typing.html"><div class="art">⌨️</div><div class="copy"><span class="number">GAME 07</span><h2>계산 타자왕</h2><p>계산도 하고 타자 실력도 키워보세요.</p><div class="play">게임 시작 →</div></div></a>
       <a class="game" style="--card:linear-gradient(135deg,#ffe394,#ffb9b0)" href="08-around-the-world.html"><div class="art">🌍</div><div class="copy"><span class="number">GAME 08</span><h2>80일간의 세계일주</h2><p>세계 곳곳을 여행하며 미션을 즐겨보세요.</p><div class="play">게임 시작 →</div></div></a>
+      <a class="game wide" style="--card:linear-gradient(135deg,#bfe8ff,#7ec8f5)" href="09-light-sword-run/"><div class="art"><img src="assets/card-light-sword-run.webp" alt="빛의 검을 휘두르는 빅터와 왕관 쓴 게왕"></div><div class="copy"><span class="number">GAME 09</span><h2>Light Sword Run 빛의 검</h2><p>빅터·그레이스·나비·헤이즐·이박사 중 하나를 골라 날아오는 것을 베어요. 폭탄은 자르면 끝! 게왕·뱀왕·부엉이왕과 겨뤄 보세요.</p><div class="play">게임 시작 →</div></div></a>
+      <a class="game" style="--card:linear-gradient(135deg,#fff0be,#c8e8ff)" href="10-ox-quiz/"><div class="art"><img src="assets/card-ox-quiz.webp" alt="빅터·돌구·헤이즐과 O, X"></div><div class="copy"><span class="number">GAME 10</span><h2>Let's Check! O·X 퀴즈</h2><p>돌구의 말이 맞으면 O, 틀리면 X로 걸어가요. 3D 상식 퀴즈 대결!</p><div class="play">게임 시작 →</div></div></a>
+      <a class="game" style="--card:linear-gradient(135deg,#ffe9c7,#f3d6e8)" href="11-nabi-playroom/"><div class="art"><img src="assets/card-nabi-playroom.webp" alt="이박사·나비·헤이즐"></div><div class="copy"><span class="number">GAME 11</span><h2>나비의 놀이방</h2><p>나비 밥 주기 · 책 쌓기 · 이박사 따라 하기. 쉬운 게임 세 가지.</p><div class="play">게임 시작 →</div></div></a>
+    </section>
+
+    <section class="showcase" aria-labelledby="showcase-title">
+      <div class="showcase-head">
+        <h2 id="showcase-title">학생 작품 전시</h2>
+        <p>수업에서 학생들이 직접 만든 웹게임·웹페이지를 모았어요.</p>
+      </div>
+      <ul class="works" id="works"></ul>
+      <p class="works-empty" id="works-empty">첫 작품이 곧 이곳에 실립니다.</p>
     </section>
   </main>
+  <script src="assets/student-works.js"></script>
+  <script>
+    // 학생 작품 목록 그리기 — 목록은 assets/student-works.js 에서 한 줄씩 늘린다
+    (function () {
+      var list = window.STUDENT_WORKS || [], ul = document.getElementById("works");
+      if (!list.length) { ul.hidden = true; return; }
+      document.getElementById("works-empty").hidden = true;
+      list.forEach(function (w, i) {
+        var li = document.createElement("li"), a = document.createElement("a");
+        a.href = w.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+        var no = document.createElement("span"); no.className = "no"; no.textContent = String(i + 1).padStart(2, "0");
+        var mid = document.createElement("span"), t = document.createElement("strong"), s = document.createElement("small");
+        t.textContent = w.title; s.textContent = [w.by, w.note].filter(Boolean).join(" · ");
+        mid.appendChild(t); mid.appendChild(s);
+        var go = document.createElement("span"); go.className = "go"; go.textContent = "열기 ↗";
+        a.appendChild(no); a.appendChild(mid); a.appendChild(go); li.appendChild(a); ul.appendChild(li);
+      });
+    })();
+  </script>
   <footer>여름방학 AI 특강 · 웹게임 만들기<br><a href="https://yeonsung-ac.github.io/" style="color:#ff5b61;font-weight:700;text-decoration:none">이현구 홈페이지로 돌아가기 →</a></footer>
 </body>
 </html>

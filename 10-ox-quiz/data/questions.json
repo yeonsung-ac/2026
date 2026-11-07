@@ -1,0 +1,1138 @@
+[
+ {
+  "ep": 1,
+  "title": "Do Bulls Hate Red?",
+  "x": {
+   "en": "Bulls get angry at the color red.",
+   "ko": "황소는 빨간색을 보면 화가 난다."
+  },
+  "o": {
+   "en": "Bulls notice movement, not color.",
+   "ko": "황소는 색이 아니라 움직임을 알아챈다."
+  },
+  "why": {
+   "en": "It's the movement, not the colour.",
+   "ko": "색이 아니라 움직임이야."
+  }
+ },
+ {
+  "ep": 2,
+  "title": "Does Swallowed Gum Stay for 7 Years?",
+  "x": {
+   "en": "Swallowed gum stays in your tummy for seven years.",
+   "ko": "삼킨 껌은 배 속에 7년 동안 남는다."
+  },
+  "o": {
+   "en": "Swallowed gum passes in a few days.",
+   "ko": "삼킨 껌은 며칠이면 몸 밖으로 나온다."
+  },
+  "why": {
+   "en": "Gum passes in a few days. But don't swallow it!",
+   "ko": "껌은 며칠이면 지나가. 그래도 삼키지는 마!"
+  }
+ },
+ {
+  "ep": 3,
+  "title": "Can You See the Great Wall From Space?",
+  "x": {
+   "en": "You can easily see the Great Wall from space.",
+   "ko": "우주에서 만리장성이 쉽게 보인다."
+  },
+  "o": {
+   "en": "The Great Wall is very hard to see from space.",
+   "ko": "우주에서 만리장성은 보기가 아주 어렵다."
+  },
+  "why": {
+   "en": "Long is not the same as easy to see.",
+   "ko": "길다고 잘 보이는 건 아니야."
+  }
+ },
+ {
+  "ep": 4,
+  "title": "Does Lightning Never Strike Twice?",
+  "x": {
+   "en": "Lightning never strikes the same place twice.",
+   "ko": "번개는 같은 곳에 두 번 치지 않는다."
+  },
+  "o": {
+   "en": "Lightning can strike the same place again and again.",
+   "ko": "번개는 같은 곳에 여러 번 칠 수 있다."
+  },
+  "why": {
+   "en": "When thunder roars, go indoors!",
+   "ko": "천둥이 울리면, 안으로!"
+  }
+ },
+ {
+  "ep": 5,
+  "title": "Do We Only Use 10% of Our Brain?",
+  "x": {
+   "en": "We only use ten percent of our brain.",
+   "ko": "우리는 뇌의 10퍼센트만 쓴다."
+  },
+  "o": {
+   "en": "We use all of our brain, just not all at once.",
+   "ko": "우리는 뇌를 다 쓴다. 한꺼번에가 아닐 뿐."
+  },
+  "why": {
+   "en": "You use all of your brain, just not all at once.",
+   "ko": "뇌는 다 써. 한꺼번에가 아닐 뿐."
+  }
+ },
+ {
+  "ep": 6,
+  "title": "Are Bats Blind?",
+  "x": {
+   "en": "Bats are blind.",
+   "ko": "박쥐는 앞을 못 본다."
+  },
+  "o": {
+   "en": "Bats can see.",
+   "ko": "박쥐는 볼 수 있다."
+  },
+  "why": {
+   "en": "Bats can see, and many can hear their way in the dark.",
+   "ko": "박쥐는 볼 수 있고, 많은 박쥐는 어둠 속에서 소리로 길을 찾아."
+  }
+ },
+ {
+  "ep": 7,
+  "title": "Do Carrots Help You See in the Dark?",
+  "x": {
+   "en": "Carrots let you see in the dark.",
+   "ko": "당근을 먹으면 어둠 속에서도 보인다."
+  },
+  "o": {
+   "en": "Carrots help healthy eyes, but they are not night vision.",
+   "ko": "당근은 눈 건강을 돕지만 밤눈 초능력은 아니다."
+  },
+  "why": {
+   "en": "Carrots help healthy eyes, but they are not night vision.",
+   "ko": "당근은 건강한 눈을 돕지만, 밤눈 초능력은 아니야."
+  }
+ },
+ {
+  "ep": 8,
+  "title": "Do Ostriches Hide Their Heads in the Sand?",
+  "x": {
+   "en": "Ostriches hide their heads in the sand.",
+   "ko": "타조는 모래에 머리를 숨긴다."
+  },
+  "o": {
+   "en": "Ostriches run fast when they are in danger.",
+   "ko": "타조는 위험하면 빨리 달린다."
+  },
+  "why": {
+   "en": "Ostriches don't hide their heads. They run!",
+   "ko": "타조는 머리를 숨기지 않아. 달려!"
+  }
+ },
+ {
+  "ep": 9,
+  "title": "Will a Mother Bird Leave If You Touch Her Baby?",
+  "x": {
+   "en": "A mother bird leaves if you touch her baby.",
+   "ko": "아기 새를 만지면 엄마 새가 떠난다."
+  },
+  "o": {
+   "en": "A mother bird won't leave just because you touched her baby.",
+   "ko": "아기 새를 만졌다고 엄마 새가 떠나지는 않는다."
+  },
+  "why": {
+   "en": "Mom won't leave because of your touch. But look, don't touch!",
+   "ko": "손을 댔다고 엄마 새가 떠나진 않아. 그래도 보기만 해!"
+  }
+ },
+ {
+  "ep": 10,
+  "title": "Does Sugar Make Kids Go Wild?",
+  "x": {
+   "en": "Sugar makes kids go wild.",
+   "ko": "설탕을 먹으면 아이들이 난리를 친다."
+  },
+  "o": {
+   "en": "Parties make kids excited, not sugar.",
+   "ko": "아이들을 들뜨게 하는 건 설탕이 아니라 파티다."
+  },
+  "why": {
+   "en": "It's the party, not the sugar!",
+   "ko": "설탕이 아니라 파티야!"
+  }
+ },
+ {
+  "ep": 11,
+  "title": "Do Camels Store Water in Their Humps?",
+  "x": {
+   "en": "A camel stores water in its hump.",
+   "ko": "낙타 혹에는 물이 들어 있다."
+  },
+  "o": {
+   "en": "A camel's hump is full of fat.",
+   "ko": "낙타 혹에는 지방이 가득하다."
+  },
+  "why": {
+   "en": "A camel's hump is full of fat, not water!",
+   "ko": "낙타 혹에는 물이 아니라 지방이 가득해!"
+  }
+ },
+ {
+  "ep": 12,
+  "title": "Do Goldfish Really Have a Three-Second Memory?",
+  "x": {
+   "en": "A goldfish only remembers for three seconds.",
+   "ko": "금붕어의 기억력은 3초다."
+  },
+  "o": {
+   "en": "A goldfish can remember for months.",
+   "ko": "금붕어는 몇 달 동안 기억할 수 있다."
+  },
+  "why": {
+   "en": "A goldfish can remember for months, not seconds!",
+   "ko": "금붕어는 몇 초가 아니라 몇 달을 기억해!"
+  }
+ },
+ {
+  "ep": 13,
+  "title": "Why Do Chameleons Really Change Color?",
+  "x": {
+   "en": "Chameleons change color to copy what's behind them.",
+   "ko": "카멜레온은 뒤 배경을 따라 색을 바꾼다."
+  },
+  "o": {
+   "en": "Chameleons change color to send messages.",
+   "ko": "카멜레온은 메시지를 보내려고 색을 바꾼다."
+  },
+  "why": {
+   "en": "A chameleon sends messages with color. It doesn't copy!",
+   "ko": "카멜레온은 색으로 메시지를 보내. 따라 하는 게 아니야!"
+  }
+ },
+ {
+  "ep": 14,
+  "title": "Does Cracking Your Knuckles Make Your Fingers Fat?",
+  "x": {
+   "en": "Cracking your knuckles makes your fingers fat.",
+   "ko": "손가락을 꺾으면 손가락이 굵어진다."
+  },
+  "o": {
+   "en": "Cracking your knuckles won't make your fingers fat.",
+   "ko": "손가락을 꺾어도 손가락이 굵어지지 않는다."
+  },
+  "why": {
+   "en": "That pop isn't your bones, and it won't make fat fingers!",
+   "ko": "그 소리는 뼈가 아니고, 손가락도 굵어지지 않아!"
+  }
+ },
+ {
+  "ep": 15,
+  "title": "Is the Five-Second Rule Real?",
+  "x": {
+   "en": "Food is safe if you pick it up in five seconds.",
+   "ko": "5초 안에 주우면 떨어진 음식도 괜찮다."
+  },
+  "o": {
+   "en": "Germs can get on food right away.",
+   "ko": "세균은 떨어진 음식에 바로 붙을 수 있다."
+  },
+  "why": {
+   "en": "Germs can't count to five!",
+   "ko": "세균은 5까지 세지 못해!"
+  }
+ },
+ {
+  "ep": 16,
+  "title": "Is Your Blood Blue Inside Your Body?",
+  "x": {
+   "en": "Your blood is blue inside your body.",
+   "ko": "몸속의 피는 파란색이다."
+  },
+  "o": {
+   "en": "Your blood is always red.",
+   "ko": "피는 언제나 빨간색이다."
+  },
+  "why": {
+   "en": "Your blood is always red. Light makes veins look blue!",
+   "ko": "피는 언제나 빨강이야. 빛 때문에 정맥이 파랗게 보여!"
+  }
+ },
+ {
+  "ep": 17,
+  "title": "Is Summer Hot Because Earth Is Closer to the Sun?",
+  "x": {
+   "en": "Summer is hot because Earth is closer to the Sun.",
+   "ko": "여름이 더운 건 지구가 해에 더 가까워서다."
+  },
+  "o": {
+   "en": "Summer comes because Earth leans.",
+   "ko": "여름은 지구가 기울어 있어서 온다."
+  },
+  "why": {
+   "en": "Remember the leaning globe? Earth really leans like that.",
+   "ko": "기울어진 지구본 기억나? 지구는 진짜로 저렇게 기울어 있어."
+  }
+ },
+ {
+  "ep": 18,
+  "title": "Do Dogs Really See in Black and White?",
+  "x": {
+   "en": "Dogs see only in black and white.",
+   "ko": "개는 흑백으로만 본다."
+  },
+  "o": {
+   "en": "Dogs see blue and yellow best.",
+   "ko": "개는 파랑과 노랑을 가장 잘 본다."
+  },
+  "why": {
+   "en": "Dogs see blue and yellow best. Their world isn't just gray!",
+   "ko": "개는 파랑과 노랑을 가장 잘 봐. 세상이 회색만은 아니야!"
+  }
+ },
+ {
+  "ep": 19,
+  "title": "Do Cats Always Land on Their Feet?",
+  "x": {
+   "en": "Cats always land on their feet.",
+   "ko": "고양이는 언제나 발로 착지한다."
+  },
+  "o": {
+   "en": "Cats usually turn in the air, but not always.",
+   "ko": "고양이는 대개 공중에서 몸을 돌리지만 언제나는 아니다."
+  },
+  "why": {
+   "en": "Cats usually turn in the air, but not always. And falls can still hurt them!",
+   "ko": "고양이는 대개 공중에서 돌지만 언제나는 아니야. 떨어지면 다칠 수도 있어!"
+  }
+ },
+ {
+  "ep": 20,
+  "title": "Do We Lose Most of Our Body Heat Through Our Heads?",
+  "x": {
+   "en": "We lose most of our body heat through our heads.",
+   "ko": "몸의 열은 대부분 머리로 빠져나간다."
+  },
+  "o": {
+   "en": "Your head loses about one tenth of your heat.",
+   "ko": "머리로 나가는 열은 약 10분의 1이다."
+  },
+  "why": {
+   "en": "Your head loses about one tenth of your heat. Still, wear your hat!",
+   "ko": "머리로 나가는 열은 약 10분의 1이야. 그래도 모자는 써!"
+  }
+ },
+ {
+  "ep": 21,
+  "title": "Is the Sahara the Biggest Desert on Earth?",
+  "x": {
+   "en": "The Sahara is the biggest desert on Earth.",
+   "ko": "사하라는 지구에서 가장 큰 사막이다."
+  },
+  "o": {
+   "en": "The biggest desert is cold Antarctica.",
+   "ko": "가장 큰 사막은 추운 남극이다."
+  },
+  "why": {
+   "en": "The biggest desert is cold Antarctica. The Sahara is the biggest hot one!",
+   "ko": "가장 큰 사막은 추운 남극이야. 사하라는 더운 사막 중 가장 커!"
+  }
+ },
+ {
+  "ep": 22,
+  "title": "Do We Swallow Eight Spiders a Year in Our Sleep?",
+  "x": {
+   "en": "We swallow eight spiders a year in our sleep.",
+   "ko": "우리는 자면서 1년에 거미 여덟 마리를 삼킨다."
+  },
+  "o": {
+   "en": "Spiders stay away from sleeping people.",
+   "ko": "거미는 잠든 사람을 피해 다닌다."
+  },
+  "why": {
+   "en": "Nobody has found proof of eight spiders a year. Spiders stay away from you!",
+   "ko": "1년에 여덟 마리라는 증거는 없어. 거미는 너를 피해 다녀!"
+  }
+ },
+ {
+  "ep": 23,
+  "title": "Do Sunflowers Always Follow the Sun?",
+  "x": {
+   "en": "Sunflowers always follow the Sun.",
+   "ko": "해바라기는 언제나 해를 따라간다."
+  },
+  "o": {
+   "en": "Open sunflowers stop and face east.",
+   "ko": "활짝 핀 해바라기는 멈춰서 동쪽을 본다."
+  },
+  "why": {
+   "en": "Young sunflowers follow the sun. Open ones stop and face east!",
+   "ko": "어린 해바라기는 해를 따라가. 꽃이 피면 멈추고 동쪽을 봐!"
+  }
+ },
+ {
+  "ep": 24,
+  "title": "Do All Bees Die After They Sting?",
+  "x": {
+   "en": "All bees die after they sting.",
+   "ko": "벌은 쏘고 나면 모두 죽는다."
+  },
+  "o": {
+   "en": "Most bees don't die after they sting.",
+   "ko": "대부분의 벌은 쏘고 나서도 죽지 않는다."
+  },
+  "why": {
+   "en": "A worker honey bee can die after a sting. Most other bees don't!",
+   "ko": "꿀벌 일벌은 쏘고 죽을 수 있지만, 다른 벌은 대부분 안 그래!"
+  }
+ },
+ {
+  "ep": 25,
+  "title": "Do You Taste Sweet Only on the Tip of Your Tongue?",
+  "x": {
+   "en": "You taste sweet only on the tip of your tongue.",
+   "ko": "단맛은 혀끝에서만 느낀다."
+  },
+  "o": {
+   "en": "Taste buds all over your tongue sense every taste.",
+   "ko": "혀 곳곳의 맛봉오리가 모든 맛을 느낀다."
+  },
+  "why": {
+   "en": "There's no sweet spot. Taste buds all over your tongue sense every taste!",
+   "ko": "단맛 자리는 따로 없어. 혀 곳곳의 맛봉오리가 모든 맛을 느껴!"
+  }
+ },
+ {
+  "ep": 26,
+  "title": "Did Vikings Wear Horned Helmets?",
+  "x": {
+   "en": "Vikings wore horned helmets.",
+   "ko": "바이킹은 뿔 달린 투구를 썼다."
+  },
+  "o": {
+   "en": "No Viking horned helmet has been found.",
+   "ko": "바이킹 뿔 투구는 발견된 적이 없다."
+  },
+  "why": {
+   "en": "No Viking horned helmet has been found. The horns came from art and shows!",
+   "ko": "바이킹 뿔 투구는 발견된 적이 없어. 뿔은 그림과 공연에서 왔어!"
+  }
+ },
+ {
+  "ep": 27,
+  "title": "Do Bananas Grow on Trees?",
+  "x": {
+   "en": "Bananas grow on trees.",
+   "ko": "바나나는 나무에서 자란다."
+  },
+  "o": {
+   "en": "A banana plant is a giant herb.",
+   "ko": "바나나는 거대한 풀이다."
+  },
+  "why": {
+   "en": "A banana plant is a giant herb, not a tree. Its trunk is rolled leaves!",
+   "ko": "바나나는 나무가 아니라 거대한 풀이야. 줄기는 말린 잎이고!"
+  }
+ },
+ {
+  "ep": 28,
+  "title": "Is the Far Side of the Moon Always Dark?",
+  "x": {
+   "en": "The far side of the Moon is always dark.",
+   "ko": "달의 뒷면은 언제나 어둡다."
+  },
+  "o": {
+   "en": "The far side of the Moon gets sunlight, too.",
+   "ko": "달의 뒷면도 햇빛을 받는다."
+  },
+  "why": {
+   "en": "The far side gets sunlight, too. We just can't see it from Earth!",
+   "ko": "뒷면도 햇빛을 받아. 지구에서 안 보일 뿐이야!"
+  }
+ },
+ {
+  "ep": 29,
+  "title": "Can Owls Turn Their Heads All the Way Around?",
+  "x": {
+   "en": "Owls can turn their heads all the way around.",
+   "ko": "올빼미는 고개를 한 바퀴 다 돌릴 수 있다."
+  },
+  "o": {
+   "en": "An owl can turn its head about 270 degrees.",
+   "ko": "올빼미는 고개를 약 270도 돌릴 수 있다."
+  },
+  "why": {
+   "en": "An owl can turn its head about 270 degrees each way, but not a full circle!",
+   "ko": "올빼미는 양쪽으로 약 270도 돌리지만, 한 바퀴는 아니야!"
+  }
+ },
+ {
+  "ep": 30,
+  "title": "Was Napoleon Really Short?",
+  "x": {
+   "en": "Napoleon was very short.",
+   "ko": "나폴레옹은 키가 아주 작았다."
+  },
+  "o": {
+   "en": "Napoleon was about average height for his time.",
+   "ko": "나폴레옹은 그 시대 평균 키쯤이었다."
+  },
+  "why": {
+   "en": "Napoleon was about average for his time. Old numbers and cartoons fooled us!",
+   "ko": "나폴레옹은 그 시대 평균쯤이었어. 옛 숫자와 만화에 속은 거야!"
+  }
+ },
+ {
+  "ep": 31,
+  "title": "Do Mice Really Love Cheese?",
+  "x": {
+   "en": "Cheese is a mouse's favorite food.",
+   "ko": "쥐가 가장 좋아하는 음식은 치즈다."
+  },
+  "o": {
+   "en": "Mice usually like grains and sweet foods better.",
+   "ko": "쥐는 대개 곡식과 단 먹이를 더 좋아한다."
+  },
+  "why": {
+   "en": "A hungry mouse eats cheese, but mice usually like grains and sweet foods better!",
+   "ko": "배고픈 쥐는 치즈도 먹지만, 대개 곡식과 단 먹이를 더 좋아해!"
+  }
+ },
+ {
+  "ep": 32,
+  "title": "Are Peanuts Really Nuts?",
+  "x": {
+   "en": "Peanuts are nuts that grow on trees.",
+   "ko": "땅콩은 나무에 열리는 견과다."
+  },
+  "o": {
+   "en": "Peanuts grow under the ground.",
+   "ko": "땅콩은 땅속에서 자란다."
+  },
+  "why": {
+   "en": "Peanuts are legumes. They grow under the ground, not on trees!",
+   "ko": "땅콩은 콩과 식물이야. 나무가 아니라 땅속에서 자라!"
+  }
+ },
+ {
+  "ep": 33,
+  "title": "Do Diamonds Come From Coal?",
+  "x": {
+   "en": "Diamonds come from coal.",
+   "ko": "다이아몬드는 석탄에서 생긴다."
+  },
+  "o": {
+   "en": "Most diamonds formed much deeper than coal.",
+   "ko": "다이아몬드는 대개 석탄보다 훨씬 깊은 곳에서 생겼다."
+  },
+  "why": {
+   "en": "Diamonds and coal share carbon, but most diamonds formed deeper and much earlier!",
+   "ko": "다이아몬드와 석탄은 탄소를 나누지만, 다이아몬드는 대개 더 깊고 훨씬 일찍 생겼어!"
+  }
+ },
+ {
+  "ep": 34,
+  "title": "Does Cold Air Give You a Cold?",
+  "x": {
+   "en": "Cold air alone gives you a cold.",
+   "ko": "찬 공기만으로 감기에 걸린다."
+  },
+  "o": {
+   "en": "Viruses give you colds.",
+   "ko": "감기는 바이러스 때문에 걸린다."
+  },
+  "why": {
+   "en": "Viruses give you colds. Cold air alone does not, but wear your coat!",
+   "ko": "감기는 바이러스 때문이야. 찬 공기만으로는 안 걸려. 그래도 외투는 입어!"
+  }
+ },
+ {
+  "ep": 35,
+  "title": "Are Polar Bears Really White?",
+  "x": {
+   "en": "Polar bears have white skin.",
+   "ko": "북극곰은 피부가 하얗다."
+  },
+  "o": {
+   "en": "Polar bears have black skin.",
+   "ko": "북극곰은 피부가 검다."
+  },
+  "why": {
+   "en": "Polar bears have black skin, and their fur only looks white!",
+   "ko": "북극곰은 피부가 검고, 털은 하얗게 보일 뿐이야!"
+  }
+ },
+ {
+  "ep": 36,
+  "title": "Is Glass Really a Slow Liquid?",
+  "x": {
+   "en": "Glass is a slow liquid.",
+   "ko": "유리는 아주 천천히 흐르는 액체다."
+  },
+  "o": {
+   "en": "Glass acts like a solid.",
+   "ko": "유리는 고체처럼 행동한다."
+  },
+  "why": {
+   "en": "Glass acts like a solid. Old windows were made uneven, and they did not flow!",
+   "ko": "유리는 고체처럼 행동해. 옛 창은 고르지 않게 만들어졌을 뿐, 흘러내린 게 아니야!"
+  }
+ },
+ {
+  "ep": 37,
+  "title": "Did Einstein Really Fail Math?",
+  "x": {
+   "en": "Einstein failed math.",
+   "ko": "아인슈타인은 수학에서 낙제했다."
+  },
+  "o": {
+   "en": "Einstein never failed math.",
+   "ko": "아인슈타인은 수학을 낙제한 적이 없다."
+  },
+  "why": {
+   "en": "Einstein never failed math. He missed one exam because of other subjects!",
+   "ko": "아인슈타인은 수학을 낙제한 적이 없어. 시험 하나를 다른 과목 때문에 놓쳤을 뿐이야!"
+  }
+ },
+ {
+  "ep": 38,
+  "title": "Does Water Spin the Other Way in Australia?",
+  "x": {
+   "en": "Sink water always spins the other way in Australia.",
+   "ko": "호주에서는 세면대 물이 언제나 반대로 돈다."
+  },
+  "o": {
+   "en": "Sink water spins because of the sink's shape.",
+   "ko": "세면대 물은 세면대 모양 때문에 돈다."
+  },
+  "why": {
+   "en": "The Earth's turn bends giant storms, but your sink spins because of its shape and its water!",
+   "ko": "지구의 회전은 거대한 폭풍을 휘게 하지만, 세면대 물은 모양과 물살 때문에 돌아!"
+  }
+ },
+ {
+  "ep": 39,
+  "title": "Does a Cut Worm Become Two Worms?",
+  "x": {
+   "en": "A cut worm becomes two worms.",
+   "ko": "지렁이를 자르면 두 마리가 된다."
+  },
+  "o": {
+   "en": "A cut worm does not become two worms.",
+   "ko": "지렁이를 잘라도 두 마리가 되지 않는다."
+  },
+  "why": {
+   "en": "A cut worm does not become two worms. At best, the head half regrows a tail!",
+   "ko": "지렁이를 잘라도 두 마리가 되지 않아. 잘해야 머리 쪽이 꼬리를 다시 키울 뿐이야!"
+  }
+ },
+ {
+  "ep": 40,
+  "title": "Does Shaving Make Hair Grow Back Thicker?",
+  "x": {
+   "en": "Shaving makes hair grow back thicker.",
+   "ko": "면도하면 털이 더 굵게 난다."
+  },
+  "o": {
+   "en": "Shaving does not change your hair.",
+   "ko": "면도는 털을 바꾸지 않는다."
+  },
+  "why": {
+   "en": "Shaving does not change your hair. It only leaves a blunt tip!",
+   "ko": "면도는 털을 바꾸지 않아. 끝을 뭉툭하게 남길 뿐이야!"
+  }
+ },
+ {
+  "ep": 41,
+  "title": "Did Marie Antoinette Say Let Them Eat Cake?",
+  "x": {
+   "en": "Marie Antoinette said, \"Let them eat cake.\"",
+   "ko": "마리 앙투아네트는 \"케이크를 먹으라고 해\"라고 말했다."
+  },
+  "o": {
+   "en": "Nobody has found proof that Marie Antoinette said it.",
+   "ko": "마리 앙투아네트가 그 말을 했다는 증거는 없다."
+  },
+  "why": {
+   "en": "Nobody has found proof that she said it. The story is a rumor!",
+   "ko": "그가 말했다는 증거는 없어. 그 이야기는 소문이야!"
+  }
+ },
+ {
+  "ep": 42,
+  "title": "Are Fortune Cookies Really From China?",
+  "x": {
+   "en": "Fortune cookies come from China.",
+   "ko": "포춘 쿠키는 중국에서 왔다."
+  },
+  "o": {
+   "en": "Fortune cookies likely began in Japan.",
+   "ko": "포춘 쿠키는 일본에서 시작된 것으로 보인다."
+  },
+  "why": {
+   "en": "Fortune cookies likely began in Japan and grew up in America!",
+   "ko": "포춘 쿠키는 일본에서 시작해 미국에서 자란 것으로 보여!"
+  }
+ },
+ {
+  "ep": 43,
+  "title": "Is There No Gravity in Space?",
+  "x": {
+   "en": "There is no gravity in space.",
+   "ko": "우주에는 중력이 없다."
+  },
+  "o": {
+   "en": "There is gravity in space.",
+   "ko": "우주에도 중력이 있다."
+  },
+  "why": {
+   "en": "There is gravity in space. Astronauts float because they are falling!",
+   "ko": "우주에도 중력이 있어. 비행사들은 떨어지고 있어서 떠 있는 거야!"
+  }
+ },
+ {
+  "ep": 44,
+  "title": "Is the Sun Really Yellow?",
+  "x": {
+   "en": "The Sun is yellow.",
+   "ko": "해는 노란색이다."
+  },
+  "o": {
+   "en": "Sunlight is white.",
+   "ko": "햇빛은 흰빛이다."
+  },
+  "why": {
+   "en": "Sunlight is white. The air makes it look yellow!",
+   "ko": "햇빛은 흰빛이야. 공기 때문에 노랗게 보여!"
+  }
+ },
+ {
+  "ep": 45,
+  "title": "Do Watermelon Seeds Grow in Your Tummy?",
+  "x": {
+   "en": "Watermelon seeds grow in your tummy.",
+   "ko": "수박씨를 삼키면 배 속에서 자란다."
+  },
+  "o": {
+   "en": "A seed can't grow in your tummy.",
+   "ko": "씨는 배 속에서 자라지 못한다."
+  },
+  "why": {
+   "en": "A seed can't grow in your tummy. It just passes through!",
+   "ko": "씨는 배 속에서 자라지 못해. 그냥 지나갈 뿐이야!"
+  }
+ },
+ {
+  "ep": 46,
+  "title": "Do Penguins Live at the North Pole?",
+  "x": {
+   "en": "Penguins live at the North Pole.",
+   "ko": "펭귄은 북극에 산다."
+  },
+  "o": {
+   "en": "Wild penguins live in the south.",
+   "ko": "야생 펭귄은 남쪽에 산다."
+  },
+  "why": {
+   "en": "Wild penguins live in the south, not at the North Pole!",
+   "ko": "야생 펭귄은 남쪽에 살아. 북극이 아니야!"
+  }
+ },
+ {
+  "ep": 47,
+  "title": "Did People Think the Earth Was Flat?",
+  "x": {
+   "en": "In Columbus's time, people thought the Earth was flat.",
+   "ko": "콜럼버스 시대 사람들은 지구가 평평하다고 생각했다."
+  },
+  "o": {
+   "en": "In Columbus's time, people knew the Earth was round.",
+   "ko": "콜럼버스 시대 사람들은 지구가 둥근 걸 알았다."
+  },
+  "why": {
+   "en": "In Columbus's time, people knew the Earth was round. They argued about its size!",
+   "ko": "콜럼버스 시대 사람들은 지구가 둥근 걸 알았어. 다툰 건 크기였어!"
+  }
+ },
+ {
+  "ep": 48,
+  "title": "Do We Have Only Five Senses?",
+  "x": {
+   "en": "We have only five senses.",
+   "ko": "우리 감각은 다섯 개뿐이다."
+  },
+  "o": {
+   "en": "We have more than five senses.",
+   "ko": "우리 감각은 다섯 개보다 많다."
+  },
+  "why": {
+   "en": "We have more than five senses, like balance and knowing where your body is!",
+   "ko": "우리 감각은 다섯 개보다 많아. 균형 감각, 몸의 위치 감각처럼!"
+  }
+ },
+ {
+  "ep": 49,
+  "title": "Is a Tomato a Vegetable?",
+  "x": {
+   "en": "In science, a tomato is a vegetable.",
+   "ko": "과학에서 토마토는 채소다."
+  },
+  "o": {
+   "en": "In science, a tomato is a fruit.",
+   "ko": "과학에서 토마토는 열매다."
+  },
+  "why": {
+   "en": "In science, a tomato is a fruit. In the kitchen, we use it like a vegetable!",
+   "ko": "과학에서 토마토는 열매야. 부엌에서는 채소처럼 쓰지!"
+  }
+ },
+ {
+  "ep": 50,
+  "title": "Do Toads Give You Warts?",
+  "x": {
+   "en": "Touching a toad gives you warts.",
+   "ko": "두꺼비를 만지면 사마귀가 생긴다."
+  },
+  "o": {
+   "en": "Toads don't give you warts.",
+   "ko": "두꺼비는 사마귀를 옮기지 않는다."
+  },
+  "why": {
+   "en": "Toads don't give you warts. But always wash your hands after touching one!",
+   "ko": "두꺼비는 사마귀를 옮기지 않아. 그래도 만진 뒤엔 꼭 손을 씻어!"
+  }
+ },
+ {
+  "ep": 51,
+  "title": "Do Lemmings Jump Off Cliffs?",
+  "x": {
+   "en": "Lemmings jump off cliffs together.",
+   "ko": "레밍은 다 같이 절벽에서 뛰어내린다."
+  },
+  "o": {
+   "en": "Lemmings move to find food and space.",
+   "ko": "레밍은 먹이와 자리를 찾아 이동한다."
+  },
+  "why": {
+   "en": "Lemmings don't jump off cliffs together. They move to find food and space!",
+   "ko": "레밍은 다 같이 절벽에서 뛰어내리지 않아. 먹이와 자리를 찾아 떠나는 거야!"
+  }
+ },
+ {
+  "ep": 52,
+  "title": "Can Porcupines Shoot Their Quills?",
+  "x": {
+   "en": "Porcupines can shoot their quills.",
+   "ko": "호저는 가시를 쏠 수 있다."
+  },
+  "o": {
+   "en": "A porcupine's quills come off when you touch them.",
+   "ko": "호저 가시는 닿을 때 빠진다."
+  },
+  "why": {
+   "en": "Porcupines can't shoot their quills. The quills come off when you touch them!",
+   "ko": "호저는 가시를 쏘지 못해. 가시는 닿을 때 빠지는 거야!"
+  }
+ },
+ {
+  "ep": 53,
+  "title": "Are Elephants Scared of Mice?",
+  "x": {
+   "en": "Elephants are scared of mice.",
+   "ko": "코끼리는 쥐를 무서워한다."
+  },
+  "o": {
+   "en": "Elephants avoid bees.",
+   "ko": "코끼리는 벌을 피한다."
+  },
+  "why": {
+   "en": "Elephants aren't scared of mice. They don't like surprises, and they avoid bees!",
+   "ko": "코끼리는 쥐를 무서워하지 않아. 깜짝 놀라는 걸 싫어하고, 벌을 피해!"
+  }
+ },
+ {
+  "ep": 54,
+  "title": "Is Everest the Tallest Mountain?",
+  "x": {
+   "en": "From bottom to top, Everest is the tallest mountain.",
+   "ko": "밑에서 꼭대기까지 재면 에베레스트가 가장 큰 산이다."
+  },
+  "o": {
+   "en": "From bottom to top, Mauna Kea is taller than Everest.",
+   "ko": "밑에서 꼭대기까지 재면 마우나케아가 에베레스트보다 크다."
+  },
+  "why": {
+   "en": "Everest has the highest top. But from bottom to top, Mauna Kea is taller!",
+   "ko": "에베레스트는 꼭대기가 가장 높아. 하지만 밑에서 꼭대기까지는 마우나케아가 더 커!"
+  }
+ },
+ {
+  "ep": 55,
+  "title": "Can a Falling Coin Knock You Out?",
+  "x": {
+   "en": "A coin dropped from a tall building can knock you out.",
+   "ko": "높은 빌딩에서 떨어진 동전에 맞으면 기절한다."
+  },
+  "o": {
+   "en": "Air slows a falling coin down.",
+   "ko": "공기가 떨어지는 동전을 느리게 만든다."
+  },
+  "why": {
+   "en": "Air slows a falling coin, so it won't knock you out. But never drop things from high places!",
+   "ko": "공기가 떨어지는 동전을 늦춰서 기절하지는 않아. 그래도 높은 곳에서 절대 떨어뜨리지 마!"
+  }
+ },
+ {
+  "ep": 56,
+  "title": "Does a Duck's Quack Echo?",
+  "x": {
+   "en": "A duck's quack doesn't echo.",
+   "ko": "오리 꽥꽥 소리는 메아리가 울리지 않는다."
+  },
+  "o": {
+   "en": "A duck's quack does echo.",
+   "ko": "오리 꽥꽥 소리도 메아리가 울린다."
+  },
+  "why": {
+   "en": "A duck's quack does echo. It's just hard to hear!",
+   "ko": "오리 꽥꽥 소리도 메아리가 울려. 잘 안 들릴 뿐이야!"
+  }
+ },
+ {
+  "ep": 57,
+  "title": "Does Reading in Dim Light Hurt Your Eyes?",
+  "x": {
+   "en": "Reading in dim light hurts your eyes forever.",
+   "ko": "어두운 데서 책을 읽으면 눈이 영영 나빠진다."
+  },
+  "o": {
+   "en": "Dim light can make your eyes tired.",
+   "ko": "어두우면 눈이 피곤해질 수 있다."
+  },
+  "why": {
+   "en": "Dim light can make your eyes tired, but it doesn't hurt them forever!",
+   "ko": "어두우면 눈이 피곤할 수는 있지만, 영영 나빠지지는 않아!"
+  }
+ },
+ {
+  "ep": 58,
+  "title": "Can You See the Moon in the Daytime?",
+  "x": {
+   "en": "You can only see the Moon at night.",
+   "ko": "달은 밤에만 보인다."
+  },
+  "o": {
+   "en": "You can see the Moon in the daytime, too.",
+   "ko": "달은 낮에도 보인다."
+  },
+  "why": {
+   "en": "You can see the Moon in the daytime too. Just look up!",
+   "ko": "달은 낮에도 보여. 위를 올려다보기만 해!"
+  }
+ },
+ {
+  "ep": 59,
+  "title": "Do Dogs Sweat Through Their Tongues?",
+  "x": {
+   "en": "Dogs sweat through their tongues.",
+   "ko": "개는 혀로 땀을 흘린다."
+  },
+  "o": {
+   "en": "Dogs pant to cool down.",
+   "ko": "개는 헐떡여서 더위를 식힌다."
+  },
+  "why": {
+   "en": "Dogs don't sweat through their tongues. They pant to cool down!",
+   "ko": "개는 혀로 땀을 흘리지 않아. 헐떡여서 더위를 식혀!"
+  }
+ },
+ {
+  "ep": 60,
+  "title": "Are Raindrops Shaped Like Tears?",
+  "x": {
+   "en": "Raindrops are shaped like tears.",
+   "ko": "빗방울은 눈물 모양이다."
+  },
+  "o": {
+   "en": "Small raindrops are round.",
+   "ko": "작은 빗방울은 둥글다."
+  },
+  "why": {
+   "en": "Small raindrops are round, and big ones look like buns. Not tears!",
+   "ko": "작은 빗방울은 둥글고, 큰 빗방울은 빵 모양이야. 눈물이 아니야!"
+  }
+ },
+ {
+  "ep": 61,
+  "title": "Do Sharks Have to Keep Swimming?",
+  "x": {
+   "en": "All sharks must keep swimming or they die.",
+   "ko": "모든 상어는 계속 헤엄치지 않으면 죽는다."
+  },
+  "o": {
+   "en": "Many sharks can rest.",
+   "ko": "많은 상어는 쉴 수 있다."
+  },
+  "why": {
+   "en": "Some sharks must keep swimming, but many sharks can rest!",
+   "ko": "계속 헤엄쳐야 하는 상어도 있지만, 많은 상어는 쉴 수 있어!"
+  }
+ },
+ {
+  "ep": 62,
+  "title": "Do Elephants Drink Through Their Trunks?",
+  "x": {
+   "en": "Elephants drink water through their trunks like a straw.",
+   "ko": "코끼리는 코를 빨대처럼 써서 물을 마신다."
+  },
+  "o": {
+   "en": "An elephant sprays water from its trunk into its mouth.",
+   "ko": "코끼리는 코에 담은 물을 입에 뿜어 넣는다."
+  },
+  "why": {
+   "en": "An elephant fills its trunk with water, then sprays it into its mouth!",
+   "ko": "코끼리는 코에 물을 담았다가 입에 뿜어 넣어!"
+  }
+ },
+ {
+  "ep": 63,
+  "title": "Do Fish Sleep?",
+  "x": {
+   "en": "Fish never sleep.",
+   "ko": "물고기는 절대 자지 않는다."
+  },
+  "o": {
+   "en": "Fish do sleep, in their own way.",
+   "ko": "물고기도 나름대로 잔다."
+  },
+  "why": {
+   "en": "Fish do sleep, in their own way. Most keep their eyes open!",
+   "ko": "물고기도 나름대로 자. 대부분 눈을 뜬 채로!"
+  }
+ },
+ {
+  "ep": 64,
+  "title": "Do Plants Eat Soil?",
+  "x": {
+   "en": "Plants eat soil.",
+   "ko": "식물은 흙을 먹는다."
+  },
+  "o": {
+   "en": "Plants make their own food with sunlight.",
+   "ko": "식물은 햇빛으로 자기 양분을 만든다."
+  },
+  "why": {
+   "en": "Plants don't eat soil. They make their own food with sunlight!",
+   "ko": "식물은 흙을 먹지 않아. 햇빛으로 자기 양분을 만들어!"
+  }
+ },
+ {
+  "ep": 65,
+  "title": "Do Butterflies Taste With Their Feet?",
+  "x": {
+   "en": "Butterflies can only taste with their mouths.",
+   "ko": "나비는 입으로만 맛을 본다."
+  },
+  "o": {
+   "en": "A butterfly can taste with its feet.",
+   "ko": "나비는 발로 맛을 볼 수 있다."
+  },
+  "why": {
+   "en": "A butterfly can taste a flower with its feet!",
+   "ko": "나비는 발로 꽃 맛을 볼 수 있어!"
+  }
+ },
+ {
+  "ep": 66,
+  "title": "Can a Turtle Crawl Out of Its Shell?",
+  "x": {
+   "en": "A turtle can crawl out of its shell.",
+   "ko": "거북은 등딱지에서 기어 나올 수 있다."
+  },
+  "o": {
+   "en": "A turtle's shell is part of its body.",
+   "ko": "거북 등딱지는 몸의 한 부분이다."
+  },
+  "why": {
+   "en": "A turtle's shell is part of its body. It can never crawl out!",
+   "ko": "거북 등딱지는 몸의 한 부분이야. 절대 기어 나올 수 없어!"
+  }
+ },
+ {
+  "ep": 67,
+  "title": "Is a Starfish a Fish?",
+  "x": {
+   "en": "A starfish is a fish.",
+   "ko": "불가사리는 물고기다."
+  },
+  "o": {
+   "en": "A starfish is not a fish.",
+   "ko": "불가사리는 물고기가 아니다."
+  },
+  "why": {
+   "en": "A starfish is not a fish. It's a sea star!",
+   "ko": "불가사리는 물고기가 아니야. 바다의 별이야!"
+  }
+ },
+ {
+  "ep": 68,
+  "title": "Are Koalas Bears?",
+  "x": {
+   "en": "Koalas are bears.",
+   "ko": "코알라는 곰이다."
+  },
+  "o": {
+   "en": "A koala's baby grows in a pouch.",
+   "ko": "코알라 아기는 주머니에서 자란다."
+  },
+  "why": {
+   "en": "A koala is not a bear. Its baby grows in a pouch!",
+   "ko": "코알라는 곰이 아니야. 아기는 주머니에서 자라!"
+  }
+ },
+ {
+  "ep": 69,
+  "title": "Are Snakes Slimy?",
+  "x": {
+   "en": "Snakes are slimy.",
+   "ko": "뱀은 미끈미끈하다."
+  },
+  "o": {
+   "en": "A snake's scales are dry and smooth.",
+   "ko": "뱀 비늘은 마르고 매끈하다."
+  },
+  "why": {
+   "en": "Snakes are not slimy. Their scales are dry and smooth!",
+   "ko": "뱀은 미끈하지 않아. 비늘은 마르고 매끈해!"
+  }
+ },
+ {
+  "ep": 70,
+  "title": "Do Giraffes Have More Neck Bones?",
+  "x": {
+   "en": "A giraffe has more neck bones than you.",
+   "ko": "기린은 사람보다 목뼈가 많다."
+  },
+  "o": {
+   "en": "A giraffe has seven neck bones, just like you.",
+   "ko": "기린 목뼈는 사람처럼 일곱 개다."
+  },
+  "why": {
+   "en": "A giraffe has seven neck bones, just like you!",
+   "ko": "기린 목뼈는 우리처럼 일곱 개야!"
+  }
+ },
+ {
+  "ep": 71,
+  "title": "Do Rabbits Live on Carrots?",
+  "x": {
+   "en": "A rabbit's main food is carrots.",
+   "ko": "토끼의 주식은 당근이다."
+  },
+  "o": {
+   "en": "Rabbits eat mostly hay and grass.",
+   "ko": "토끼는 주로 건초와 풀을 먹는다."
+  },
+  "why": {
+   "en": "Rabbits eat mostly hay and grass. Carrots are just a treat!",
+   "ko": "토끼는 거의 건초와 풀을 먹어. 당근은 간식일 뿐이야!"
+  }
+ }
+]

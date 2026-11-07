@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nabi's Playroom</title>
+<link rel="stylesheet" href="common.css">
+<style>
+body { overflow: auto; padding: calc(env(safe-area-inset-top, 0px) + 28px) 16px calc(env(safe-area-inset-bottom, 0px) + 28px); }
+.wrap { max-width: 980px; margin: 0 auto; }
+header { text-align: center; }
+header h1 { margin: 0; font-size: clamp(34px, 7vw, 56px); color: var(--navy); line-height: 1; letter-spacing: -.01em; }
+header p { margin: 10px 0 0; color: var(--dim); font-size: 15px; word-break: keep-all; }
+.cast { display: flex; justify-content: center; align-items: flex-end; gap: 6px; margin-top: 14px; }
+.cast img { height: 110px; }
+.games { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 26px; }
+.game { background: var(--paper); border-radius: 22px; padding: 18px 18px 20px; text-decoration: none; color: var(--ink); display: grid; grid-template-rows: auto auto 1fr auto; gap: 6px; box-shadow: 0 6px 0 rgba(29, 37, 80, .08); transition: transform .12s; }
+.game:hover { transform: translateY(-3px); }
+.game .art { height: 150px; border-radius: 14px; display: grid; place-items: end center; overflow: hidden; }
+.game .art img { height: 140px; }
+.game h2 { margin: 8px 0 0; font-size: 24px; }
+.game h2 small { display: block; font-size: 14px; color: var(--dim); font-weight: 500; margin-top: 4px; }
+.game p { margin: 4px 0 0; font-size: 14px; color: var(--dim); line-height: 1.55; word-break: keep-all; }
+.game .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.game .meta span { font-size: 12px; background: #edf3fb; color: var(--navy); padding: 4px 10px; border-radius: 99px; }
+.a1 { background: #ffe9c7; } .a2 { background: #f3e6cf; } .a3 { background: #d8eefc; }
+footer { text-align: center; margin-top: 28px; font-size: 12px; color: var(--dim); line-height: 1.7; }
+</style>
+</head>
+<body>
+<style>
+.sitebar{position:fixed;top:12px;left:12px;z-index:99999;display:flex;gap:6px;font:13px/1 "Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+.sitebar a{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;
+  background:rgba(255,255,255,.94);color:#17233b;text-decoration:none;font-weight:700;
+  border:1px solid rgba(23,35,59,.12);box-shadow:0 3px 10px rgba(0,0,0,.18);transition:transform .15s,box-shadow .15s}
+.sitebar a:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.24)}
+.sitebar a.ghost{background:rgba(255,255,255,.72);font-weight:600;color:#53617d}
+@media (max-width:520px){.sitebar{top:8px;left:8px;font-size:12px}.sitebar a{padding:7px 11px}}
+
+</style>
+<nav class="sitebar" aria-label="사이트 이동">
+  <a href="../" aria-label="웹게임 놀이터 목록으로 이동"><span aria-hidden="true">←</span> 놀이터</a>
+  <a class="ghost" href="https://yeonsung-ac.github.io/" aria-label="홈페이지로 이동">홈</a>
+</nav>
+
+<div class="wrap">
+  <header>
+    <h1>Nabi's Playroom</h1>
+    <p>이박사 · 나비 · 헤이즐과 함께하는 쉬운 게임 세 가지</p>
+    <div class="cast"><img src="img/drlee.png" alt="이박사"><img src="img/nabi.png" alt="나비" style="height:84px"><img src="img/hazel.png" alt="헤이즐"></div>
+  </header>
+  <div class="games">
+    <a class="game" href="feed.html">
+      <div class="art a1"><img src="img/nabi.png" alt=""></div>
+      <h2>Feed Nabi<small>나비 밥 주기</small></h2>
+      <p>헤이즐이 떨어뜨리는 생선·우유·쿠키를 받고, 양말·장화는 피해요.</p>
+      <div class="meta"><span>좌우로 움직이기</span><span>60초</span></div>
+    </a>
+    <a class="game" href="stack.html">
+      <div class="art a2"><img src="img/drlee.png" alt=""></div>
+      <h2>Stack the Books<small>이박사의 책 쌓기</small></h2>
+      <p>왔다 갔다 하는 책을 눌러 떨어뜨려 높이 쌓아요. 꼭대기엔 나비가!</p>
+      <div class="meta"><span>누르기 하나</span><span>끝없이</span></div>
+    </a>
+    <a class="game" href="copy.html">
+      <div class="art a3"><img src="img/hazel.png" alt=""></div>
+      <h2>Copy Dr. Lee<small>이박사 따라 하기</small></h2>
+      <p>이박사의 동작 순서를 기억했다가 헤이즐이 똑같이 따라 하게 해요.</p>
+      <div class="meta"><span>단추 4개</span><span>기억력</span></div>
+    </a>
+  </div>
+  <footer>Produced by 네오픽스코리아 · Directed by Lee, Hyun Goo<br>Made in collaboration with AI · Assistant Director: Dan</footer>
+</div>
+</body>
+</html>

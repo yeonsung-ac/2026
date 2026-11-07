@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Light Sword Run</title>
+<link rel="stylesheet" href="common.css">
+<style>
+:root { --hero: #4fc3ff; }
+#select { overflow: auto; align-items: start; }
+#select .card { width: min(720px, 100%); margin: auto 0; }
+.cast { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 16px; }
+.pick { background: rgba(255, 255, 255, .08); border-radius: 16px; padding: 8px 4px 10px; color: #fff; display: grid; justify-items: center; gap: 4px; border: 3px solid transparent; transition: transform .12s; }
+.pick:hover { transform: translateY(-2px); }
+.pick[aria-pressed="true"] { border-color: var(--hero); background: rgba(255, 255, 255, .16); }
+.swords { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.swords span { font-size: 14px; color: #fff; font-weight: 700; margin-right: 2px; }
+.sw { width: 44px; height: 44px; border-radius: 99px; background: rgba(255, 255, 255, .08); border: 3px solid transparent; display: grid; place-items: center; }
+.sw i { width: 8px; height: 28px; border-radius: 9px; background: var(--c); box-shadow: 0 0 10px var(--c), 0 0 3px #fff inset; transform: rotate(35deg); }
+.sw[aria-pressed="true"] { border-color: var(--c); background: rgba(255, 255, 255, .18); }
+.pick img { height: 92px; width: 100%; object-fit: contain; }
+.pick b { font-size: 15px; }
+.pick small { font-size: 12px; color: #c9d0f0; }
+.rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; text-align: left; }
+.rules div { background: rgba(255, 255, 255, .07); border-radius: 12px; padding: 10px 12px; font-size: 13px; line-height: 1.5; color: #c9d0f0; word-break: keep-all; }
+.rules div b { display: block; color: #fff; font-size: 14px; margin-bottom: 2px; }
+.rules img { width: 30px; height: 30px; float: right; margin: -2px -4px 0 4px; }
+.kings { display: flex; justify-content: center; gap: 10px; margin-top: 12px; }
+.kings figure { margin: 0; text-align: center; font-size: 12px; color: #c9d0f0; }
+.kings img { height: 64px; display: block; margin: 0 auto 2px; }
+#go { background: var(--hero); }
+body:has(#select:not(.hidden)) .bar { display: none; }
+@media (max-width: 560px) {
+  .cast { grid-template-columns: repeat(3, 1fr); }
+  .rules { grid-template-columns: 1fr; }
+  .pick img { height: 76px; }
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<script src="common.js"></script>
+<script src="game.js"></script>
+</head>
+<body>
+<style>
+.sitebar{position:fixed;top:12px;left:12px;z-index:99999;display:flex;gap:6px;font:13px/1 "Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+.sitebar a{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;
+  background:rgba(255,255,255,.94);color:#17233b;text-decoration:none;font-weight:700;
+  border:1px solid rgba(23,35,59,.12);box-shadow:0 3px 10px rgba(0,0,0,.18);transition:transform .15s,box-shadow .15s}
+.sitebar a:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.24)}
+.sitebar a.ghost{background:rgba(255,255,255,.72);font-weight:600;color:#53617d}
+@media (max-width:520px){.sitebar{top:8px;left:8px;font-size:12px}.sitebar a{padding:7px 11px}}
+.sitebar{display:none}body:has(#select:not(.hidden)) .sitebar,body:has(#over:not(.hidden)) .sitebar,body:has(#clear:not(.hidden)) .sitebar{display:flex}
+</style>
+<nav class="sitebar" aria-label="사이트 이동">
+  <a href="../" aria-label="웹게임 놀이터 목록으로 이동"><span aria-hidden="true">←</span> 놀이터</a>
+  <a class="ghost" href="https://yeonsung-ac.github.io/" aria-label="홈페이지로 이동">홈</a>
+</nav>
+
+<main></main>
+<div class="bar">
+  <span class="chip" id="hearts" style="color:#ff8a8a">♥♥♥</span><span class="grow"></span>
+  <span class="chip" id="stg">1/3 바다</span>
+  <span class="chip">점수 <b id="score">0</b></span>
+</div>
+
+<div id="select" class="screen">
+  <div class="card">
+    <h1>Light Sword Run<small>빛의 검으로 길을 열어요</small></h1>
+    <div class="cast" role="group" aria-label="캐릭터 고르기">
+      <button class="pick" data-k="victor"><img src="img/sel_victor.png" alt=""><b>Victor</b><small>빅터</small></button>
+      <button class="pick" data-k="grace"><img src="img/sel_grace.png" alt=""><b>Grace</b><small>그레이스</small></button>
+      <button class="pick" data-k="nabi"><img src="img/sel_nabi.png" alt=""><b>Nabi</b><small>나비</small></button>
+      <button class="pick" data-k="hazel"><img src="img/sel_hazel.png" alt=""><b>Hazel</b><small>헤이즐</small></button>
+      <button class="pick" data-k="drlee"><img src="img/sel_drlee.png" alt=""><b>Dr. Lee</b><small>이박사</small></button>
+    </div>
+    <div class="swords" role="group" aria-label="칼 색 고르기">
+      <span>칼 색</span>
+      <button class="sw" data-c="white" style="--c:#ffffff" aria-label="흰색"><i></i></button>
+      <button class="sw" data-c="green" style="--c:#4dff7a" aria-label="녹색"><i></i></button>
+      <button class="sw" data-c="blue" style="--c:#4fb8ff" aria-label="파란색"><i></i></button>
+      <button class="sw" data-c="red" style="--c:#ff4a4a" aria-label="빨간색"><i></i></button>
+      <button class="sw" data-c="yellow" style="--c:#ffd23f" aria-label="노란색"><i></i></button>
+    </div>
+    <div class="rules">
+      <div><b>Swipe to cut</b>날아오는 것을 손가락이나 마우스로 그어서 잘라요. 부딪히면 하트가 줄어요.</div>
+      <div><img src="sprites/p_bomb.webp" alt=""><b>Don't cut bombs!</b>폭탄을 자르면 바로 끝나요. 그냥 두면 땅에 떨어져 꺼져요.</div>
+      <div><b>Beat the King</b>왕마다 던지는 게 달라요. 점선 동그라미가 뜨면 그때 왕을 그어요!</div>
+    </div>
+    <div class="kings">
+      <figure><img src="img/king_crab.png" alt="">1 바다 · 게왕</figure>
+      <figure><img src="img/king_snake.png" alt="">2 정글 · 뱀왕</figure>
+      <figure><img src="img/king_owl.png" alt="">3 하늘 성 · 부엉이왕</figure>
+    </div>
+    <div class="btns"><button class="btn" id="go">Start · 시작</button></div>
+    <div class="credit">Produced by 네오픽스코리아 · Directed by Lee, Hyun Goo<br>Made in collaboration with AI · Assistant Director: Dan</div>
+  </div>
+</div>
+
+<div id="over" class="screen hidden">
+  <div class="card">
+    <h1 id="o-title">Boom!<small>폭탄을 잘랐어요</small></h1>
+    <div class="big" id="o-score">0</div>
+    <div class="best" id="o-best"></div>
+    <div class="btns">
+      <button class="btn" id="again">Play again · 다시</button>
+      <button class="btn ghost" id="pickAgain">캐릭터 바꾸기</button>
+    </div>
+  </div>
+</div>
+
+<div id="clear" class="screen hidden">
+  <div class="card">
+    <img class="who" id="c-who" src="img/sel_victor.png" alt="">
+    <h1>You did it!<small>왕 셋이 모두 친구가 됐어요</small></h1>
+    <div class="big" id="c-score">0</div>
+    <div class="best" id="c-best"></div>
+    <div class="btns">
+      <button class="btn" id="again2">Play again · 다시</button>
+      <button class="btn ghost" id="pickAgain2">캐릭터 바꾸기</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

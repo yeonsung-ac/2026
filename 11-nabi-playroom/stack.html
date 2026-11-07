@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stack the Books</title>
+<link rel="stylesheet" href="common.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<script src="common.js"></script>
+</head>
+<body>
+<main></main>
+<div class="bar">
+  <a href="index.html">◀ 게임 고르기</a><span class="grow"></span>
+  <span class="chip">책 <b id="score">0</b>권</span>
+</div>
+
+<div id="start" class="screen">
+  <div class="card">
+    <img class="who" src="img/drlee.png" alt="">
+    <h1>Stack the Books<small>이박사의 책 쌓기</small></h1>
+    <p>책이 왔다 갔다 해요. <b>눌러서 떨어뜨리세요.</b><br>삐져나온 부분은 떨어져요. 꼭대기의 나비를 높이높이!</p>
+    <p style="font-size:13px">화면 누르기 · 스페이스바</p>
+    <div class="btns"><button class="btn" id="go">Start · 시작</button></div>
+  </div>
+</div>
+
+<div id="over" class="screen hidden">
+  <div class="card">
+    <img class="who" src="img/nabi.png" alt="">
+    <h1 id="o-title">Oops!<small>책이 떨어졌어요</small></h1>
+    <div class="big" id="o-score">0</div>
+    <div class="best" id="o-best"></div>
+    <div class="btns">
+      <button class="btn" id="again">Play again · 다시</button>
+      <a class="btn ghost" href="index.html">다른 게임</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORDS = ["Moon", "Bats", "Stars", "Fish", "Bees", "Owls", "Sun", "Rain", "Frogs", "Seeds", "Sharks", "Koalas", "Snakes", "Earth", "Plants", "Space"];
+const COLORS = ["#ef6f6c", "#f6b84a", "#5fbf7a", "#4f9de0", "#9a7be0", "#ee8fb8", "#3fb8b0", "#f08a4b"];
+let wordOff = 0, state = "ready", stack = [], cur = null, chips = [], cam = 0, score = 0, perfect = 0;
+let lee = { anim: "idle", t: 0 }, nabi = { jump: 0, fall: null };
+
+function preload() { loadSprites(["nabi", "drlee_idle", "drlee_clap", "drlee_surprise", "drlee_nod"]); }
+function setup() {
+  createCanvas(windowWidth, windowHeight).parent(document.querySelector("main"));
+  textFont("GmarketSans"); textAlign(CENTER, CENTER);
+  $("go").onclick = start; $("again").onclick = start;
+  reset();
+}
+function windowResized() { resizeCanvas(windowWidth, windowHeight); reset(); }
+
+const BH = () => Math.max(U() * 7, height * 0.04);                 // 책 두께
+const DESK = () => height - U() * 16;     // 책상 윗면(카메라 0일 때)
+function reset() {
+  const w = Math.min(width * 0.55, U() * 60);
+  stack = [{ x: width / 2 - w / 2, w, c: "#8a5a3a", word: "" }];
+  cur = null; chips = []; cam = 0; score = 0; perfect = 0; nabi.fall = null;
+  $("score").textContent = 0;
+}
+function start() {
+  tone([[1, 0.01, "sine", 0.0001]]);
+  reset(); wordOff = Math.floor(Math.random() * WORDS.length); state = "play"; show("start", false); show("over", false);
+  lee.anim = "idle"; spawn();
+}
+function spawn() {
+  const top = stack[stack.length - 1];
+  const fromLeft = stack.length % 2 === 0;
+  cur = { x: fromLeft ? -top.w : width, w: top.w, dir: fromLeft ? 1 : -1, c: COLORS[stack.length % COLORS.length], word: WORDS[(stack.length * 7 + wordOff) % WORDS.length],
+          speed: width * (0.32 + Math.min(stack.length, 30) * 0.018) };
+}
+function drop() {
+  if (state !== "play" || !cur) return;
+  const top = stack[stack.length - 1];
+  const left = Math.max(cur.x, top.x), right = Math.min(cur.x + cur.w, top.x + top.w);
+  const y = stack.length;
+  if (right <= left) {             // 하나도 안 겹침
+    chips.push({ x: cur.x, w: cur.w, y, c: cur.c, vy: 0, vx: cur.dir * 60, rot: 0 });
+    cur = null; return lose();
+  }
+  if (Math.abs(cur.x - top.x) < U() * 1.2) {   // 거의 딱 맞음 → 그대로
+    stack.push({ x: top.x, w: top.w, c: cur.c, word: cur.word });
+    perfect++; SFX.win(); lee.anim = "clap"; lee.t = 0;
+  } else {
+    if (cur.x < left) chips.push({ x: cur.x, w: left - cur.x, y, c: cur.c, vy: 0, vx: -80, rot: 0 });
+    if (cur.x + cur.w > right) chips.push({ x: right, w: cur.x + cur.w - right, y, c: cur.c, vy: 0, vx: 80, rot: 0 });
+    stack.push({ x: left, w: right - left, c: cur.c, word: cur.word });
+    SFX.pop();
+    if (stack.length % 5 === 1) { lee.anim = "nod"; lee.t = 0; }
+  }
+  score = stack.length - 1; $("score").textContent = score;
+  nabi.jump = 0.35;
+  spawn();
+}
+function lose() {
+  state = "falling"; SFX.bad(); lee.anim = "surprise"; lee.t = 0;
+  const top = stack[stack.length - 1];
+  nabi.fall = { x: top.x + top.w / 2, y: stack.length, vy: -U() * 30, rot: 0 };
+  setTimeout(() => {
+    state = "over";
+    $("o-score").textContent = score;
+    $("o-best").textContent = "최고 " + setBest("stack", score) + "권" + (perfect ? ` · 딱 맞춤 ${perfect}번` : "");
+    $("o-title").innerHTML = score >= 20 ? "Amazing!<small>책 탑이 엄청 높아요!</small>" : score >= 10 ? "Great!<small>잘 쌓았어요!</small>" : "Oops!<small>한 번 더 해 볼까요?</small>";
+    show("over");
+  }, 1300);
+}
+function keyPressed() { if (key === " ") { drop(); return false; } }
+function mousePressed(e) { if (e && e.target && e.target.tagName !== "CANVAS") return; drop(); }
+
+const sy = (i) => DESK() - (i + 1) * BH() + cam;   // i번째 책의 화면 y
+
+function draw() {
+  const dt = Math.min(deltaTime / 1000, 0.05), t = millis() / 1000;
+  if (state === "play" && cur) {
+    cur.x += cur.dir * cur.speed * dt;
+    if (cur.x > width - cur.w * 0.15) cur.dir = -1;
+    if (cur.x < -cur.w * 0.85) cur.dir = 1;
+  }
+  // 꼭대기가 화면 40% 높이에 오도록 카메라를 올린다
+  const want = Math.max(0, stack.length * BH() - (DESK() - height * 0.42));
+  cam = lerp(cam, want, Math.min(1, dt * 4));
+  lee.t += dt; if (lee.anim !== "idle" && lee.t > 1.0) lee.anim = "idle";
+  nabi.jump -= dt;
+
+  // 배경: 벽과 책장 무늬 (카메라 따라 살짝)
+  background("#f3e6cf");
+  noStroke();
+  for (let i = 0; i < 14; i++) { fill(i % 2 ? "#ead8b8" : "#efdfc3"); rect(0, ((i * U() * 22 + cam * 0.3) % (height + U() * 22)) - U() * 22, width, U() * 11); }
+  // 책상
+  const dy = DESK() + cam;
+  fill("#8a5a3a"); rect(width * 0.08, dy, width * 0.84, U() * 3, 6);
+  fill("#6e4528"); rect(width * 0.14, dy + U() * 3, U() * 3, height); rect(width * 0.86 - U() * 3, dy + U() * 3, U() * 3, height);
+  // 쌓인 책
+  for (let i = 1; i < stack.length; i++) book(stack[i], sy(i - 1));
+  // 바닥 책(받침)
+  const b0 = stack[0]; fill(b0.c); rect(b0.x, dy - BH() * 0.6, b0.w, BH() * 0.6, 4);
+  // 움직이는 책
+  if (cur && state === "play") book(cur, sy(stack.length - 1));
+  // 떨어지는 조각
+  for (const c of chips) {
+    c.vy += height * 2.2 * dt; c.rot += (c.vx > 0 ? 3 : -3) * dt;
+    c.px = (c.px ?? c.x) + c.vx * dt; c.py = (c.py ?? sy(c.y - 1)) + c.vy * dt;
+    push(); translate(c.px + c.w / 2, c.py + BH() / 2); rotate(c.rot); fill(c.c); rect(-c.w / 2, -BH() / 2, c.w, BH(), 4); pop();
+  }
+  chips = chips.filter((c) => (c.py ?? 0) < height + 200);
+  // 나비: 꼭대기에 앉아 있다가 새 책이 오면 폴짝
+  const nh = U() * 17;
+  if (nabi.fall) {
+    nabi.fall.vy += height * 1.8 * dt; nabi.fall.rot += 6 * dt;
+    nabi.fall.py = (nabi.fall.py ?? sy(nabi.fall.y - 2)) + nabi.fall.vy * dt;
+    drawSprite("nabi", nabi.fall.x, nabi.fall.py, nh, { frame: 8, rot: nabi.fall.rot });
+  } else {
+    const top = stack[stack.length - 1];
+    const ty = stack.length > 1 ? sy(stack.length - 2) : dy - BH() * 0.6;
+    const j = nabi.jump > 0 ? Math.sin((0.35 - nabi.jump) / 0.35 * Math.PI) * U() * 6 : 0;
+    drawSprite("nabi", top.x + top.w / 2, ty - j, nh, { frame: nabi.jump > 0 ? 6 : 0 });
+  }
+  // 이박사: 오른쪽 아래, 늘 보인다
+  const lh = Math.min(U() * 36, height * 0.4);
+  drawSprite("drlee_" + lee.anim, width - lh * 0.42, height - U() * 2, lh, { t: lee.t, loop: lee.anim === "idle" });
+  if (lee.anim === "clap") bubble("Perfect!", width - lh * 0.42, height - lh * 0.95);
+  if (lee.anim === "surprise") bubble("Oh no!", width - lh * 0.42, height - lh * 0.95);
+}
+
+function book(b, y) {
+  fill(b.c); rect(b.x, y, b.w, BH(), 4);
+  fill(255, 255, 255, 60); rect(b.x, y + BH() * 0.18, b.w, BH() * 0.12);
+  fill(0, 0, 0, 30); rect(b.x, y + BH() * 0.7, b.w, BH() * 0.12);
+  if (b.word && b.w > U() * 14) { fill(255); textSize(BH() * 0.42); textStyle(BOLD); text(b.word, b.x + b.w / 2, y + BH() * 0.5); }
+}
+function bubble(s, x, y) {
+  textSize(U() * 4); textStyle(BOLD);
+  const w = textWidth(s) + U() * 5, h = U() * 7;
+  fill(255); rect(x - w / 2, y - h, w, h, 99); triangle(x - U(), y - 1, x + U(), y - 1, x, y + U() * 1.5);
+  fill("#1d2550"); text(s, x, y - h / 2);
+}
+</script>
+</body>
+</html>

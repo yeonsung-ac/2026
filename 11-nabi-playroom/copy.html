@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Copy Dr. Lee</title>
+<link rel="stylesheet" href="common.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+<script src="common.js"></script>
+<style>
+#pad { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); width: min(560px, calc(100% - 24px)); display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; z-index: 5; }
+#pad button { height: 78px; border-radius: 18px; color: #fff; font-size: 19px; font-weight: 700; display: grid; place-content: center; gap: 4px; box-shadow: 0 6px 0 rgba(0, 0, 0, .18); transition: transform .06s, filter .1s; }
+#pad button small { font-size: 12px; font-weight: 500; opacity: .9; }
+#pad button:active, #pad button.lit { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0, 0, 0, .18); filter: brightness(1.25); }
+#pad button[disabled] { opacity: .55; cursor: default; }
+#pad button.lit { opacity: 1; }
+#pad .m0 { background: #ef6f6c; } #pad .m1 { background: #f2a93b; } #pad .m2 { background: #4f9de0; } #pad .m3 { background: #5fbf7a; }
+@media (max-width: 480px) { #pad { gap: 6px; } #pad button { height: 66px; font-size: 16px; } }
+</style>
+</head>
+<body>
+<main></main>
+<div class="bar">
+  <a href="index.html">◀ 게임 고르기</a><span class="grow"></span>
+  <span class="chip">단계 <b id="score">0</b></span>
+</div>
+<div id="pad" class="hidden">
+  <button class="m0" data-i="0" disabled>Clap<small>박수</small></button>
+  <button class="m1" data-i="1" disabled>Wave<small>손 흔들기</small></button>
+  <button class="m2" data-i="2" disabled>Bow<small>인사</small></button>
+  <button class="m3" data-i="3" disabled>Point<small>가리키기</small></button>
+</div>
+
+<div id="start" class="screen">
+  <div class="card">
+    <img class="who" src="img/drlee.png" alt="">
+    <h1>Copy Dr. Lee<small>이박사 따라 하기</small></h1>
+    <p>이박사가 동작을 차례로 보여 줘요.<br><b>같은 순서로 단추를 누르면</b> 헤이즐이 따라 해요.<br>한 단계마다 동작이 하나씩 늘어나요!</p>
+    <div class="btns"><button class="btn" id="go">Start · 시작</button></div>
+  </div>
+</div>
+
+<div id="over" class="screen hidden">
+  <div class="card">
+    <img class="who" src="img/hazel.png" alt="">
+    <h1 id="o-title">Oops!<small>순서가 달라요</small></h1>
+    <div class="big" id="o-score">0</div>
+    <div class="best" id="o-best"></div>
+    <div class="btns">
+      <button class="btn" id="again">Play again · 다시</button>
+      <a class="btn ghost" href="index.html">다른 게임</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const MOVES = [
+  { k: "clap", en: "Clap!" }, { k: "wave_R", en: "Wave!" }, { k: "bow", en: "Bow!" }, { k: "point_R", en: "Point!" },
+];
+let state = "ready", seq = [], step = 0, timer = 0, lv = 0;
+let lee = { anim: "idle", t: 0, say: "" }, hz = { anim: "idle", t: 0, say: "" }, nabiT = 0, nabiHappy = 0;
+const btns = [...document.querySelectorAll("#pad button")];
+
+function preload() {
+  loadSprites(["nabi", ...["idle", "clap", "wave_R", "bow", "point_R", "surprise", "nod"].map((a) => "drlee_" + a),
+               ...["idle", "clap", "wave_R", "bow", "point_R", "surprise"].map((a) => "hazel_" + a)]);
+}
+function setup() {
+  createCanvas(windowWidth, windowHeight).parent(document.querySelector("main"));
+  textFont("GmarketSans"); textAlign(CENTER, CENTER);
+  $("go").onclick = start; $("again").onclick = start;
+  btns.forEach((b) => b.onclick = () => press(+b.dataset.i));
+}
+function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+function keyPressed() { const i = "1234".indexOf(key); if (i >= 0) press(i); }
+
+function act(who, anim, say = "") { who.anim = anim; who.t = 0; who.say = say; }
+function start() {
+  tone([[1, 0.01, "sine", 0.0001]]);
+  seq = [randInt(), randInt()]; lv = 0; $("score").textContent = 0;
+  show("start", false); show("over", false); show("pad");
+  act(hz, "idle"); nextShow();
+}
+const randInt = () => Math.floor(Math.random() * 4);
+const beat = () => Math.max(0.6, 1.05 - lv * 0.05);   // 단계가 오를수록 조금씩 빨라진다
+
+function nextShow() { state = "show"; step = -1; timer = 0.9; setPad(false); act(lee, "idle", "Watch me!"); }
+function setPad(on) { btns.forEach((b) => b.disabled = !on); }
+function flash(i) { const b = btns[i]; b.classList.add("lit"); setTimeout(() => b.classList.remove("lit"), 260); }
+
+function press(i) {
+  if (state !== "input") return;
+  SFX.note(i); flash(i);
+  act(hz, MOVES[i].k, MOVES[i].en);
+  if (i !== seq[step]) return fail();
+  step++;
+  if (step >= seq.length) {
+    state = "wait"; setPad(false); lv++; $("score").textContent = lv;
+    nabiHappy = 1.2;
+    setTimeout(() => { SFX.win(); act(lee, "clap", lv % 3 === 0 ? "Excellent!" : "Good job!"); }, 500);
+    setTimeout(() => { seq.push(randInt()); nextShow(); }, 1900);
+  }
+}
+function fail() {
+  state = "wait"; setPad(false);
+  setTimeout(() => { SFX.bad(); act(hz, "surprise", "Oops!"); act(lee, "surprise", "Not that one!"); }, 350);
+  setTimeout(() => {
+    state = "over"; show("pad", false);
+    $("o-score").textContent = lv;
+    $("o-best").textContent = "최고 " + setBest("copy", lv) + "단계";
+    $("o-title").innerHTML = lv >= 8 ? "Super memory!<small>기억력 최고!</small>" : lv >= 4 ? "Great!<small>잘 따라 했어요!</small>" : "Oops!<small>순서가 달라요</small>";
+    show("over");
+  }, 1600);
+}
+
+function draw() {
+  const dt = Math.min(deltaTime / 1000, 0.05);
+  lee.t += dt; hz.t += dt; nabiT += dt; nabiHappy -= dt;
+  if (state === "show") {
+    timer -= dt;
+    if (timer <= 0) {
+      step++;
+      if (step < seq.length) {
+        const m = seq[step]; SFX.note(m); flash(m);
+        act(lee, MOVES[m].k, MOVES[m].en); timer = beat();
+      } else {
+        state = "input"; step = 0; setPad(true);
+        act(lee, "idle", ""); act(hz, "idle", "My turn!");
+      }
+    }
+  }
+  // 동작이 끝나면 서 있기로
+  for (const w of [lee, hz]) if (w.anim !== "idle" && w.t > 0.95) { w.anim = "idle"; }
+  if (lee.say && lee.t > 1.4 && state !== "show") lee.say = "";
+  if (hz.say && hz.t > 1.2) hz.say = "";
+
+  // 무대
+  const g = drawingContext.createLinearGradient(0, 0, 0, height);
+  g.addColorStop(0, "#bfe3fb"); g.addColorStop(1, "#eef8ff");
+  drawingContext.fillStyle = g; noStroke(); rect(0, 0, width, height);
+  const floor = height - Math.max(U() * 24, 120);
+  fill("#cfe6c2"); rect(0, floor, width, height - floor);
+  fill("#b7d8a6"); ellipse(width / 2, floor + U() * 2, width * 1.1, U() * 8);
+  // 사람 크기: 둘이 나란히 들어가게
+  const h = Math.min(height * 0.5, width * (width < height ? 0.6 : 0.48));
+  const lx = width * 0.3, hx = width * 0.7;
+  drawSprite("drlee_" + lee.anim, lx, floor + U() * 2, h, { t: lee.t, fps: 10.5, loop: lee.anim === "idle" });
+  drawSprite("hazel_" + hz.anim, hx, floor + U() * 2, h, { t: hz.t, fps: 10.5, loop: hz.anim === "idle" });
+  label("Dr. Lee", lx, floor + U() * 4.5); label("Hazel", hx, floor + U() * 4.5);
+  if (lee.say) bubble(lee.say, lx, floor - h * 0.92);
+  if (hz.say) bubble(hz.say, hx, floor - h * 0.92);
+  // 나비는 가운데서 구경 — 잘하면 손을 흔든다
+  const nf = nabiHappy > 0 ? 4 + Math.floor(nabiT * 10) % 6 : Math.floor(nabiT * 2) % 2 ? 0 : 1;
+  drawSprite("nabi", width / 2, floor + U() * 1, h * 0.42, { frame: nf, sy: 1 + Math.sin(nabiT * 3) * 0.015 });
+  // 상태 글
+  if (state === "input") banner("Your turn! · 따라 해 보세요");
+  else if (state === "show") banner("Watch Dr. Lee · 잘 보세요");
+}
+function bubble(s, x, y) {
+  textSize(U() * 4.6); textStyle(BOLD);
+  const w = textWidth(s) + U() * 6, hh = U() * 8;
+  fill(255); rect(x - w / 2, y - hh, w, hh, 99); triangle(x - U() * 1.2, y - 1, x + U() * 1.2, y - 1, x, y + U() * 2);
+  fill("#1d2550"); text(s, x, y - hh / 2);
+}
+function label(s, x, y) { textSize(U() * 3); textStyle(BOLD); fill("#1d2550"); text(s, x, y); }
+function banner(s) {
+  textSize(Math.max(14, U() * 3.6)); textStyle(BOLD);
+  const w = textWidth(s) + 32, y = 72;
+  fill(29, 37, 80, 220); rect(width / 2 - w / 2, y, w, 40, 99);
+  fill("#ffcf3f"); text(s, width / 2, y + 20);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Let's Check! O·X 퀴즈</title>
+<style>
+@font-face { font-family: "GmarketSans"; src: url("fonts/GmarketSansBold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "GmarketSans"; src: url("fonts/GmarketSansMedium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+:root {
+  --sky: #a9d4f2;
+  --board: #141a33;
+  --board-2: #1f2850;
+  --chalk: #f4f6ff;
+  --chalk-dim: #aab3d8;
+  --gold: #ffd24a;
+  --o: #36c26b;
+  --x: #ef4b4b;
+  --victor: #c9302c;
+  --hazel: #4f7d3a;
+  --font: "GmarketSans", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--sky); color: var(--chalk); font-family: var(--font); font-weight: 500; overflow: hidden; -webkit-tap-highlight-color: transparent; user-select: none; }
+canvas#gl { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+button { font-family: inherit; cursor: pointer; border: 0; }
+button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.hidden { display: none !important; }
+
+/* 칠판 카드 — 영상 속 돌구 칠판과 같은 결 */
+.board { background: linear-gradient(180deg, var(--board-2), var(--board)); border-radius: 18px; box-shadow: 0 10px 30px rgba(10, 14, 40, .35), inset 0 0 0 2px rgba(255, 255, 255, .06); }
+.en { font-weight: 700; color: var(--chalk); text-wrap: balance; }
+.ko { color: var(--chalk-dim); text-wrap: balance; word-break: keep-all; }
+
+/* 위쪽 HUD */
+#hud { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 10px); left: 12px; right: 12px; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+#qno { background: var(--board); padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 15px; white-space: nowrap; }
+#timer { flex: 1; height: 12px; background: rgba(20, 26, 51, .35); border-radius: 999px; overflow: hidden; }
+#timer i { display: block; height: 100%; width: 100%; background: var(--gold); border-radius: 999px; transform-origin: left; }
+#timer.low i { background: var(--x); }
+.score { display: flex; align-items: center; gap: 6px; background: var(--board); padding: 4px 12px 4px 4px; border-radius: 999px; font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.score img { width: 32px; height: 32px; border-radius: 50%; background: #dfe9f7; object-fit: cover; }
+.score.me { box-shadow: 0 0 0 3px var(--gold); }
+
+/* 문제 카드 */
+#qcard { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 58px); left: 50%; transform: translateX(-50%); width: min(760px, calc(100% - 24px)); padding: 14px 18px 14px 74px; pointer-events: none; min-height: 76px; }
+#qcard .dolgu { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; background: #dfe9f7; }
+#qcard .lead { font-size: 13px; color: var(--gold); font-weight: 700; letter-spacing: .04em; margin-bottom: 4px; }
+#qcard .en { font-size: clamp(18px, 3.2vw, 28px); line-height: 1.25; }
+#qcard .ko { font-size: clamp(13px, 2vw, 17px); margin-top: 4px; }
+
+/* 아래 조작 */
+#controls { position: fixed; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); display: flex; justify-content: center; gap: 14px; padding-inline: 16px; }
+.pick { width: 92px; height: 92px; border-radius: 50%; font-size: 52px; font-weight: 700; color: #fff; box-shadow: 0 6px 0 rgba(0, 0, 0, .18); line-height: 1; }
+.pick.o { background: var(--o); }
+.pick.x { background: var(--x); }
+.pick:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0, 0, 0, .18); }
+#lock { align-self: center; height: 56px; padding: 0 22px; border-radius: 999px; background: var(--board); color: var(--gold); font-size: 18px; font-weight: 700; }
+#lock[disabled] { opacity: .35; cursor: default; }
+#hint { position: fixed; bottom: calc(env(safe-area-inset-bottom, 0px) + 118px); left: 50%; transform: translateX(-50%); background: rgba(20, 26, 51, .7); padding: 6px 14px; border-radius: 999px; font-size: 13px; white-space: nowrap; pointer-events: none; }
+
+/* 말풍선 */
+.bubble { position: fixed; transform: translate(-50%, -100%); background: #fff; color: #1b2140; padding: 7px 12px; border-radius: 14px; font-weight: 700; font-size: 16px; white-space: nowrap; pointer-events: none; box-shadow: 0 4px 12px rgba(0, 0, 0, .15); }
+.bubble::after { content: ""; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%); border: 7px solid transparent; border-bottom: 0; border-top-color: #fff; }
+
+/* 확인 카드 */
+#check { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); transform: translateX(-50%); width: min(760px, calc(100% - 24px)); padding: 16px 18px 16px 108px; }
+#check .stamp { position: absolute; left: 16px; top: 16px; width: 76px; height: 76px; border-radius: 50%; display: grid; place-items: center; font-size: 48px; font-weight: 700; color: #fff; }
+#check .stamp.o { background: var(--o); }
+#check .stamp.x { background: var(--x); }
+#check .verdict { font-size: clamp(20px, 3.4vw, 28px); font-weight: 700; }
+#check .verdict.good { color: var(--gold); }
+#check .verdict.bad { color: #ff9a9a; }
+#check .why { margin-top: 8px; }
+#check .why .en { font-size: clamp(16px, 2.6vw, 21px); line-height: 1.3; }
+#check .why .en.rem::before { content: "Remember. "; color: var(--gold); }
+#check .why .ko { font-size: clamp(13px, 2vw, 16px); margin-top: 3px; }
+#check .ep { margin-top: 10px; font-size: 12px; color: var(--chalk-dim); }
+#check .row { display: flex; justify-content: flex-end; margin-top: 10px; }
+#next { height: 48px; padding: 0 22px; border-radius: 999px; background: var(--gold); color: var(--board); font-size: 17px; font-weight: 700; }
+
+/* 시작·결과 화면 */
+.screen { position: fixed; inset: 0; display: grid; place-items: center; padding: 16px; background: linear-gradient(180deg, rgba(20, 26, 51, .15), rgba(20, 26, 51, .55)); }
+.panel { width: min(560px, 100%); padding: 26px 22px 20px; text-align: center; }
+.logo { font-size: clamp(34px, 7vw, 52px); font-weight: 700; color: var(--gold); letter-spacing: -.01em; line-height: 1; }
+.logo small { display: block; font-size: .42em; color: var(--chalk); margin-top: 8px; letter-spacing: .02em; }
+.panel p { margin: 14px 0 0; color: var(--chalk-dim); font-size: 15px; line-height: 1.55; }
+.panel p b { color: var(--chalk); font-weight: 700; }
+.choose { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+.choose button { background: rgba(255, 255, 255, .07); color: var(--chalk); border-radius: 16px; padding: 12px 8px 14px; display: grid; justify-items: center; gap: 6px; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .08); }
+.choose button img { width: 96px; height: 96px; border-radius: 50%; background: #dfe9f7; }
+.choose button .nm { font-size: 20px; font-weight: 700; }
+.choose button .ds { font-size: 12px; color: var(--chalk-dim); }
+.choose button.victor:hover, .choose button.victor:focus-visible { box-shadow: inset 0 0 0 3px var(--victor); }
+.choose button.hazel:hover, .choose button.hazel:focus-visible { box-shadow: inset 0 0 0 3px var(--hazel); }
+.keys { margin-top: 16px; font-size: 12px; color: var(--chalk-dim); }
+.credit { margin-top: 18px; font-size: 11px; color: var(--chalk-dim); line-height: 1.6; }
+#result .big { font-size: clamp(54px, 12vw, 80px); font-weight: 700; color: var(--gold); line-height: 1; font-variant-numeric: tabular-nums; }
+#result .vs { margin-top: 6px; font-size: 16px; color: var(--chalk); }
+#result .msg { margin-top: 14px; font-size: 20px; font-weight: 700; }
+#result .msg .ko { display: block; font-size: 14px; font-weight: 500; margin-top: 4px; }
+.btns { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+.btns button { height: 50px; padding: 0 22px; border-radius: 999px; font-size: 16px; font-weight: 700; }
+.btns .primary { background: var(--gold); color: var(--board); }
+.btns .ghost { background: rgba(255, 255, 255, .1); color: var(--chalk); }
+#loading { position: fixed; inset: 0; display: grid; place-items: center; background: var(--sky); color: var(--board); font-weight: 700; font-size: 18px; }
+#loading .bar { width: 220px; height: 10px; background: rgba(20, 26, 51, .15); border-radius: 999px; margin-top: 12px; overflow: hidden; }
+#loading .bar i { display: block; height: 100%; width: 0; background: var(--board); transition: width .2s; }
+
+@media (max-width: 560px) {
+  #hud .score { font-size: 15px; padding-right: 9px; }
+  #hud .score img { width: 26px; height: 26px; }
+  #qcard { padding-left: 62px; }
+  #qcard .dolgu { width: 42px; height: 42px; left: 10px; }
+  .pick { width: 76px; height: 76px; font-size: 42px; }
+  #lock { height: 50px; font-size: 16px; padding: 0 16px; }
+  #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 100px); }
+  #check { padding-left: 16px; padding-top: 86px; }
+  #check .stamp { width: 58px; height: 58px; font-size: 36px; }
+  #check .verdict { position: absolute; left: 86px; top: 30px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<style>
+.sitebar{position:fixed;top:12px;left:12px;z-index:99999;display:flex;gap:6px;font:13px/1 "Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+.sitebar a{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;
+  background:rgba(255,255,255,.94);color:#17233b;text-decoration:none;font-weight:700;
+  border:1px solid rgba(23,35,59,.12);box-shadow:0 3px 10px rgba(0,0,0,.18);transition:transform .15s,box-shadow .15s}
+.sitebar a:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.24)}
+.sitebar a.ghost{background:rgba(255,255,255,.72);font-weight:600;color:#53617d}
+@media (max-width:520px){.sitebar{top:8px;left:8px;font-size:12px}.sitebar a{padding:7px 11px}}
+.sitebar{display:none}body:has(#title:not(.hidden)) .sitebar,body:has(#result:not(.hidden)) .sitebar{display:flex}
+</style>
+<nav class="sitebar" aria-label="사이트 이동">
+  <a href="../" aria-label="웹게임 놀이터 목록으로 이동"><span aria-hidden="true">←</span> 놀이터</a>
+  <a class="ghost" href="https://yeonsung-ac.github.io/" aria-label="홈페이지로 이동">홈</a>
+</nav>
+
+<canvas id="gl"></canvas>
+
+<div id="loading"><div style="text-align:center">불러오는 중…<div class="bar"><i id="loadbar"></i></div></div></div>
+
+<div id="hud" class="hidden">
+  <div id="qno">Q 1/10</div>
+  <div id="timer"><i></i></div>
+  <div class="score me" id="score-me"><img alt=""><span>0</span></div>
+  <div class="score" id="score-rival"><img alt=""><span>0</span></div>
+</div>
+
+<div id="qcard" class="board hidden">
+  <img class="dolgu" src="img/badge_dolgu.png" alt="돌구">
+  <div class="lead">TRUE OR FALSE? · 맞을까, 틀릴까?</div>
+  <div class="en" id="q-en"></div>
+  <div class="ko" id="q-ko"></div>
+</div>
+
+<div id="hint" class="hidden">O나 X 쪽으로 걸어가세요 · 바닥을 눌러도 돼요</div>
+<div id="controls" class="hidden">
+  <button class="pick o" id="go-o" aria-label="O 쪽으로 가기">O</button>
+  <button id="lock" disabled>Let's check!</button>
+  <button class="pick x" id="go-x" aria-label="X 쪽으로 가기">X</button>
+</div>
+
+<div id="bubble-me" class="bubble hidden"></div>
+<div id="bubble-rival" class="bubble hidden"></div>
+
+<div id="check" class="board hidden">
+  <div class="stamp" id="c-stamp">O</div>
+  <div class="verdict" id="c-verdict"></div>
+  <div class="why"><div class="en" id="c-en"></div><div class="ko" id="c-ko"></div></div>
+  <div class="ep" id="c-ep"></div>
+  <div class="row"><button id="next">Next ▶</button></div>
+</div>
+
+<div id="title" class="screen hidden">
+  <div class="panel board">
+    <div class="logo">Let's Check!<small>O·X 퀴즈 · 누가 맞을까?</small></div>
+    <p>돌구가 내는 문장이 <b>맞으면 O</b>, <b>틀리면 X</b> 쪽으로 달려가세요.<br>영상 71편에서 뽑은 10문제, 친구와 대결해요!</p>
+    <div class="choose">
+      <button class="victor" id="pick-victor"><img src="img/badge_victor.png" alt=""><span class="nm">Victor</span><span class="ds">빅터로 하기</span></button>
+      <button class="hazel" id="pick-hazel"><img src="img/badge_hazel.png" alt=""><span class="nm">Hazel</span><span class="ds">헤이즐로 하기</span></button>
+    </div>
+    <div class="keys">키보드: 화살표·WASD로 걷기 · Enter로 확인</div>
+    <div class="credit">Produced by 네오픽스코리아 · Directed by Lee, Hyun Goo<br>Made in collaboration with AI · Assistant Director: Dan</div>
+  </div>
+</div>
+
+<div id="result" class="screen hidden">
+  <div class="panel board">
+    <div class="ko" style="font-size:14px">10문제 중</div>
+    <div class="big" id="r-score">0</div>
+    <div class="vs" id="r-vs"></div>
+    <div class="msg" id="r-msg"></div>
+    <div class="btns">
+      <button class="primary" id="again">Play again · 다시 하기</button>
+      <button class="ghost" id="swap">캐릭터 바꾸기</button>
+    </div>
+    <div class="credit">더 알고 싶으면 유튜브 「Let's Check!」 영상에서 확인해요.</div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const ROUNDS = 10, THINK = 12;            // 문제 수, 생각할 시간(초)
+const ZONE = { o: new THREE.Vector3(-1.55, 0, 0.35), x: new THREE.Vector3(1.55, 0, 0.35) };
+const ZONE_R = 0.95;
+const NAMES = { victor: "Victor", hazel: "Hazel" };
+
+/* ── 렌더러·장면 ── */
+const renderer = new THREE.WebGLRenderer({ canvas: $("gl"), antialias: true, preserveDrawingBuffer: params.has("shot") });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xa9d4f2);
+scene.fog = new THREE.Fog(0xa9d4f2, 12, 26);
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+const LOOK = new THREE.Vector3(0, 0.55, 0.1);
+
+scene.add(new THREE.HemisphereLight(0xeaf4ff, 0x9bb07a, 1.6));
+const sun = new THREE.DirectionalLight(0xfff3e0, 2.2);
+sun.position.set(2.5, 6, 4.5);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5, near: 1, far: 20 });
+sun.shadow.bias = -0.0005;
+scene.add(sun);
+
+/* 무대: 장난감 같은 둥근 섬 — 영상 배경의 단순한 도형 결을 따른다 */
+const mat = (c, r = 0.9) => new THREE.MeshStandardMaterial({ color: c, roughness: r });
+const island = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 3.9, 0.5, 64), mat(0x9fd27b));
+island.position.y = -0.25; island.receiveShadow = true; scene.add(island);
+const rim = new THREE.Mesh(new THREE.CylinderGeometry(3.9, 3.2, 1.2, 64), mat(0xc79a6a));
+rim.position.y = -1.1; scene.add(rim);
+const stage = new THREE.Mesh(new THREE.CylinderGeometry(3.1, 3.1, 0.06, 64), mat(0xf6ead2, 0.8));
+stage.position.y = 0.03; stage.receiveShadow = true; scene.add(stage);
+
+function zonePad(key, color) {
+  const g = new THREE.Group();
+  const pad = new THREE.Mesh(new THREE.CircleGeometry(ZONE_R, 48), new THREE.MeshStandardMaterial({ color, roughness: 0.7, transparent: true, opacity: 0.55 }));
+  pad.rotation.x = -Math.PI / 2; pad.position.y = 0.065; pad.receiveShadow = true;
+  const ring = new THREE.Mesh(new THREE.RingGeometry(ZONE_R - 0.07, ZONE_R, 64), new THREE.MeshBasicMaterial({ color }));
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.07;
+  g.add(pad, ring);
+  // 뒤에 세운 큰 글자
+  const sign = new THREE.Group();
+  const m = mat(color, 0.4);
+  if (key === "o") {
+    const t = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.11, 20, 48), m); t.castShadow = true; sign.add(t);
+  } else {
+    for (const a of [1, -1]) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.05, 0.22), m); b.rotation.z = a * Math.PI / 4; b.castShadow = true; sign.add(b); }
+  }
+  sign.position.set(0, 1.0, -0.95);
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.5, 12), mat(0x8a6a4a)); post.position.set(0, 0.28, -0.95); post.castShadow = true;
+  g.add(sign, post);
+  g.position.copy(ZONE[key]);
+  g.userData = { pad, sign };
+  scene.add(g);
+  return g;
+}
+const pads = { o: zonePad("o", 0x36c26b), x: zonePad("x", 0xef4b4b) };
+
+// 둘레 나무·덤불
+function tree(x, z, s, c) {
+  const g = new THREE.Group();
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.07 * s, 0.09 * s, 0.6 * s, 10), mat(0x8a6a4a));
+  trunk.position.y = 0.3 * s;
+  const top = new THREE.Mesh(new THREE.SphereGeometry(0.42 * s, 20, 16), mat(c, 0.85));
+  top.position.y = 0.85 * s; top.scale.y = 1.1;
+  trunk.castShadow = top.castShadow = true;
+  g.add(trunk, top); g.position.set(x, 0, z); scene.add(g);
+}
+[[-3.4, -1.6, 1.3, 0x6fbf5a], [3.5, -1.4, 1.1, 0x86c95e], [-2.6, -2.9, 1.0, 0x86c95e], [2.4, -3.0, 1.4, 0x5fae4e], [3.6, 1.6, 0.8, 0x6fbf5a], [-3.7, 1.4, 0.9, 0x5fae4e]].forEach((t) => tree(...t));
+
+// 돌구 받침
+const podium = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.58, 0.32, 40), mat(0x2a3360, 0.6));
+podium.position.set(0, 0.16, -1.75); podium.castShadow = podium.receiveShadow = true; scene.add(podium);
+
+/* ── 캐릭터 ── */
+class Actor {
+  constructor(gltf, key) {
+    this.key = key;
+    this.root = new THREE.Group();
+    this.model = gltf.scene;
+    this.root.add(this.model);
+    this.model.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } });
+    this.mixer = new THREE.AnimationMixer(this.model);
+    this.actions = {};
+    for (const c of gltf.animations) this.actions[c.name.replace(/^[^_]+_/, "")] = this.mixer.clipAction(c);
+    this.mixer.addEventListener("finished", () => { if (this.after) { const a = this.after; this.after = null; this.play(a); } });
+    this.cur = null; this.after = null;
+    this.target = null; this.vel = new THREE.Vector3(); this.yaw = 0; this.yawGoal = 0;
+    this.speed = 1.5;
+    this.play("idle");
+    scene.add(this.root);
+  }
+  play(name, loop = true, fade = 0.25) {
+    const a = this.actions[name];
+    if (!a) return;
+    if (this.cur === a && loop) return;
+    a.reset(); a.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, Infinity); a.clampWhenFinished = !loop;
+    a.fadeIn(fade).play();
+    if (this.cur && this.cur !== a) this.cur.fadeOut(fade);
+    this.cur = a;
+  }
+  gesture(name, then = "idle") { this.after = then; this.play(name, false); }
+  walkTo(p) { this.target = p.clone(); this.target.y = 0; }
+  face(yaw) { this.yawGoal = yaw; }
+  get pos() { return this.root.position; }
+  update(dt, input) {
+    let dir = new THREE.Vector3();
+    if (input && input.lengthSq() > 0) { dir.copy(input); this.target = null; }
+    else if (this.target) {
+      dir.subVectors(this.target, this.pos); dir.y = 0;
+      if (dir.length() < 0.06) { this.target = null; dir.set(0, 0, 0); this.yawGoal = 0; }
+    }
+    const moving = dir.lengthSq() > 1e-6;
+    if (moving) {
+      dir.normalize();
+      this.pos.addScaledVector(dir, this.speed * dt);
+      this.yawGoal = Math.atan2(dir.x, dir.z);
+      if (!this.after) this.play("walk");
+    } else if (this.cur === this.actions.walk) this.play("idle");
+    // 무대 밖으로 못 나가게
+    const r = Math.hypot(this.pos.x, this.pos.z);
+    if (r > 2.85) this.pos.multiplyScalar(2.85 / r);
+    if (this.pos.z < -1.15) this.pos.z = -1.15;
+    let d = this.yawGoal - this.yaw; d = Math.atan2(Math.sin(d), Math.cos(d));
+    this.yaw += d * Math.min(1, dt * 10);
+    this.root.rotation.y = this.yaw;
+    this.mixer.update(dt);
+    return moving;
+  }
+  zone() {
+    for (const k of ["o", "x"]) if (Math.hypot(this.pos.x - ZONE[k].x, this.pos.z - ZONE[k].z) < ZONE_R) return k;
+    return null;
+  }
+}
+
+/* ── 불러오기 ── */
+const loader = new GLTFLoader();
+const files = { victor: "models/victor.gltf.json", hazel: "models/hazel.gltf.json", dolgu: "models/dolgu.gltf.json" };
+const prog = {};
+function load(k) {
+  return new Promise((res, rej) => loader.load(files[k], res, (e) => {
+    if (e.total) { prog[k] = e.loaded / e.total; $("loadbar").style.width = (Object.values(prog).reduce((a, b) => a + b, 0) / 3 * 100) + "%"; }
+  }, rej));
+}
+const [gV, gH, gD] = await Promise.all([load("victor"), load("hazel"), load("dolgu"), document.fonts.ready]);
+let QUESTIONS = await (await fetch("data/questions.json")).json();
+const actors = { victor: new Actor(gV, "victor"), hazel: new Actor(gH, "hazel") };
+const dolgu = gD.scene;
+dolgu.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } });
+dolgu.scale.setScalar(2.3);
+dolgu.position.set(0, 0.32, -1.75);
+scene.add(dolgu);
+const dolguMast = dolgu.getObjectByName("mast");
+const mast0 = dolguMast ? dolguMast.position.clone() : null;
+$("loading").classList.add("hidden");
+
+/* ── 소리 ── */
+const AC = window.AudioContext ? new AudioContext() : null;
+function tone(seq) {
+  if (!AC) return;
+  if (AC.state === "suspended") AC.resume();
+  let t = AC.currentTime;
+  for (const [f, d, type = "sine", v = 0.18] of seq) {
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + d);
+    o.connect(g).connect(AC.destination); o.start(t); o.stop(t + d + 0.02);
+    t += d * 0.85;
+  }
+}
+const SFX = {
+  good: () => tone([[660, 0.12], [880, 0.12], [1320, 0.3]]),
+  bad: () => tone([[300, 0.18, "triangle"], [220, 0.35, "triangle"]]),
+  tick: () => tone([[1200, 0.05, "square", 0.05]]),
+  pop: () => tone([[520, 0.06], [780, 0.08]]),
+};
+const voices = { victor: new Audio("audio/victor_letscheck.mp3"), hazel: new Audio("audio/hazel_letscheck.mp3") };
+
+/* ── 카메라 맞추기: 무대 폭 7m가 늘 화면에 들어오게 ── */
+function resize() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  // 세로 화면은 O·X 자리까지만 들어오게 바짝, 조금 더 내려다보게
+  const tall = camera.aspect < 0.8;
+  const span = tall ? 5.0 : 6.6, vfov = THREE.MathUtils.degToRad(camera.fov);
+  const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+  const dist = Math.max(6.4, (span / 2) / Math.tan(hfov / 2));
+  camera.position.set(0, dist * (tall ? 0.62 : 0.42) + 0.4, dist * (tall ? 0.8 : 0.92) + LOOK.z);
+  camera.lookAt(tall ? new THREE.Vector3(0, 0.2, 0.5) : LOOK);
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize); resize();
+
+/* ── 입력 ── */
+const keys = new Set();
+addEventListener("keydown", (e) => {
+  keys.add(e.key.toLowerCase());
+  if (e.key === "Enter") { if (state === "think" && !$("lock").disabled) lockIn(); else if (state === "check") nextQ(); }
+});
+addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
+function keyInput() {
+  const v = new THREE.Vector3();
+  if (keys.has("arrowleft") || keys.has("a")) v.x -= 1;
+  if (keys.has("arrowright") || keys.has("d")) v.x += 1;
+  if (keys.has("arrowup") || keys.has("w")) v.z -= 1;
+  if (keys.has("arrowdown") || keys.has("s")) v.z += 1;
+  return v;
+}
+const ray = new THREE.Raycaster(), ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), ndc = new THREE.Vector2();
+$("gl").addEventListener("pointerdown", (e) => {
+  if (state !== "think") return;
+  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const p = new THREE.Vector3();
+  if (ray.ray.intersectPlane(ground, p)) me.walkTo(p);
+});
+$("go-o").onclick = () => state === "think" && me.walkTo(ZONE.o.clone().add(new THREE.Vector3(0, 0, 0.2)));
+$("go-x").onclick = () => state === "think" && me.walkTo(ZONE.x.clone().add(new THREE.Vector3(0, 0, 0.2)));
+$("lock").onclick = () => lockIn();
+$("next").onclick = () => nextQ();
+
+/* ── 게임 진행 ── */
+let state = "title", me = null, rival = null, deck = [], qi = 0, cur = null, tLeft = 0, lastTick = 0;
+let score = { me: 0, rival: 0 }, rivalPlan = null;
+
+function show(id, on = true) { $(id).classList.toggle("hidden", !on); }
+function bubble(id, actor, text, ms = 1800) {
+  const b = $(id); b.textContent = text; b.dataset.until = performance.now() + ms; b.actor = actor; b.classList.remove("hidden");
+}
+
+function home() {
+  state = "title";
+  ["hud", "qcard", "controls", "hint", "check", "result"].forEach((i) => show(i, false));
+  show("title");
+  // 대기 화면: 둘이 나란히 손 흔들기
+  actors.victor.pos.set(-0.55, 0, 0.9); actors.hazel.pos.set(0.55, 0, 0.9);
+  for (const a of Object.values(actors)) { a.target = null; a.yaw = a.yawGoal = 0; a.root.visible = true; a.gesture("wave_R"); }
+}
+
+function start(who) {
+  if (AC && AC.state === "suspended") AC.resume();
+  me = actors[who]; rival = actors[who === "victor" ? "hazel" : "victor"];
+  $("score-me").querySelector("img").src = `img/badge_${who}.png`;
+  $("score-rival").querySelector("img").src = `img/badge_${rival.key}.png`;
+  score = { me: 0, rival: 0 };
+  // 문제 고르기: 71편 중 10편, 편마다 O/X 중 하나 — O와 X가 반반쯤 되게
+  const pool = [...QUESTIONS].sort(() => Math.random() - 0.5).slice(0, ROUNDS);
+  const sides = Array.from({ length: ROUNDS }, (_, i) => (i % 2 ? "o" : "x")).sort(() => Math.random() - 0.5);
+  deck = pool.map((q, i) => ({ ...q, side: sides[i] }));
+  qi = -1;
+  show("title", false); show("result", false); show("hud");
+  nextQ();
+}
+
+function nextQ() {
+  qi++;
+  show("check", false);
+  pads.o.userData.pad.material.opacity = pads.x.userData.pad.material.opacity = 0.55;
+  if (qi >= ROUNDS) return finish();
+  cur = deck[qi];
+  const s = cur[cur.side];
+  $("q-en").textContent = s.en; $("q-ko").textContent = s.ko;
+  $("qno").textContent = `Q ${qi + 1}/${ROUNDS}`;
+  updScore();
+  me.pos.set(-0.45, 0, 1.25); rival.pos.set(0.45, 0, 1.25);
+  for (const a of [me, rival]) { a.target = null; a.yaw = a.yawGoal = 0; a.after = null; a.play("idle"); }
+  rival.gesture("think");
+  tLeft = THINK; lastTick = THINK;
+  // 상대: 60%는 맞히고, 1.5~5초 사이에 출발
+  const right = Math.random() < 0.6;
+  rivalPlan = { at: THINK - (1.5 + Math.random() * 3.5), pick: right ? cur.side : (cur.side === "o" ? "x" : "o"), gone: false };
+  state = "think";
+  show("qcard"); show("controls"); show("hint", qi === 0);
+  $("lock").disabled = true;
+  SFX.pop();
+}
+
+function lockIn() {
+  if (state !== "think") return;
+  state = "check";
+  show("controls", false); show("hint", false);
+  const myPick = me.zone(), rvPick = rival.zone() || rivalPlan.pick;
+  const okMe = myPick === cur.side, okRv = rvPick === cur.side;
+  if (okMe) score.me++; if (okRv) score.rival++;
+  me.target = null; rival.target = null; me.yawGoal = rival.yawGoal = 0;
+  const v = voices[me.key]; try { v.currentTime = 0; v.play(); } catch (e) {}
+  bubble("bubble-me", me, "Let's check!", 1400);
+  setTimeout(() => {
+    if (state !== "check") return;
+    (okMe ? SFX.good : SFX.bad)();
+    me.gesture(okMe ? "clap" : "surprise");
+    rival.gesture(okRv ? "clap" : "surprise");
+    pads[cur.side].userData.pad.material.opacity = 0.95;
+    pads[cur.side === "o" ? "x" : "o"].userData.pad.material.opacity = 0.18;
+    const st = $("c-stamp"); st.textContent = cur.side.toUpperCase(); st.className = "stamp " + cur.side;
+    const vd = $("c-verdict");
+    if (!myPick) { vd.textContent = "Too late! · 시간이 지났어요"; vd.className = "verdict bad"; }
+    else if (okMe) { vd.textContent = (cur.side === "o" ? "True! " : "False! ") + "You got it! · 정답!"; vd.className = "verdict good"; }
+    else { vd.textContent = (cur.side === "o" ? "It's true! " : "It's false! ") + "· 아쉬워요!"; vd.className = "verdict bad"; }
+    $("c-en").textContent = cur.why.en; $("c-ko").textContent = cur.why.ko;
+    $("c-en").classList.toggle("rem", !/^Remember/.test(cur.why.en));
+    $("c-ep").textContent = `영상 ${cur.ep}편 「${cur.title}」에서`;
+    $("next").textContent = qi + 1 >= ROUNDS ? "Result ▶ 결과 보기" : "Next ▶ 다음 문제";
+    show("qcard", false); show("check");
+    updScore();
+    $("next").focus({ preventScroll: true });
+  }, 900);
+}
+
+function updScore() {
+  $("score-me").querySelector("span").textContent = score.me;
+  $("score-rival").querySelector("span").textContent = score.rival;
+}
+
+function finish() {
+  state = "result";
+  show("hud", false); show("qcard", false);
+  $("r-score").textContent = score.me;
+  $("r-vs").textContent = `${NAMES[me.key]} ${score.me} : ${score.rival} ${NAMES[rival.key]}`;
+  let m;
+  if (score.me > score.rival) { m = ["You win!", "이겼어요!"]; me.gesture("clap"); rival.gesture("bow"); }
+  else if (score.me < score.rival) { m = [`${NAMES[rival.key]} wins this time!`, "다음엔 이길 수 있어요!"]; me.gesture("bow"); rival.gesture("clap"); }
+  else { m = ["It's a tie!", "비겼어요!"]; me.gesture("wave_R"); rival.gesture("wave_R"); }
+  $("r-msg").innerHTML = `${m[0]}<span class="ko">${m[1]}</span>`;
+  me.pos.set(-0.55, 0, 0.9); rival.pos.set(0.55, 0, 0.9);
+  show("result");
+  $("again").focus({ preventScroll: true });
+}
+$("again").onclick = () => start(me.key);
+$("swap").onclick = () => home();
+$("pick-victor").onclick = () => start("victor");
+$("pick-hazel").onclick = () => start("hazel");
+
+/* ── 매 프레임 ── */
+const clock = new THREE.Clock();
+const tmp = new THREE.Vector3();
+function placeBubble(id) {
+  const b = $(id);
+  if (b.classList.contains("hidden")) return;
+  if (performance.now() > +b.dataset.until || !b.actor) { b.classList.add("hidden"); return; }
+  tmp.copy(b.actor.pos); tmp.y = 1.18; tmp.project(camera);
+  b.style.left = ((tmp.x + 1) / 2 * innerWidth) + "px";
+  b.style.top = ((1 - tmp.y) / 2 * innerHeight) + "px";
+}
+function loop() {
+  const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+  if (state === "think") {
+    tLeft -= dt;
+    $("timer").firstElementChild.style.transform = `scaleX(${Math.max(0, tLeft / THINK)})`;
+    $("timer").classList.toggle("low", tLeft < 3.5);
+    if (tLeft < 3.5 && Math.ceil(tLeft) < lastTick) { lastTick = Math.ceil(tLeft); SFX.tick(); }
+    if (!rivalPlan.gone && tLeft < rivalPlan.at) {
+      rivalPlan.gone = true;
+      const z = ZONE[rivalPlan.pick].clone(); z.x += rivalPlan.pick === "o" ? -0.3 : 0.3; z.z -= 0.25;
+      rival.after = null; rival.walkTo(z);
+      const sure = rival.key === "victor" ? "Very sure! " : "I think ";
+      bubble("bubble-rival", rival, sure + rivalPlan.pick.toUpperCase() + "!", 2200);
+    }
+    $("lock").disabled = !me.zone();
+    if (tLeft <= 0) lockIn();
+  }
+  const inp = state === "think" ? keyInput() : null;
+  if (me) me.update(dt, inp);
+  for (const a of Object.values(actors)) if (a !== me) a.update(dt, null);
+  // 둘이 겹치지 않게 살짝 밀기
+  const A = actors.victor.pos, B = actors.hazel.pos, dd = Math.hypot(A.x - B.x, A.z - B.z);
+  if (dd < 0.42 && dd > 1e-4) { const k = (0.42 - dd) / 2 / dd; const dx = (A.x - B.x) * k, dz = (A.z - B.z) * k; A.x += dx; A.z += dz; B.x -= dx; B.z -= dz; }
+  // 돌구: 둥실둥실, 판정 때 기둥이 쑥
+  dolgu.position.y = 0.32 + Math.sin(t * 2.2) * 0.02;
+  dolgu.rotation.y = Math.sin(t * 0.7) * 0.15;
+  if (dolguMast) dolguMast.position.y = mast0.y + (state === "check" ? 0.04 + Math.sin(t * 6) * 0.01 : 0);
+  // 표지판 살짝 흔들림
+  pads.o.userData.sign.rotation.y = Math.sin(t * 1.3) * 0.25;
+  pads.x.userData.sign.rotation.y = Math.sin(t * 1.3 + 1) * 0.25;
+  placeBubble("bubble-me"); placeBubble("bubble-rival");
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+}
+// 영상의 첫 화면으로
+home();
+loop();
+
+// 시험용: ?shot=play|check|result&who=victor
+if (params.has("shot")) {
+  const who = params.get("who") || "victor";
+  const s = params.get("shot");
+  if (s !== "title") {
+    start(who);
+    if (s === "check" || s === "result") { me.pos.copy(ZONE.o); setTimeout(() => lockIn(), 300); }
+    if (s === "play") setTimeout(() => { me.walkTo(ZONE.x); }, 200);
+    if (s === "result") setTimeout(() => { qi = ROUNDS - 1; nextQ(); }, 1500);
+  }
+}
+</script>
+</body>
+</html>
