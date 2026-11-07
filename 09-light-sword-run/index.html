@@ -29,6 +29,7 @@
 .kings figure { margin: 0; text-align: center; font-size: 12px; color: #c9d0f0; }
 .kings img { height: 64px; display: block; margin: 0 auto 2px; }
 #go { background: var(--hero); }
+#select .btns { position: sticky; bottom: 0; z-index: 2; margin: 14px -22px -20px; padding: 12px 22px calc(64px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(rgba(29, 37, 80, 0), var(--navy) 30%); border-radius: 0 0 20px 20px; }   /* ★ 휴대폰에서도 시작 단추가 늘 보이게 */
 body:has(#select:not(.hidden)) .bar { display: none; }
 body.igniting .bar { display: none; }
 @media (max-width: 560px) {
@@ -39,7 +40,7 @@ body.igniting .bar { display: none; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
 <script src="common.js"></script>
-<script src="game.js?v=21"></script>
+<script src="game.js?v=22"></script>
 </head>
 <body>
 <style>

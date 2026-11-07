@@ -283,7 +283,7 @@ function mousePressed(e) { if (e && e.target && e.target.tagName !== "CANVAS") r
 function mouseDragged() { pMove(mouseX, mouseY); }
 function mouseReleased() { pUp(); }
 function touchStarted(e) { if (e && e.target && e.target.tagName !== "CANVAS") return; pDown(mouseX, mouseY); return false; }
-function touchMoved() { pMove(mouseX, mouseY); return false; }
+function touchMoved(e) { if (e && e.target && e.target.tagName !== "CANVAS") return; pMove(mouseX, mouseY); return false; }   // ★ 시작 화면은 손가락으로 내릴 수 있게
 function touchEnded() { pUp(); }
 
 function cutAlong(ax, ay, bx, by) {
