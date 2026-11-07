@@ -131,14 +131,14 @@ button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 </head>
 <body>
 <style>
-.sitebar{position:fixed;top:12px;left:12px;z-index:99999;display:flex;gap:6px;font:13px/1 "Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+.sitebar{position:fixed;bottom:max(12px,env(safe-area-inset-bottom,0px));left:max(12px,env(safe-area-inset-left,0px));z-index:99999;display:flex;gap:6px;font:13px/1 "Malgun Gothic","Apple SD Gothic Neo",sans-serif}
 .sitebar a{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;border-radius:999px;
   background:rgba(255,255,255,.94);color:#17233b;text-decoration:none;font-weight:700;
   border:1px solid rgba(23,35,59,.12);box-shadow:0 3px 10px rgba(0,0,0,.18);transition:transform .15s,box-shadow .15s}
 .sitebar a:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.24)}
 .sitebar a.ghost{background:rgba(255,255,255,.72);font-weight:600;color:#53617d}
-@media (max-width:520px){.sitebar{top:8px;left:8px;font-size:12px}.sitebar a{padding:7px 11px}}
-.sitebar{display:none}body:has(#title:not(.hidden)) .sitebar,body:has(#result:not(.hidden)) .sitebar{display:flex}
+@media (max-width:520px){.sitebar{bottom:8px;left:8px;font-size:12px}.sitebar a{padding:7px 11px}}
+.sitebar{display:flex}   /* 플레이 중에도 보이게 */
 </style>
 <nav class="sitebar" aria-label="사이트 이동">
   <a href="../" aria-label="웹게임 놀이터 목록으로 이동"><span aria-hidden="true">←</span> 놀이터</a>
