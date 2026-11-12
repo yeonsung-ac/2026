@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Let's Check! 블록 월드</title>
+<link rel="shortcut icon" href="TemplateData/favicon.png">
+<meta name="description" content="블록 섬을 탐험하며 돌구의 O·X 문제를 푸는 게임 · 네오픽스코리아">
+<style>
+  :root{ --ink:#e9ecef; --dim:#8d949c; --gold:#d8a94f; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; height:100%; background:#0a0c10; overflow:hidden;
+    font-family:"Pretendard","Malgun Gothic","맑은 고딕",system-ui,sans-serif; color:var(--ink); }
+  #wrap{ position:fixed; inset:0; }
+  canvas{ display:block; width:100%; height:100%; background:#0a0c10; outline:none; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+
+  /* 불러오는 동안 */
+  #load{ position:fixed; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:18px; background:#0a0c10; z-index:20; }
+  #load img{ width:78px; height:auto; opacity:.95; }
+  #load .t{ font-size:1.05rem; letter-spacing:.01em; }
+  #load .s{ font-size:.86rem; color:var(--dim); }
+  #bar{ width:min(62vw,320px); height:6px; border-radius:99px; background:#1b2029; overflow:hidden; }
+  #bar > i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,#d8a94f,#f0d49a); transition:width .15s; }
+
+  /* 전체화면 단추 */
+  #fs{ position:fixed; left:12px; top:calc(env(safe-area-inset-top,0px) + 84px); z-index:15;
+    width:38px; height:38px; border:0; border-radius:12px; cursor:pointer;
+    background:rgba(20,24,30,.6); color:var(--ink); font-size:19px; line-height:1;
+    backdrop-filter:blur(4px); }
+  #fs:hover{ background:rgba(40,46,56,.75); }
+
+  /* 알림 띠 */
+  #warn{ position:fixed; left:0; right:0; top:0; z-index:30; }
+  #warn > div{ margin:6px auto; max-width:90%; padding:9px 14px; border-radius:10px;
+    font-size:.9rem; text-align:center; }
+</style>
+</head>
+<body>
+  <div id="wrap"><canvas id="unity-canvas" tabindex="-1"></canvas></div>
+
+  <div id="load">
+    <img src="TemplateData/favicon.png" alt="네오픽스코리아">
+    <div class="t">블록 섬을 불러오는 중… · Loading the island</div>
+    <div id="bar"><i></i></div>
+    <div class="s">처음 열 때만 조금 걸려요 · 네오픽스코리아</div>
+  </div>
+
+  <button id="fs" title="전체 화면">⛶</button>
+  <div id="warn"></div>
+
+<script>
+  var canvas = document.querySelector("#unity-canvas");
+  canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  var loadBox = document.querySelector("#load");
+  var barFill = document.querySelector("#bar > i");
+
+  function unityShowBanner(msg, type) {
+    var box = document.querySelector("#warn");
+    var div = document.createElement('div');
+    div.innerHTML = msg;
+    div.style.background = (type == 'error') ? '#7a2420' : '#5a4a16';
+    box.appendChild(div);
+    if (type != 'error') setTimeout(function(){ box.removeChild(div); }, 5000);
+  }
+
+  var buildUrl = "Build";
+  var config = {
+    arguments: [],
+    dataUrl: buildUrl + "/web.data.wasm",
+    frameworkUrl: buildUrl + "/web.framework.wasm",
+    codeUrl: buildUrl + "/web.wasm",
+    streamingAssetsUrl: "StreamingAssets",
+    companyName: "Neopix Korea",
+    productName: "BlockWorld",
+    productVersion: "0.1.0",
+    showBanner: unityShowBanner,
+    devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+  };
+
+  var script = document.createElement("script");
+  script.src = buildUrl + "/web.loader.js";
+  script.onload = function () {
+    createUnityInstance(canvas, config, function (p) {
+      barFill.style.width = (100 * p) + "%";
+    }).then(function (inst) {
+      loadBox.style.display = "none";
+      document.querySelector("#fs").onclick = function () { inst.SetFullscreen(1); };
+      canvas.focus();
+    }).catch(function (m) { unityShowBanner(m, 'error'); });
+  };
+  document.body.appendChild(script);
+</script>
+</body>
+</html>
