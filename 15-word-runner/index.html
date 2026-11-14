@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Let's Check! 워드 러너</title>
+<link rel="shortcut icon" href="TemplateData/favicon.png">
+<meta name="description" content="토익 600점 기본 단어를 듣고·쪼개고·달리고·말하며 외우는 3D 게임 · 네오픽스코리아">
+<style>
+  :root{ --ink:#e9ecef; --dim:#8d949c; --gold:#d8a94f; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; height:100%; background:#0a0c10; overflow:hidden;
+    font-family:"Pretendard","Malgun Gothic","맑은 고딕",system-ui,sans-serif; color:var(--ink); }
+  #wrap{ position:fixed; inset:0; }
+  canvas{ display:block; width:100%; height:100%; background:#0a0c10; outline:none; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+
+  /* 불러오는 동안 */
+  #load{ position:fixed; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:18px; background:#0a0c10; z-index:20; }
+  #load img{ width:78px; height:auto; opacity:.95; }
+  #load .t{ font-size:1.05rem; letter-spacing:.01em; }
+  #load .s{ font-size:.86rem; color:var(--dim); }
+  #bar{ width:min(62vw,320px); height:6px; border-radius:99px; background:#1b2029; overflow:hidden; }
+  #bar > i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,#d8a94f,#f0d49a); transition:width .15s; }
+
+  /* 전체화면 단추 */
+  #fs{ position:fixed; left:12px; top:calc(env(safe-area-inset-top,0px) + 84px); z-index:15;
+    width:38px; height:38px; border:0; border-radius:12px; cursor:pointer;
+    background:rgba(20,24,30,.6); color:var(--ink); font-size:19px; line-height:1;
+    backdrop-filter:blur(4px); }
+  #fs:hover{ background:rgba(40,46,56,.75); }
+  /* 세로 휴대폰에서는 문제 카드와 겹치므로 숨긴다(아이폰은 어차피 전체화면을 못 함) */
+  @media (orientation: portrait) and (max-width: 600px){ #fs{ display:none; } }
+
+  /* 놀이터로 돌아가기 (전체화면 단추 아래) */
+  #home{ position:fixed; left:12px; top:calc(env(safe-area-inset-top,0px) + 130px); z-index:15; padding:6px 10px; border-radius:10px;
+    background:rgba(20,24,30,.55); color:#e9ecef; font-size:13px; text-decoration:none; backdrop-filter:blur(4px); }
+  #home:hover{ background:rgba(40,46,56,.75); }
+  @media (orientation: portrait) and (max-width: 600px){ #home{ top:auto; bottom:calc(env(safe-area-inset-bottom,0px) + 8px); left:50%; transform:translateX(-50%); } }
+
+  /* 전체화면·놀이터는 게임 안 메뉴로 옮겼다(점수판과 겹쳐서) */
+  #fs, #home{ display:none !important; }
+
+  /* 알림 띠 */
+  #warn{ position:fixed; left:0; right:0; top:0; z-index:30; }
+  #warn > div{ margin:6px auto; max-width:90%; padding:9px 14px; border-radius:10px;
+    font-size:.9rem; text-align:center; }
+</style>
+</head>
+<body>
+  <div id="wrap"><canvas id="unity-canvas" tabindex="-1"></canvas></div>
+
+  <div id="load">
+    <img src="TemplateData/favicon.png" alt="네오픽스코리아">
+    <div class="t">워드 러너를 불러오는 중… · Loading Word Runner</div>
+    <div id="bar"><i></i></div>
+    <div class="s">처음 열 때만 조금 걸려요 · 네오픽스코리아</div>
+  </div>
+
+  <a id="home" href="../" title="웹게임 놀이터로">← 놀이터</a>
+  <button id="fs" title="전체 화면">⛶</button>
+  <div id="warn"></div>
+
+<script>
+  var canvas = document.querySelector("#unity-canvas");
+  // 아이폰은 사용자가 한 번 눌러야 소리 읽기가 열린다 → 첫 터치·클릭·키에 빈 말을 한 번
+  (function(){ var done=false; function unlock(){ if(done) return; done=true; try{ var u=new SpeechSynthesisUtterance(" "); u.volume=0; window.speechSynthesis.speak(u); }catch(e){} }
+    ["pointerdown","touchend","keydown"].forEach(function(ev){ window.addEventListener(ev, unlock, {once:false, passive:true}); }); })();
+  canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  var loadBox = document.querySelector("#load");
+  var barFill = document.querySelector("#bar > i");
+
+  function unityShowBanner(msg, type) {
+    var box = document.querySelector("#warn");
+    var div = document.createElement('div');
+    div.innerHTML = msg;
+    div.style.background = (type == 'error') ? '#7a2420' : '#5a4a16';
+    box.appendChild(div);
+    if (type != 'error') setTimeout(function(){ box.removeChild(div); }, 5000);
+  }
+
+  var buildUrl = "Build";
+  var config = {
+    arguments: [],
+    dataUrl: buildUrl + "/web_wr.data.wasm",
+    frameworkUrl: buildUrl + "/web_wr.framework.wasm",
+    codeUrl: buildUrl + "/web_wr.wasm",
+    streamingAssetsUrl: "StreamingAssets",
+    companyName: "Neopix Korea",
+    productName: "WordRunner",
+    productVersion: "0.1.0",
+    showBanner: unityShowBanner,
+    devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+  };
+
+  var script = document.createElement("script");
+  script.src = buildUrl + "/web_wr.loader.js";
+  script.onload = function () {
+    createUnityInstance(canvas, config, function (p) {
+      barFill.style.width = (100 * p) + "%";
+    }).then(function (inst) {
+      loadBox.style.display = "none";
+      document.querySelector("#fs").onclick = function () { inst.SetFullscreen(1); };
+      canvas.focus();
+    }).catch(function (m) { unityShowBanner(m, 'error'); });
+  };
+  document.body.appendChild(script);
+</script>
+</body>
+</html>
