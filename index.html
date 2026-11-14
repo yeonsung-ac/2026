@@ -46,6 +46,17 @@
     .art img { width:100%; height:100%; object-fit:contain; object-position:center bottom; display:block; }
     .game.wide { grid-column:span 2; }
     @media (max-width:560px){ .game.wide { grid-column:auto; } }
+    /* 유니티 3D 맵 게임 — 아랫단, 짙은 바탕으로 구분 */
+    .maps { margin-top:44px; padding:26px 26px 28px; border-radius:25px; background:linear-gradient(160deg,#16324a,#1f4d5a); color:#eef6f8; }
+    .maps-head { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:6px 16px; margin-bottom:18px; }
+    .maps-head h2 { margin:0; font-size:24px; letter-spacing:-.05em; color:#fff; }
+    .maps-head p { margin:0; color:#b9d3db; font-size:14px; }
+    .map-grid { display:grid; grid-template-columns:1fr; gap:20px; }
+    .map-grid .game.wide { grid-column:auto; }
+    .map-grid .game { color:var(--ink); }
+    .map-grid .art { height:auto; aspect-ratio:1040/350; overflow:hidden; }
+    .map-grid .art img { height:100%; object-fit:cover; object-position:center; }
+    @media (max-width:560px){ .maps { padding:20px 16px 22px; } }
     /* 학생 작품 전시 — 상자로 구분한 작은 목록 */
     .showcase { margin-top:44px; padding:26px 26px 22px; border:2px dashed rgba(23,35,59,.18); border-radius:25px; background:rgba(255,255,255,.62); }
     .showcase-head { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:6px 16px; margin-bottom:16px; }
@@ -85,6 +96,16 @@
       <a class="game" style="--card:linear-gradient(135deg,#ffe9c7,#f3d6e8)" href="11-nabi-playroom/feed.html"><div class="art"><img src="assets/card-feed.webp" alt="나비에게 먹이를 주는 헤이즐"></div><div class="copy"><span class="number">GAME 11</span><h2>나비 밥 주기</h2><p>헤이즐이 떨어뜨리는 먹이 — 생선·우유·쿠키는 받고 양말·장화는 피하세요!</p><div class="play">게임 시작 →</div></div></a>
       <a class="game" style="--card:linear-gradient(135deg,#d9e7ff,#c8b6ff)" href="11-nabi-playroom/stack.html"><div class="art"><img src="assets/card-stack.webp" alt="책을 쌓는 이박사"></div><div class="copy"><span class="number">GAME 12</span><h2>이박사의 책 쌓기</h2><p>왔다 갔다 하는 책을 눌러 떨어뜨려 높이 쌓아요. 꼭대기의 나비를 높이높이!</p><div class="play">게임 시작 →</div></div></a>
       <a class="game" style="--card:linear-gradient(135deg,#cfeedd,#a6dff0)" href="11-nabi-playroom/copy.html"><div class="art"><img src="assets/card-copy.webp" alt="이박사를 따라 하는 헤이즐"></div><div class="copy"><span class="number">GAME 13</span><h2>이박사 따라 하기</h2><p>이박사가 보여 주는 순서대로 단추를 누르면 헤이즐이 따라 해요. 기억력 게임!</p><div class="play">게임 시작 →</div></div></a>
+    </section>
+
+    <section class="maps" aria-labelledby="maps-title">
+      <div class="maps-head">
+        <h2 id="maps-title">유니티 3D 맵 게임</h2>
+        <p>섬·지도·길이 이어진 3D 세상을 직접 걸어 다니는 게임 · PC는 화살표, 휴대폰은 조이스틱</p>
+      </div>
+      <div class="map-grid">
+        <a class="game wide" style="--card:linear-gradient(135deg,#bfeaff,#c9f0c2)" href="13-explore-island/"><div class="art"><img src="assets/card-explore-island.webp" alt="탐험 섬의 헤이즐·돌구·빅터와 O, X 문"></div><div class="copy"><span class="number">3D MAP 01</span><h2>Let's Check! 탐험 섬</h2><p>헤이즐이나 빅터가 되어 섬을 걸어 다녀요. 지도를 보며 스테이지 1·2·3을 차례로 찾아가 돌구의 O·X 문제를 풀고, 길에서 영어 낱말 카드·동물 도감·숨은 보물을 모아요. 3D · 휴대폰도 OK</p><div class="play">게임 시작 →</div></div></a>
+      </div>
     </section>
 
     <section class="showcase" aria-labelledby="showcase-title">
