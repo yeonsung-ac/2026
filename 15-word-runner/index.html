@@ -75,10 +75,24 @@
   <div id="warn"></div>
 
 <script>
+// 휴대폰 소리 잠금 풀기: 첫 터치(누르는 그 순간)에 빈 말을 한 번 읽고, 유니티 소리도 깨운다.
+// 아이폰 사파리는 이렇게 해야 그 뒤의 읽어 주기가 들린다. 터치 전에 막힌 말은 풀린 뒤 한 번 다시 읽는다.
+(function () {
+  var W = window.__danTts || (window.__danTts = { n: 0 });
+  function unlock() {
+    W.tries = (W.tries || 0) + 1;
+    if (W.tries > 3) return;                       // 처음 세 번 시도 (pointerup·touchend·click 중 사파리가 인정하는 것 하나는 걸린다)
+    var first = !W.unlocked; W.unlocked = true; if (first) W.unlockAt = Date.now();
+    try { var s = window.speechSynthesis; if (s) { var z = new SpeechSynthesisUtterance(' '); z.volume = 0; s.speak(z); } } catch (e) {}
+    try { var AC = window.AudioContext || window.webkitAudioContext; if (AC && window.WEBAudio && WEBAudio.audioContext && WEBAudio.audioContext.state !== 'running') WEBAudio.audioContext.resume(); } catch (e) {}
+    // 풀기 전에 막힌 말만 한 번 다시 읽는다
+    if (first) setTimeout(function () { if (W.last && W.say && W.last.at < W.unlockAt && W.unlockAt - W.last.at < 4000) W.say(W.last.t, W.last.r); }, 150);
+  }
+  ['touchend', 'pointerup', 'mouseup', 'keydown', 'click'].forEach(function (ev) { window.addEventListener(ev, unlock, true); });
+})();
+</script>
+<script>
   var canvas = document.querySelector("#unity-canvas");
-  // 아이폰은 사용자가 한 번 눌러야 소리 읽기가 열린다 → 첫 터치·클릭·키에 빈 말을 한 번
-  (function(){ var done=false; function unlock(){ if(done) return; done=true; try{ var u=new SpeechSynthesisUtterance(" "); u.volume=0; window.speechSynthesis.speak(u); }catch(e){} }
-    ["pointerdown","touchend","keydown"].forEach(function(ev){ window.addEventListener(ev, unlock, {once:false, passive:true}); }); })();
   canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   var loadBox = document.querySelector("#load");
   var barFill = document.querySelector("#bar > i");
