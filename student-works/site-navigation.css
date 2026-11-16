@@ -1,0 +1,21 @@
+.studio-nav {
+  max-width: 1080px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 8px 14px 4px;
+}
+a.studio-return {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 7px 15px;
+  border: 1px solid #d6b5a4;
+  border-radius: 999px;
+  background: #fff8ef;
+  color: #56392f;
+  font: 700 14px/1.4 system-ui, sans-serif;
+  text-decoration: none;
+}
+a.studio-return:hover { background: #ffe8dc; }
+a.studio-return:focus-visible { outline: 3px solid #805363; outline-offset: 3px; }

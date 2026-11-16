@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#071813" />
+  <meta name="description" content="브라우저에서 HTML 파일 하나로 플레이하는 무료 블랙잭 카드 게임" />
+  <title>BLACKJACK 21 — 원페이지 카드 게임</title>
+  <style>
+    :root{color-scheme:dark;--bg:#061310;--felt:#0e4534;--felt2:#0c3429;--mint:#a8e8c0;--gold:#f2cb82;--gold-dark:#c6984d;--white:#f4f3eb;--muted:#9bb7a9;--danger:#fd8c81;--border:rgba(233,245,225,.14)}
+    *{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-width:320px;min-height:100vh;color:var(--white);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:radial-gradient(ellipse at 50% -14%,#194b38 0%,#081d17 46%,#05120f 100%)}button{font:inherit;cursor:pointer}button:disabled{cursor:not-allowed;opacity:.4}button:focus-visible{outline:3px solid #ffde97;outline-offset:3px}.shell{max-width:1240px;margin:auto;padding:24px 26px 28px}
+    .topbar{display:flex;align-items:center;gap:14px;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:12px}.brand-icon{width:43px;height:43px;display:grid;place-items:center;border:1px solid rgba(245,213,149,.45);color:var(--gold);font-size:23px;transform:rotate(-8deg);border-radius:12px;background:#102d25}.brand-title{font-family:Georgia,serif;font-size:25px;font-weight:700;letter-spacing:.12em;line-height:1.1}.brand-sub{font-size:10px;letter-spacing:.24em;color:var(--gold);margin-top:4px}.top-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:rgba(255,255,255,.035);border-radius:999px;padding:10px 15px;font-size:13px;color:var(--muted)}.pill strong{color:#f9e6b6;font-size:16px;font-variant-numeric:tabular-nums}.dot{width:7px;height:7px;border-radius:50%;background:#82d99e;box-shadow:0 0 8px #82d99e70}.text-btn{border:1px solid var(--border);background:rgba(255,255,255,.035);color:#e0e8df;padding:10px 15px;border-radius:999px;transition:.2s}.text-btn:hover{background:rgba(255,255,255,.1)}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 304px;gap:20px;align-items:stretch}.table-shell{position:relative;min-height:642px;border-radius:28px;overflow:hidden;background:radial-gradient(ellipse at center 35%,#176148 0%,#11503c 43%,#0a2a21 100%);border:2px solid #315846;box-shadow:0 14px 70px #0007,inset 0 0 0 6px #08271e,inset 0 0 0 8px #8c7442a8,inset 0 0 0 16px #0a3327}.table-shell:before{content:"";position:absolute;inset:22px;border:1px solid rgba(255,230,171,.14);border-radius:200px 200px 140px 140px;pointer-events:none}.table-shell:after{content:"BLACKJACK  •  PAYS 3 TO 2";position:absolute;pointer-events:none;left:50%;top:47%;transform:translate(-50%,-50%);color:rgba(248,220,155,.14);font:bold clamp(12px,1.8vw,19px) Georgia,serif;letter-spacing:.2em;white-space:nowrap}.table-content{position:relative;z-index:1;display:flex;flex-direction:column;justify-content:space-between;min-height:642px;padding:31px 22px 24px}.seat{text-align:center;position:relative}.seat-title{display:flex;justify-content:center;align-items:center;gap:9px;font-size:11px;letter-spacing:.18em;font-weight:800;color:#e5dfc6}.score{padding:4px 9px;font-size:12px;letter-spacing:0;background:rgba(0,0,0,.25);border:1px solid #ffffff22;border-radius:6px;color:#fff}.card-row{min-height:142px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px}.playing-card{width:91px;height:130px;border-radius:9px;background:linear-gradient(144deg,#fffefd,#e9e8e2);color:#192522;border:1px solid #fff;box-shadow:0 5px 12px #001b146c, inset 0 0 0 2px #ddd;position:relative;animation:card-in .32s both;flex-shrink:0}.playing-card.red{color:#c5393c}.corner{position:absolute;top:7px;left:8px;font-family:Georgia,serif;font-weight:700;font-size:23px;line-height:.95;text-align:center}.corner small{font-size:16px;display:block;margin-top:3px}.corner.bottom{top:auto;left:auto;bottom:7px;right:8px;transform:rotate(180deg)}.center-suit{position:absolute;inset:0;display:grid;place-items:center;font-size:46px;text-shadow:0 1px 0 #fff}.playing-card.back{background:#123a40;border:4px solid #f0e2bc;box-shadow:0 5px 15px #001a13a6,inset 0 0 0 3px #173a41}.back:before{content:"";position:absolute;inset:5px;border:1px solid #8fada3;background:repeating-linear-gradient(45deg,transparent 0 5px,#d5e8d424 5px 7px),repeating-linear-gradient(-45deg,transparent 0 5px,#d5e8d424 5px 7px);border-radius:3px}.back:after{content:"♠";color:#e5d7b9;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:35px;text-shadow:0 1px 7px #000}.placeholder{width:91px;height:130px;border:2px dashed #e9efd13c;border-radius:10px;background:rgba(255,255,255,.025)}.center-message{min-height:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;padding:8px 10px;z-index:1}.message-tag{color:var(--gold);letter-spacing:.12em;font-size:10px;font-weight:700;text-transform:uppercase}.message-main{font-size:clamp(18px,2.3vw,26px);line-height:1.3;font-weight:800;text-shadow:0 2px 8px #0d2921}.message-sub{color:#c7e1d1;font-size:12px}.player-area{min-height:222px}.hands{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:10px}.hand{min-width:164px;padding:11px 12px 15px;border:1px solid transparent;border-radius:15px;transition:.25s}.hand.active{border-color:#ebcd8596;background:#112e2380;box-shadow:0 0 24px #f7d98a19}.hand.win{border-color:#7de4a180}.hand.lose{border-color:#fa958058}.hand.push{border-color:#b2d6ca61}.hand-head{font-size:11px;color:#d1e8d7}.hand-head strong{color:var(--gold)}.hand .card-row{min-height:130px;margin-top:8px}.hand .playing-card{width:86px;height:122px}.hand .playing-card .center-suit{font-size:43px}.hand .playing-card .corner{font-size:22px}.hand .playing-card .corner small{font-size:15px}.hand .card-row{gap:5px}.hand-bet{font-size:11px;color:#cad6cc;margin-top:8px}.hand-result{font-size:12px;font-weight:750;margin-top:5px}.win .hand-result{color:#9be6ad}.lose .hand-result{color:#f8aca2}.push .hand-result{color:#e9dbac}@keyframes card-in{from{opacity:0;transform:translateY(-13px) rotate(-5deg) scale(.95)}to{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}}
+    .side{display:flex;flex-direction:column;gap:16px}.panel{border:1px solid var(--border);border-radius:21px;background:linear-gradient(155deg,rgba(29,57,46,.8),rgba(9,30,24,.85));padding:21px;box-shadow:0 6px 30px #0002}.eyebrow{font-size:10px;font-weight:800;color:var(--gold);letter-spacing:.21em;margin-bottom:7px}.panel-title{font-size:19px;font-weight:800;margin:0 0 6px}.panel-sub{font-size:12px;line-height:1.7;color:var(--muted);margin:0}.bet-total{display:flex;justify-content:space-between;align-items:center;margin:25px 0 13px}.bet-total span:first-child{color:#b8c9bd;font-size:12px}.bet-value{font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--gold)}.chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:20px 0}.chip{margin:auto;width:66px;height:66px;border-radius:50%;border:6px dashed #ffffffb0;box-shadow:inset 0 0 0 3px #ffffff60,0 5px 13px #0005;display:grid;place-items:center;font-size:15px;font-weight:850;color:#fff;transition:transform .15s,filter .15s;user-select:none;position:relative}.chip:not(:disabled):hover{transform:translateY(-4px);filter:brightness(1.15)}.chip:disabled{opacity:.35}.chip-10{background:#27628b}.chip-25{background:#34805a}.chip-50{background:#bd4651}.chip-100{background:#313c52}.chip-250{background:#8b55a0}.chip-500{background:#a78239}.chip span{display:grid;place-items:center;background:#0003;width:42px;height:42px;border-radius:50%;font-variant-numeric:tabular-nums}.bet-tools{display:flex;gap:8px;margin-bottom:14px}.bet-tools button{flex:1;border-radius:9px;border:1px solid var(--border);background:#ffffff0b;color:#d4e1d5;padding:10px;font-size:12px}.bet-tools button:hover:not(:disabled){background:#ffffff1b}.primary{background:linear-gradient(140deg,#f6df9e,#d8a653);color:#1f261c;border:1px solid #ffe4ab;border-radius:11px;min-height:49px;width:100%;padding:12px;font-size:15px;font-weight:850;box-shadow:0 7px 19px #17170b3d;transition:filter .2s,transform .2s}.primary:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}.primary:disabled{opacity:.42}.action-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}.action{padding:13px 8px;border-radius:11px;border:1px solid #90bc9c65;background:#214f3d;color:white;font-weight:750;min-height:51px}.action:hover:not(:disabled){background:#2c654e}.action.main{border-color:#e8c77c;background:#d5af63;color:#162820}.action small{display:block;font-weight:500;font-size:10px;opacity:.75;margin-top:3px}.mini-info{font-size:12px;color:#a7bcae;line-height:1.65;margin-top:12px}.result-number{font-size:36px;letter-spacing:-.04em;font-weight:850;margin:15px 0 12px}.result-number.positive{color:#9be6b1}.result-number.negative{color:#ffaaa0}.result-number.neutral{color:#f0d49b}.tip-card{display:flex;gap:12px;align-items:flex-start;margin-top:auto}.tip-icon{width:35px;height:35px;border-radius:10px;background:#eac68120;color:var(--gold);display:grid;place-items:center;flex-shrink:0}.tip-title{font-weight:750;font-size:12px;margin:0 0 5px}.tip-text{margin:0;color:var(--muted);font-size:11px;line-height:1.65}.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:19px}.stat{padding:11px 5px;border:1px solid #ffffff16;border-radius:11px;text-align:center;background:#ffffff06}.stat strong{display:block;font-size:22px;color:#f7edcb}.stat small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.history{margin-top:15px;display:flex;flex-direction:column;gap:9px}.history-row{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #ffffff10;padding:0 0 9px;font-size:12px}.history-row:last-child{border:0;padding-bottom:0}.history-row span{color:#b3c6b7}.history-row strong{font-variant-numeric:tabular-nums}.footer{text-align:center;color:#7e9e8e;font-size:11px;letter-spacing:.015em;margin:17px 0 0}.hidden{display:none!important}.overlay{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:#000a;backdrop-filter:blur(7px);padding:20px}.modal{width:min(520px,100%);max-height:86vh;overflow:auto;border:1px solid #d2bb7c66;border-radius:21px;background:#10291f;box-shadow:0 20px 70px #0009;padding:26px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.modal h2{margin:0;color:#f4db9b;font-size:24px}.modal p{color:#c5d8c9;font-size:14px;line-height:1.8}.modal dl{display:grid;grid-template-columns:105px 1fr;gap:12px 10px;color:#bbd6c5;font-size:13px;line-height:1.55}.modal dt{font-weight:850;color:#f0d397}.modal dd{margin:0}.close{border:0;background:#ffffff15;color:white;border-radius:10px;font-size:20px;width:36px;height:36px}.rule-note{padding:12px 14px;border-radius:11px;background:#ffffff0a;font-size:12px;color:#aac8b5;line-height:1.7;margin-top:16px}
+    @media(max-width:950px){.layout{grid-template-columns:minmax(0,1fr)}.side{display:grid;grid-template-columns:1fr 1fr}.tip-card{grid-column:1/-1}.table-shell,.table-content{min-height:610px}}@media(max-width:600px){.shell{padding:14px 12px 23px}.topbar{gap:13px;margin-bottom:15px}.brand-title{font-size:20px}.brand-icon{width:37px;height:37px;font-size:20px}.brand-sub{font-size:9px}.top-actions{gap:6px}.pill{padding:8px 10px;font-size:11px}.pill strong{font-size:13px}.text-btn{padding:8px 11px;font-size:12px}.side{display:flex}.table-shell,.table-content{min-height:515px}.table-shell{border-radius:18px}.table-content{padding:25px 5px 15px}.table-shell:before{inset:14px}.seat-title{font-size:10px}.card-row{min-height:109px;margin-top:11px}.playing-card,.placeholder{width:68px;height:97px}.corner{top:5px;left:6px;font-size:17px}.corner small{font-size:12px}.corner.bottom{bottom:5px;right:6px}.center-suit{font-size:33px}.player-area{min-height:168px}.hands{gap:3px;margin-top:5px}.hand{padding:7px 3px 9px;min-width:135px}.hand .card-row{min-height:101px;gap:3px}.hand .playing-card{width:63px;height:92px}.hand .playing-card .center-suit{font-size:31px}.hand .playing-card .corner{font-size:16px}.hand .playing-card .corner small{font-size:11px}.hand-bet{margin-top:3px}.message-main{font-size:18px}.center-message{min-height:58px}.table-shell:after{font-size:11px;top:46%}.panel{padding:18px}.chips{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}.chip{height:46px;width:46px;border-width:4px;font-size:11px}.chip span{width:30px;height:30px}.bet-total{margin:17px 0 5px}.bet-value{font-size:29px}.modal{padding:20px}.modal dl{grid-template-columns:78px 1fr}}@media(max-width:385px){.chips{grid-template-columns:repeat(3,1fr);gap:11px}.chip{width:61px;height:61px;font-size:14px}.chip span{width:39px;height:39px}.hand .playing-card{width:57px;height:84px}.hand{min-width:120px}.topbar .pill{font-size:10px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    /* Casino-inspired motion layer: everything is native CSS/Web Audio, fully offline. */
+    .table-shell{isolation:isolate;transition:box-shadow .35s}
+    .table-shell.win-flash{animation:table-win 1.25s ease-out}
+    .table-shell.lose-flash{animation:table-lose .65s ease-out}
+    .table-shell.push-flash{animation:table-push .8s ease-out}
+    @keyframes table-win{0%,100%{box-shadow:0 14px 70px #0007,inset 0 0 0 6px #08271e,inset 0 0 0 8px #8c7442a8,inset 0 0 0 16px #0a3327}25%{box-shadow:0 14px 70px #0007,inset 0 0 90px #a4e4a250,0 0 65px #ead0876e}}
+    @keyframes table-lose{0%,100%{filter:none}35%{filter:sepia(.16) saturate(1.35) hue-rotate(300deg)}}
+    @keyframes table-push{0%,100%{filter:none}35%{filter:brightness(1.17)}}
+    .playing-card{animation:none;backface-visibility:hidden;transform-origin:center center}
+    .playing-card.card-landed{animation:card-land .32s cubic-bezier(.17,.67,.26,1.24) both}
+    @keyframes card-land{0%{transform:translateY(-7px) scale(1.065)}60%{transform:translateY(3px) scale(.985)}100%{transform:translateY(0) scale(1)}}
+    .shoe-stack{position:absolute;right:31px;top:47px;width:71px;height:106px;z-index:3;pointer-events:none;filter:drop-shadow(0 8px 9px #00191083);transform:rotate(9deg)}
+    .shoe-stack::before,.shoe-stack::after,.shoe-design{content:"";position:absolute;inset:0;border-radius:7px;border:3px solid #eee0b8;background:#194855;box-shadow:inset 0 0 0 3px #102e39,inset 0 0 0 5px #b2c9bc,0 2px 4px #00191085}
+    .shoe-stack::before{transform:translate(5px,-6px)}
+    .shoe-stack::after{transform:translate(3px,-3px)}
+    .shoe-design{display:grid;place-items:center;color:#e7d8b5;font:29px Georgia,serif;z-index:1;background:repeating-linear-gradient(45deg,#254e55 0 4px,#1a3c45 4px 8px)}
+    .shoe-caption{position:absolute;top:157px;right:36px;font:700 9px Georgia,serif;letter-spacing:.1em;color:#c1d2c19a;z-index:3;pointer-events:none}
+    .wager-spot{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;max-width:220px;margin:6px auto 0;border:1px solid #f0d59b38;border-radius:50px;padding:4px 13px 4px 6px;background:#08261d80;box-shadow:inset 0 0 15px #040f0a59;transition:opacity .22s}
+    .wager-spot.no-bet{opacity:.38}
+    .wager-spot.pot-pulse{animation:pot-pulse .45s ease-out}
+    @keyframes pot-pulse{0%{box-shadow:0 0 0 0 #ffd78a6a}100%{box-shadow:0 0 0 16px #ffd78a00}}
+    .pot-chips{width:66px;height:35px;position:relative;flex-shrink:0}
+    .pot-disc{position:absolute;left:10px;top:3px;width:33px;height:33px;border-radius:50%;border:4px dashed #ffffffbc;background:#b88a34;box-shadow:inset 0 0 0 2px #ffffff48,0 3px 2px #00170b8c}
+    .pot-disc:nth-child(2){left:19px;top:2px;background:#a34d50}
+    .pot-disc:nth-child(3){left:29px;top:0px;background:#295c78}
+    .pot-copy{text-align:left;display:flex;flex-direction:column;gap:2px;white-space:nowrap}
+    .pot-copy span{color:#a9c7b5;font-size:9px;letter-spacing:.1em}
+    .pot-copy strong{color:#f8dca2;font-size:13px;line-height:1.2;tab-size:4}
+    .fx-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:60}
+    .flying-card{position:fixed;z-index:3;margin:0;will-change:transform;animation:none!important}
+    .flying-chip{position:fixed;width:40px;height:40px;border-radius:50%;border:5px dashed #ffffffd6;display:grid;place-items:center;box-shadow:inset 0 0 0 2px #ffffff6c,0 5px 14px #0009;font-size:11px;font-weight:850;color:white;text-shadow:0 1px 3px #000b;will-change:transform;z-index:4;pointer-events:none}
+    .big-announcement{position:absolute;z-index:5;top:47%;left:50%;transform:translate(-50%,-50%) scale(.72);pointer-events:none;opacity:0;white-space:nowrap;max-width:95%;text-align:center;font-family:Georgia,serif;font-size:clamp(22px,3.8vw,41px);font-weight:900;letter-spacing:.12em;text-shadow:0 5px 12px #05140de0,0 0 30px #05140de0}
+    .big-announcement.show{animation:announcement 2.1s cubic-bezier(.12,.75,.2,1) both}
+    .big-announcement.win{color:#ffdf91;text-shadow:0 4px 7px #000,0 0 18px #efcf75}
+    .big-announcement.lose{color:#ffaca6;text-shadow:0 4px 7px #000,0 0 17px #b64b51}
+    .big-announcement.push{color:#ebf0df}
+    @keyframes announcement{0%{opacity:0;transform:translate(-50%,-45%) scale(.65)}13%{opacity:1;transform:translate(-50%,-50%) scale(1.10)}27%,69%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-58%) scale(1.05)}}
+    .confetti-piece{position:fixed;width:7px;height:13px;border-radius:1px;z-index:4;will-change:transform}
+    .top-actions .sound-btn{border-color:#eac68140;color:#ffe4b0;background:#d7b56712}
+    .top-actions .sound-btn[aria-pressed="false"]{color:#adc0b0;border-color:var(--border);background:#ffffff08}
+    .table-shell .center-message{position:relative;z-index:2}
+    .table-shell .shoe-stack{z-index:2}
+    .tip-card{min-height:52px}
+    @media(max-width:600px){
+      .table-shell,.table-content{min-height:555px}
+      .shoe-stack{right:12px;top:52px;transform:rotate(9deg) scale(.60);transform-origin:top right}
+      .shoe-caption{display:none}
+      .center-message{min-height:94px}
+      .wager-spot{margin-top:7px;min-height:39px;padding:2px 11px 2px 4px}
+      .pot-chips{transform:scale(.82);transform-origin:center;width:58px}
+      .big-announcement{font-size:clamp(20px,6vw,29px)}
+      .top-actions .sound-btn{font-size:11px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .playing-card.card-landed,.big-announcement.show,.table-shell.win-flash,.table-shell.lose-flash,.table-shell.push-flash{animation:none!important}
+      .big-announcement.show{opacity:1;transform:translate(-50%,-50%)}
+      .wager-spot.pot-pulse{animation:none}
+    }
+  </style>
+<script>/* PLAY & SOUND: original procedural scores and layered game effects. */
+(()=>{'use strict';
+const BANK={
+ ashen:{bpm:128,bass:[38,38,41,36],chords:[[50,53,57],[50,53,58],[53,57,60],[48,52,55]],lead:[74,0,77,72,0,69,72,0,74,77,81,0,77,74,72,69]},
+ blackjack:{bpm:84,bass:[41,38,43,36],chords:[[53,57,60,64],[50,53,57,60],[55,59,62,65],[48,52,55,59]],lead:[0,76,0,72,0,69,0,0,0,74,0,77,0,72,0,0]},
+ tower:{bpm:96,bass:[48,45,41,43],chords:[[60,64,67],[57,60,64],[53,57,60],[55,59,62]],lead:[72,76,79,83,79,76,74,0,69,72,76,79,76,72,71,0]},
+ core:{bpm:122,bass:[33,33,36,31],chords:[[45,48,52],[45,48,55],[48,52,55],[43,47,50]],lead:[69,0,72,0,76,72,0,67,69,0,72,76,79,0,76,72]}
+};
+window.PSAudio={create(game){
+ const score=BANK[game];if(!score)throw Error('Unknown audio score');
+ const key='ps-audio-v1-'+game;let prefs={music:.36,fx:.70,musicOn:true};try{prefs={...prefs,...JSON.parse(localStorage.getItem(key)||'{}')}}catch{}
+ prefs.music=Math.max(0,Math.min(1,Number(prefs.music)||0));prefs.fx=Math.max(0,Math.min(1,Number(prefs.fx)||0));
+ let ctx=null,master,musicBus,fxBus,compressor,analyser,noiseBuffer,unlocked=false,step=0,next=0,playing=false,disposed=false;
+ let callbacks={enabled:()=>true,active:()=>false,intensity:()=>false};const nodes=new Set(),musicNodes=new Set(),recent=new Map();
+ const stats={effects:0,musicSteps:0,events:{},lastError:null};
+ function save(){try{localStorage.setItem(key,JSON.stringify(prefs))}catch{}}
+ function init(){if(disposed)return null;if(ctx)return ctx;try{
+  ctx=new (window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=.72;
+  compressor=ctx.createDynamicsCompressor();compressor.threshold.value=-16;compressor.knee.value=18;compressor.ratio.value=5;compressor.attack.value=.004;compressor.release.value=.18;
+  musicBus=ctx.createGain();fxBus=ctx.createGain();musicBus.gain.value=0;fxBus.gain.value=prefs.fx;
+  musicBus.connect(master);fxBus.connect(master);master.connect(compressor);analyser=ctx.createAnalyser();analyser.fftSize=512;compressor.connect(analyser);analyser.connect(ctx.destination);
+  noiseBuffer=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);const d=noiseBuffer.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ }catch(e){stats.lastError=String(e);ctx=null}return ctx}
+ function unlock(){if(!init())return;unlocked=true;if(ctx.state==='suspended')ctx.resume().catch(e=>stats.lastError=String(e))}
+ function param(p,value){if(ctx)p.setTargetAtTime(value,ctx.currentTime,.025)}
+ function track(source,gain,extra,bus,t,d){source.connect(gain);gain.connect(bus);nodes.add(source);if(bus===musicBus)musicNodes.add(source);source.onended=()=>{nodes.delete(source);musicNodes.delete(source);source.disconnect();gain.disconnect();extra?.disconnect()};source.start(t);source.stop(t+d+.04)}
+ function note(freq,d=.12,type='triangle',v=.15,delay=0,end=freq,bus=fxBus){if(!ctx||nodes.size>100)return;const t=ctx.currentTime+delay;const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(Math.max(25,freq),t);o.frequency.exponentialRampToValueAtTime(Math.max(25,end),t+d);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0002,v),t+Math.min(.018,d*.2));g.gain.exponentialRampToValueAtTime(.0001,t+d);track(o,g,null,bus,t,d)}
+ function noise(d=.1,v=.1,filter='bandpass',freq=1500,delay=0,bus=fxBus){if(!ctx||nodes.size>100)return;const t=ctx.currentTime+delay,s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=noiseBuffer;f.type=filter;f.frequency.value=freq;f.Q.value=.8;s.connect(f);f.connect(g);g.connect(bus);g.gain.setValueAtTime(Math.max(.0002,v),t);g.gain.exponentialRampToValueAtTime(.0001,t+d);nodes.add(s);if(bus===musicBus)musicNodes.add(s);s.onended=()=>{nodes.delete(s);musicNodes.delete(s);s.disconnect();f.disconnect();g.disconnect()};s.start(t);s.stop(t+d+.03)}
+ const hz=n=>440*Math.pow(2,(n-69)/12);
+ function chime(notes,d=.17,gap=.09){notes.forEach((n,i)=>{note(hz(n),d,'triangle',.18,i*gap);note(hz(n+12),d*.65,'sine',.045,i*gap)})}
+ function effect(name,force=false){if(!ctx||!unlocked||document.hidden||ctx.state!=='running'||!callbacks.enabled())return;if(nodes.size-musicNodes.size>40)return;const now=ctx.currentTime,limit=['hit','fire','land','step'].includes(name)?.055:.025;if(!force&&now-(recent.get(name)??-10)<limit)return;recent.set(name,now);stats.effects++;stats.events[name]=(stats.events[name]||0)+1;
+  switch(name){
+   case'chip':note(1600,.055,'sine',.16,0,1100);note(2450,.045,'triangle',.08,.025,1800);noise(.035,.08,'highpass',3500);break;
+   case'deal':noise(.12,.20,'bandpass',2400);noise(.045,.10,'highpass',5200,.055);note(190,.055,'triangle',.07,.065,95);break;
+   case'flip':noise(.08,.18,'bandpass',1800);note(520,.055,'sine',.09,.045,280);break;
+   case'stand':note(330,.12,'triangle',.16,0,250);note(660,.08,'sine',.07,.04);break;
+   case'split':chime([64,69,76],.14,.065);noise(.10,.10,'bandpass',2000);break;
+   case'jump':note(game==='ashen'?190:360,.20,'triangle',.22,0,game==='ashen'?540:880);noise(.09,.08,'highpass',1800);break;
+   case'land':note(100,.10,'sine',.18,0,40);noise(.075,.13,'lowpass',700);break;
+   case'charge':note(180,.32,'sine',.14,0,720);note(360,.29,'triangle',.055,0,1440);break;
+   case'fall':note(500,.42,'triangle',.19,0,70);noise(.20,.10,'bandpass',800,.1);break;
+   case'check':chime([72,76,79,84],.25,.08);break;
+   case'ready':chime([79,84],.14,.07);break;
+   case'bust':note(240,.22,'triangle',.18,0,65);noise(.14,.08,'lowpass',900);break;
+   case'double':chime([60,67,72],.16,.065);break;
+   case'punch':noise(.10,.19,'bandpass',1600);note(170,.08,'triangle',.12,0,75);break;
+   case'kick':noise(.14,.20,'bandpass',950);note(110,.12,'sine',.21,0,40);break;
+   case'slash':noise(.20,.25,'highpass',2200);note(850,.16,'sawtooth',.065,0,160);break;
+   case'special':note(160,.3,'sawtooth',.13,0,900);note(480,.3,'triangle',.10,.03,160);noise(.24,.17,'bandpass',1500);break;
+   case'super':note(65,.55,'sawtooth',.17,0,32);note(180,.38,'triangle',.20,.06,1200);noise(.40,.25,'lowpass',2200,.13);chime([62,69,74],.19,.075);break;
+   case'dash':noise(.17,.21,'bandpass',2600);note(270,.12,'triangle',.10,0,100);break;
+   case'block':noise(.10,.18,'highpass',3300);note(1150,.14,'triangle',.14,0,650);break;
+   case'hit':note(145,.11,'sine',.25,0,38);noise(.12,.22,'bandpass',1100);note(320,.055,'square',.05,0,95);break;
+   case'heavy':note(85,.24,'sine',.32,0,28);noise(.24,.32,'lowpass',1700);noise(.06,.15,'highpass',3500);break;
+   case'burst':case'pulse':note(55,.60,'sine',.30,0,28);noise(.55,.30,'lowpass',1800);note(210,.40,'sawtooth',.09,.02,1000);break;
+   case'cancel':chime([74,81,86],.13,.035);noise(.15,.18,'highpass',2400);break;
+   case'fire':note(780,.065,'triangle',.12,0,150);noise(.04,.10,'highpass',4000);break;
+   case'kill':note(100,.16,'sine',.21,0,35);noise(.16,.23,'lowpass',1600);note(880,.07,'sine',.06,.02,440);break;
+   case'damage':note(145,.22,'sawtooth',.15,0,48);noise(.20,.21,'bandpass',700);break;
+   case'upgrade':chime([60,67,72,76,79],.28,.08);noise(.28,.08,'highpass',2800);break;
+   case'boss':[0,.23,.46].forEach(d=>note(110,.19,'square',.11,d,82));noise(.6,.13,'lowpass',600);break;
+   case'win':case'blackjack':chime(name==='blackjack'?[60,64,67,72,76,79,84]:[60,64,67,72,79],.34,.11);note(130,.5,'sine',.16);break;
+   case'lose':chime([64,60,57,52],.30,.16);note(100,.55,'triangle',.15,0,40);break;
+   case'push':chime([67,72,67],.21,.12);break;
+   case'round':chime([50,57,62],.19,.11);noise(.17,.12,'bandpass',1100);break;
+   case'select':note(660,.07,'triangle',.12,0,880);break;
+   case'pause':chime([72,67],.11,.08);break;
+   default:note(420,.08,'triangle',.1,0,580);
+  }
+ }
+ function beat(at){const dur=60/score.bpm/4,measure=Math.floor(step/16),bar=measure%4,section=Math.floor(measure/4)%4,s=step%16,offset=at-ctx.currentTime;const intense=callbacks.intensity(),bridge=section===2&&!intense;
+  const musicNote=(n,d,type,v,delay=0,end)=>note(hz(n),d,type,v,offset+delay,end?hz(end):hz(n),musicBus);
+  if(s%4===0){if(!bridge||s===0)note(130,.20,'sine',game==='blackjack'?.14:.23,offset,38,musicBus);musicNote(score.bass[bar],dur*2.4,'triangle',.16);}
+  if(game!=='blackjack'&&!bridge&&s%2===1)noise(.045,.045,'highpass',6500,offset,musicBus);
+  if(s===4||s===12){noise(game==='blackjack'?.12:.09,.075,'bandpass',game==='blackjack'?2400:1700,offset,musicBus);note(180,.07,'triangle',.045,offset,95,musicBus)}
+  if(s===0||s===8)score.chords[bar].forEach(n=>musicNote(n,dur*(game==='blackjack'?3.2:5),'sine',.026));
+  const melody=score.lead[(s+bar*4+(section===1?8:0))%score.lead.length];if(melody&&(game==='tower'||s%2===0)&&(!bridge||s%4===0))musicNote(melody+(section===3&&s>=8?12:0),dur*(game==='tower'?2.5:1.6),game==='ashen'?'triangle':'sine',game==='blackjack'?.045:.055);
+  if(bridge&&s===0)score.chords[bar].forEach(n=>musicNote(n+12,dur*12,'sine',.012));
+  if(section===3&&bar===3&&s>=12&&s%2===0)noise(.075,.065,'bandpass',1800,offset,musicBus);
+  if(game==='ashen'&&s%2===0)musicNote(score.bass[bar]+12,dur*.65,'sawtooth',.018);
+  if(game==='core'&&(s%4===2||intense&&s%2===0))musicNote(score.bass[bar]+12,dur*.7,'square',.022);
+  if(intense&&s===14)noise(.10,.08,'highpass',4400,offset,musicBus);
+  stats.musicSteps++;step++;
+ }
+ function stopMusic(){if(!ctx)return;for(const n of musicNodes){try{n.stop()}catch{}}playing=false;next=0}
+ function tick(){if(!ctx||!unlocked||disposed)return;const enabled=callbacks.enabled()&&!document.hidden;param(master.gain,enabled?.72:0);param(fxBus.gain,prefs.fx);const active=enabled&&callbacks.active()&&prefs.musicOn&&prefs.music>0;
+  if(!active){if(playing)stopMusic();param(musicBus.gain,0);return}
+  if(ctx.state!=='running')return;
+  if(!playing){playing=true;next=ctx.currentTime+.035;step=0}param(musicBus.gain,prefs.music);if(next<ctx.currentTime-.05)next=ctx.currentTime+.025;
+  let count=0;while(next<ctx.currentTime+.12&&count++<8){beat(next);next+=60/score.bpm/4}
+ }
+ const interval=setInterval(tick,25);
+ function mount(){const panel=document.createElement('details');panel.className='ps-audio';panel.innerHTML='<summary>♫ 오디오 믹서 <small>BGM · 효과음</small></summary><div class="ps-audio-row"><button type="button" class="ps-music" aria-pressed="'+prefs.musicOn+'">배경음 '+(prefs.musicOn?'ON':'OFF')+'</button><label>배경음 <input class="ps-bgm" type="range" min="0" max="100" value="'+Math.round(prefs.music*100)+'" aria-label="배경음 음량"><output>'+Math.round(prefs.music*100)+'%</output></label><label>효과음 <input class="ps-fx" type="range" min="0" max="100" value="'+Math.round(prefs.fx*100)+'" aria-label="효과음 음량"><output>'+Math.round(prefs.fx*100)+'%</output></label><span>게임을 시작하면 소리가 재생됩니다.</span></div>';
+  const css=document.createElement('style');css.textContent='.ps-audio{max-width:1200px;margin:8px auto;padding:10px 16px;border:1px solid #ffffff30;border-radius:10px;background:#141a24;color:#eee;font:12px system-ui,sans-serif}.ps-audio summary{cursor:pointer;font-weight:700}.ps-audio summary small{font-size:10px;color:#a9b5c9;margin-left:8px}.ps-audio-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:13px}.ps-audio label{display:flex;gap:7px;align-items:center}.ps-audio input{width:105px;accent-color:#e6bd78}.ps-audio output{min-width:30px;font-variant-numeric:tabular-nums}.ps-audio button{padding:7px 10px;border:1px solid #8696ad;background:#283548;color:#fff;border-radius:5px}.ps-audio button:focus-visible,.ps-audio input:focus-visible{outline:3px solid #ffe09d;outline-offset:3px}.ps-audio-row>span{font-size:10px;color:#adb6c5}@media(max-width:600px){.ps-audio{margin:8px 10px}.ps-audio-row{gap:12px}.ps-audio input{width:90px}}';document.head.appendChild(css);document.body.insertBefore(panel,document.body.firstChild);
+  panel.addEventListener('keydown',e=>{if(e.key!=='Escape')e.stopPropagation()});
+  panel.querySelector('.ps-music').onclick=e=>{unlock();prefs.musicOn=!prefs.musicOn;e.currentTarget.textContent='배경음 '+(prefs.musicOn?'ON':'OFF');e.currentTarget.setAttribute('aria-pressed',String(prefs.musicOn));save();tick()};
+  for(const [cls,key] of [['.ps-bgm','music'],['.ps-fx','fx']])panel.querySelector(cls).oninput=e=>{unlock();prefs[key]=Number(e.target.value)/100;e.target.nextElementSibling.textContent=e.target.value+'%';save();tick();if(key==='fx')effect('select')};
+ }
+ const unlockEvent=e=>{if(e.isTrusted)unlock()};document.addEventListener('pointerdown',unlockEvent,{capture:true});document.addEventListener('keydown',unlockEvent,{capture:true});
+ const visibility=()=>{if(document.hidden){stopMusic();if(ctx?.state==='running')ctx.suspend().catch(()=>{})}else if(unlocked&&ctx?.state==='suspended')ctx.resume().catch(()=>{})};document.addEventListener('visibilitychange',visibility);
+ window.addEventListener('pagehide',()=>{stopMusic();for(const n of nodes){try{n.stop()}catch{}}if(ctx?.state==='running')ctx.suspend().catch(()=>{})});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+ const api={configure(c){callbacks={...callbacks,...c}},unlock,context(){return init()},fx:effect,legacy(freq,d,type,gain,down){if(!ctx||!unlocked||!callbacks.enabled()||document.hidden)return;note(freq,d,type,Math.min(.22,gain*3),0,Math.max(30,freq/down))},stats(){let rms=0;if(analyser){const samples=new Float32Array(analyser.fftSize);analyser.getFloatTimeDomainData(samples);rms=Math.sqrt(samples.reduce((n,x)=>n+x*x,0)/samples.length)}return {...stats,events:{...stats.events},nodes:nodes.size,musicNodes:musicNodes.size,playing,context:ctx?.state||'locked',outputRms:rms,prefs:{...prefs}}}};
+ window.__psAudio=api;return api;
+}};
+})();
+
+const psAudio=PSAudio.create("blackjack");</script></head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><div class="brand-icon" aria-hidden="true">♠</div><div><div class="brand-title">BLACKJACK <span style="color:var(--gold)">21</span></div><div class="brand-sub">THE CLASSIC CARD GAME</div></div></div>
+      <div class="top-actions"><div class="pill" id="balancePill"><span class="dot" aria-hidden="true"></span>보유 칩 <strong id="balance">1,000</strong></div><button class="text-btn sound-btn" id="soundToggle" type="button" aria-pressed="true" title="전체 사운드 켜고 끄기">🔊 사운드 ON</button><button class="text-btn" id="rulesOpen" type="button">ⓘ 게임 규칙</button><button class="text-btn" id="resetGame" type="button" title="잔액과 기록 초기화">↻ 초기화</button></div>
+    </header>
+    <div class="layout">
+      <section class="table-shell" id="table" aria-label="블랙잭 게임 테이블">
+<div class="shoe-stack" id="shoeStack" aria-hidden="true"><div class="shoe-design">♠</div></div><div class="shoe-caption">6-DECK SHOE</div>
+        <div class="table-content">
+          <div class="seat dealer-area"><div class="seat-title">DEALER · 딜러 <span class="score" id="dealerScore">—</span></div><div class="card-row" id="dealerCards"><div class="placeholder"></div><div class="placeholder"></div></div></div>
+          <div class="center-message" role="status" aria-live="polite"><div class="message-tag" id="messageTag">WELCOME TO THE TABLE</div><div class="message-main" id="messageMain">베팅하고 게임을 시작하세요</div><div class="message-sub" id="messageSub">목표는 21! 21을 넘기면 버스트입니다.</div><div class="wager-spot" id="wagerSpot" aria-label="현재 베팅 칩"><div class="pot-chips" id="potChips"><div class="pot-disc"></div><div class="pot-disc"></div><div class="pot-disc"></div></div><div class="pot-copy"><span id="potLabel">준비 베팅</span><strong id="potAmount">50칩</strong></div></div></div>
+          <div class="seat player-area"><div class="seat-title">YOUR HAND · 플레이어</div><div class="hands" id="playerHands"><div class="hand"><div class="hand-head">내 카드 <span class="score">—</span></div><div class="card-row"><div class="placeholder"></div><div class="placeholder"></div></div></div></div></div>
+        </div><div class="big-announcement" id="bigAnnouncement" aria-hidden="true"></div>
+      </section>
+      <aside class="side">
+        <section class="panel" id="betPanel"><div class="eyebrow">01 · PLACE YOUR BET</div><h2 class="panel-title">베팅하기</h2><p class="panel-sub">칩을 클릭해 베팅 금액을 올리세요.</p><div class="bet-total"><span>현재 베팅</span><strong class="bet-value" id="betAmount">50</strong></div><div class="chips" id="chips"><button class="chip chip-10" data-chip="10" aria-label="10칩 추가"><span>10</span></button><button class="chip chip-25" data-chip="25" aria-label="25칩 추가"><span>25</span></button><button class="chip chip-50" data-chip="50" aria-label="50칩 추가"><span>50</span></button><button class="chip chip-100" data-chip="100" aria-label="100칩 추가"><span>100</span></button><button class="chip chip-250" data-chip="250" aria-label="250칩 추가"><span>250</span></button><button class="chip chip-500" data-chip="500" aria-label="500칩 추가"><span>500</span></button></div><div class="bet-tools"><button id="undoBet" type="button">↶ 이전 칩 취소</button><button id="clearBet" type="button">전체 취소</button></div><button class="primary" id="dealButton" type="button">카드 받기  →</button><div class="mini-info">최소 베팅 10칩 · 최대 베팅 500칩<br>실제 돈이 아닌 무료 가상 칩으로 플레이합니다.</div></section>
+        <section class="panel hidden" id="actionPanel"><div class="eyebrow">02 · YOUR TURN</div><h2 class="panel-title" id="actionTitle">당신의 차례</h2><p class="panel-sub" id="actionDesc">카드를 더 받을지 선택하세요.</p><div class="action-buttons"><button class="action main" id="hitButton" type="button">HIT<small>카드 받기</small></button><button class="action" id="standButton" type="button">STAND<small>여기서 멈추기</small></button><button class="action" id="doubleButton" type="button">DOUBLE<small>베팅 2배 · 1장</small></button><button class="action" id="splitButton" type="button">SPLIT<small>같은 점수 카드 분리</small></button></div><div class="mini-info">더블·스플릿은 조건을 만족할 때만 선택할 수 있습니다.</div></section>
+        <section class="panel hidden" id="resultPanel"><div class="eyebrow">03 · ROUND RESULT</div><h2 class="panel-title" id="resultTitle">라운드 종료</h2><p class="panel-sub" id="resultDesc">딜러와의 승부가 끝났습니다.</p><div class="result-number neutral" id="roundNet">±0</div><button class="primary" id="nextButton" type="button">다음 라운드  →</button><div class="mini-info" id="lowBalanceNote"></div></section>
+        <section class="panel"><div class="eyebrow">YOUR STATS</div><h2 class="panel-title">플레이 기록</h2><div class="stat-grid"><div class="stat"><strong id="statWins">0</strong><small>승리</small></div><div class="stat"><strong id="statLosses">0</strong><small>패배</small></div><div class="stat"><strong id="statPushes">0</strong><small>무승부</small></div></div><div class="history" id="history"><div class="history-row"><span>게임 기록이 아직 없습니다.</span></div></div></section>
+        <div class="tip-card"><div class="tip-icon">✦</div><div><p class="tip-title">기억하세요</p><p class="tip-text">에이스는 1 또는 11점입니다. 딜러는 소프트 17을 포함해 17점 이상에서 멈춥니다. 블랙잭은 3:2로 지급됩니다.</p></div></div>
+      </aside>
+    </div>
+    <footer class="footer">배경음·효과음 ON/OFF 지원 · 키보드 H: HIT / S: STAND / D: DOUBLE / M: 효과음 · FOR FUN ONLY · 가상 칩 전용 · 로컬 브라우저에 잔액과 기록 저장 · 외부 서버 없이 작동</footer>
+  </main>
+  <div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+  <div class="overlay hidden" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <div class="modal"><div class="modal-head"><h2 id="rulesTitle">게임 규칙</h2><button class="close" id="rulesClose" aria-label="규칙 닫기" type="button">×</button></div><p>딜러보다 21점에 가까워지되, 21을 초과하지 마세요. 처음 두 장이 A와 10점 카드라면 블랙잭입니다.</p><dl><dt>카드 점수</dt><dd>2~10: 숫자 그대로 / J·Q·K: 10점 / A: 1 또는 11점 중 유리한 값</dd><dt>HIT</dt><dd>카드를 한 장 더 받습니다. 21을 넘기면 즉시 패배합니다.</dd><dt>STAND</dt><dd>현재 패를 유지하고 딜러에게 턴을 넘깁니다.</dd><dt>DOUBLE</dt><dd>첫 두 장일 때만 베팅을 두 배로 늘리고 카드를 한 장 받은 뒤 종료합니다.</dd><dt>SPLIT</dt><dd>처음 두 카드의 점수가 같고 추가 베팅이 가능하면 두 패로 나눕니다. 최대 4패까지 만들 수 있습니다.</dd><dt>딜러 규칙</dt><dd>16점 이하면 카드를 받고, 소프트 17을 포함한 17점 이상에서는 멈춥니다.</dd><dt>지급</dt><dd>일반 승리 1:1, 최초 2장의 블랙잭 3:2, 무승부는 베팅금 반환.</dd></dl><div class="rule-note">이 게임의 테이블 규칙: 보험·서렌더 없음 / 스플릿 후 더블 가능 / 에이스 스플릿은 각 패에 카드를 한 장만 추가 / 스플릿 후 21은 일반 승리로 계산 / 6덱 사용 / 가상 칩으로만 진행합니다.</div></div>
+  </div>
+  <script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const STORAGE_KEY = 'one_page_blackjack_v1';
+  const SOUND_KEY = 'one_page_blackjack_sound_v2';
+  const MIN_BET = 10, MAX_BET = 500, START_BALANCE = 1000;
+  const SUITS = [{mark:'♠',red:false},{mark:'♥',red:true},{mark:'♦',red:true},{mark:'♣',red:false}];
+  const RANKS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  const money = n => Number(n).toLocaleString('ko-KR',{maximumFractionDigits:1});
+  const signed = n => (n > 0 ? '+' : n < 0 ? '−' : '±') + money(Math.abs(n));
+  const defaultStats = () => ({wins:0,losses:0,pushes:0,rounds:0});
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const shortMotion = () => reduceMotion.matches;
+  const delay = ms => new Promise(resolve => setTimeout(resolve, shortMotion() ? 12 : ms));
+  const fxLayer = $('fxLayer');
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch(e) {}
+  const safeBalance = Number(saved.balance);
+  let balance = Number.isFinite(safeBalance) && safeBalance >= 0 && safeBalance <= 100000000 ? safeBalance : START_BALANCE;
+  let stats = Object.assign(defaultStats(), saved.stats || {});
+  for (const k of Object.keys(defaultStats())) if(!Number.isFinite(stats[k]) || stats[k] < 0) stats[k] = 0;
+  let history = Array.isArray(saved.history) ? saved.history.filter(h => h && typeof h.text === 'string' && Number.isFinite(h.net)).slice(0,5) : [];
+  let soundEnabled = true;
+  try {soundEnabled = localStorage.getItem(SOUND_KEY) !== 'false';} catch(e) {}
+  let bet = Math.min(50, Math.floor(balance/10)*10), betMoves = bet ? [bet] : [];
+  let phase='betting', deck=[], dealer=[], hands=[], active=0, reveal=false, roundStart=balance, roundNet=0, summaryText='', gameToken=0;
+  let busy=false, uid=0, audioCtx=null, modalFocusReturn=null;
+
+  function persist() {
+    try {localStorage.setItem(STORAGE_KEY,JSON.stringify({balance,stats,history}));} catch(e) {}
+  }
+  function shuffle(cards) {
+    for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}
+    return cards;
+  }
+  function newShoe() {
+    const cards=[];
+    for(let n=0;n<6;n++) for(const suit of SUITS) for(const rank of RANKS)
+      cards.push({rank,suit:suit.mark,red:suit.red,id:++uid});
+    return shuffle(cards);
+  }
+  function draw(){if(deck.length===0)deck=newShoe();return deck.pop();}
+  function value(card){return card.rank==='A'?11: ['J','Q','K'].includes(card.rank)?10:Number(card.rank);}
+  function score(cards){let t=0,aces=0;for(const c of cards){t+=value(c);if(c.rank==='A')aces++;}while(t>21&&aces){t-=10;aces--;}return {total:t,soft:aces>0};}
+  function blackjack(hand){return !hand.split && hand.cards.length===2 && score(hand.cards).total===21;}
+  function makeHand(cards,amount,split=false){return {cards,bet:amount,split,splitAces:false,status:'playing',outcome:'',net:0};}
+  function canSplit(h){return phase==='playing'&&!busy&&hands.length<4&&!h.splitAces&&h.cards.length===2&&value(h.cards[0])===value(h.cards[1])&&balance>=h.bet;}
+
+  function cardHTML(card,back=false){
+    if(back) return `<div class="playing-card back" data-card-id="${card.id}" aria-label="뒷면 카드"></div>`;
+    const {rank,suit,red,id}=card;
+    return `<div class="playing-card ${red?'red':''}" data-card-id="${id}" aria-label="${rank} ${suit}"><div class="corner">${rank}<small>${suit}</small></div><div class="center-suit">${suit}</div><div class="corner bottom">${rank}<small>${suit}</small></div></div>`;
+  }
+  function message(tag,main,sub){$('messageTag').textContent=tag;$('messageMain').textContent=main;$('messageSub').textContent=sub;}
+  function render(){
+    $('balance').textContent=money(balance);
+    $('statWins').textContent=money(stats.wins);$('statLosses').textContent=money(stats.losses);$('statPushes').textContent=money(stats.pushes);
+    $('betPanel').classList.toggle('hidden',phase!=='betting');
+    $('actionPanel').classList.toggle('hidden',phase!=='playing');
+    $('resultPanel').classList.toggle('hidden',phase!=='roundover');
+    $('betAmount').textContent=money(bet);
+    $('dealButton').disabled=busy||phase!=='betting'||bet<MIN_BET||bet>MAX_BET||bet>balance;
+    $('clearBet').disabled=busy||bet<=0;
+    $('undoBet').disabled=busy||betMoves.length===0;
+    document.querySelectorAll('[data-chip]').forEach(b=>{b.disabled=busy||phase!=='betting'||bet+Number(b.dataset.chip)>MAX_BET||bet+Number(b.dataset.chip)>balance;});
+    const pot=phase==='betting'?bet:hands.reduce((sum,h)=>sum+h.bet,0);
+    $('potAmount').textContent=money(pot)+'칩';
+    $('potLabel').textContent=phase==='betting'?'준비 베팅':phase==='roundover'?'이번 라운드':'베팅 중';
+    $('wagerSpot').classList.toggle('no-bet',pot<=0);
+    $('potChips').style.setProperty('--chip-spread',Math.min(5,Math.max(1,Math.ceil(pot/100))));
+    $('dealerCards').innerHTML=dealer.length ? dealer.map((c,i)=>cardHTML(c,!reveal&&i===1)).join(''):'<div class="placeholder"></div><div class="placeholder"></div>';
+    $('dealerScore').textContent=dealer.length ? (reveal?score(dealer).total:(dealer.length===1?String(value(dealer[0])):`${value(dealer[0])} + ?`)):'—';
+    if(hands.length){
+      $('playerHands').innerHTML=hands.map((h,i)=>{
+        const total=score(h.cards).total;
+        const cls=phase==='playing'&&i===active?'active':(h.outcome||'');
+        const lab=hands.length>1?`패 ${i+1}`:'내 카드';
+        const result=h.outcome?`<div class="hand-result">${h.outcome==='win'?'승리':h.outcome==='lose'?'패배':'무승부'} · ${signed(h.net)}</div>`:'';
+        return `<div class="hand ${cls}"><div class="hand-head">${lab} <span class="score">${total}${h.status==='bust'?' · BUST':''}</span> ${phase==='playing'&&i===active?'<strong>● 진행 중</strong>':''}</div><div class="card-row">${h.cards.map(c=>cardHTML(c)).join('')}</div><div class="hand-bet">베팅 ${money(h.bet)}칩${h.split?' · 스플릿':''}</div>${result}</div>`;
+      }).join('');
+    } else $('playerHands').innerHTML='<div class="hand"><div class="hand-head">내 카드 <span class="score">—</span></div><div class="card-row"><div class="placeholder"></div><div class="placeholder"></div></div></div>';
+    if(phase==='betting') message('WELCOME TO THE TABLE','베팅하고 게임을 시작하세요',balance>=MIN_BET?'칩을 선택한 뒤 카드 받기를 눌러주세요.':'칩이 부족합니다. 초기화하면 다시 시작할 수 있습니다.');
+    if(phase==='dealing') message('CARDS IN MOTION','카드를 나누는 중입니다…','카드가 배분될 때까지 기다려주세요.');
+    if(phase==='playing'){
+      const h=hands[active];
+      message('YOUR TURN · '+(active+1)+'/'+hands.length,score(h.cards).total===21?'21점! 멈추기가 유리합니다.':'카드를 더 받으시겠어요?','딜러의 두 번째 카드는 아직 공개되지 않았습니다.');
+      $('actionTitle').textContent=hands.length>1?`패 ${active+1}의 차례`:'당신의 차례';
+      $('actionDesc').textContent=`현재 ${score(h.cards).total}점 · 베팅 ${money(h.bet)}칩`;
+      $('hitButton').disabled=busy;
+      $('standButton').disabled=busy;
+      $('doubleButton').disabled=busy||h.cards.length!==2||h.splitAces||balance<h.bet;
+      $('splitButton').disabled=!canSplit(h);
+    }
+    if(phase==='dealer')message('DEALER TURN','딜러가 카드를 확인합니다','딜러는 17점 이상이 되면 멈춥니다.');
+    if(phase==='roundover'){
+      message('ROUND COMPLETE',summaryText,`라운드 손익 ${signed(roundNet)}칩 · ${stats.rounds}라운드 플레이`);
+      $('resultTitle').textContent=summaryText;
+      $('resultDesc').textContent=`라운드 손익 ${signed(roundNet)}칩`;
+      $('roundNet').textContent=`${signed(roundNet)} 칩`;
+      $('roundNet').className='result-number '+(roundNet>0?'positive':roundNet<0?'negative':'neutral');
+      $('nextButton').textContent=balance<MIN_BET?'칩 1,000개 받고 재시작  →':'다음 라운드  →';
+      $('lowBalanceNote').textContent=balance<MIN_BET?'가상 칩이 부족합니다. 무료로 충전하여 계속 플레이하세요.':'다음 라운드에서 베팅 금액을 다시 선택할 수 있습니다.';
+    }
+    $('history').innerHTML=history.length?history.map(h=>`<div class="history-row"><span>${h.text.replace(/</g,'&lt;')}</span><strong style="color:${h.net>0?'#9ce2ad':h.net<0?'#f9a99d':'#e9d8ad'}">${signed(h.net)}</strong></div>`).join(''):'<div class="history-row"><span>게임 기록이 아직 없습니다.</span></div>';
+  }
+
+  // One-file, synthesized sound effects; no audio downloads or network requests.
+  function initAudio(){
+    if(!soundEnabled) return null;
+    try {
+      if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      if(audioCtx.state==='suspended')audioCtx.resume().catch(()=>{});
+      return audioCtx;
+    } catch(e){return null;}
+  }
+  function tone(ctx,frequency,start,duration,type='sine',volume=.065,endFreq){
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type=type;osc.frequency.setValueAtTime(frequency,start);
+    if(endFreq)osc.frequency.exponentialRampToValueAtTime(endFreq,start+duration);
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.exponentialRampToValueAtTime(volume,start+.008);
+    gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+    osc.connect(gain).connect(ctx.destination);osc.start(start);osc.stop(start+duration+.015);
+  }
+  function noise(ctx,duration=.085,vol=.028){
+    const rate=ctx.sampleRate,buf=ctx.createBuffer(1,Math.floor(rate*duration),rate);
+    const arr=buf.getChannelData(0);for(let i=0;i<arr.length;i++)arr[i]=(Math.random()*2-1)*(1-i/arr.length);
+    const src=ctx.createBufferSource(),hp=ctx.createBiquadFilter(),g=ctx.createGain();
+    src.buffer=buf;hp.type='highpass';hp.frequency.value=850;g.gain.value=vol;
+    src.connect(hp).connect(g).connect(ctx.destination);src.start();
+  }
+  function sound(name){if(!soundEnabled)return;psAudio.unlock();psAudio.fx(name);}
+function updateSoundButton(){
+    $('soundToggle').textContent=soundEnabled?'🔊 사운드 ON':'🔇 사운드 OFF';
+    $('soundToggle').setAttribute('aria-pressed',String(soundEnabled));
+    $('soundToggle').title=soundEnabled?'전체 사운드 끄기 (M)':'전체 사운드 켜기 (M)';
+  }
+  function toggleSound(){
+    soundEnabled=!soundEnabled;
+    try{localStorage.setItem(SOUND_KEY,String(soundEnabled));}catch(e){}
+    updateSoundButton();if(soundEnabled)sound('chip');
+  }
+
+  async function animateElement(el,frames,options){
+    if(!el || shortMotion() || !el.animate)return;
+    try{const a=el.animate(frames,options);await a.finished.catch(()=>{});}catch(e){}
+  }
+  function centerOf(el){
+    if(!el)return null;
+    const r=el.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,w:r.width,h:r.height};
+  }
+  async function flyChip(source,destination,amount=50,variant='normal'){
+    if(shortMotion())return;
+    const a=centerOf(source),b=centerOf(destination);if(!a||!b)return;
+    const chip=document.createElement('div');
+    chip.className='flying-chip chip-'+([10,25,50,100,250,500].includes(amount)?amount:100);
+    chip.textContent=String(amount);
+    chip.style.left=(a.x-20)+'px';chip.style.top=(a.y-20)+'px';
+    fxLayer.appendChild(chip);
+    const dx=b.x-a.x,dy=b.y-a.y;
+    await animateElement(chip,[
+      {transform:'translate(0,0) rotate(-25deg) scale(.9)',opacity:1,offset:0},
+      {transform:`translate(${dx*.53}px,${dy*.53-72}px) rotate(115deg) scale(1.12)`,opacity:1,offset:.58},
+      {transform:`translate(${dx}px,${dy}px) rotate(360deg) scale(.7)`,opacity:.1,offset:1}
+    ],{duration:variant==='settle'?660:480,easing:'cubic-bezier(.23,.8,.25,1)',fill:'forwards'});
+    chip.remove();destination.classList.remove('pot-pulse');void destination.offsetWidth;destination.classList.add('pot-pulse');
+  }
+  function discardFX(){fxLayer.replaceChildren();$('table').classList.remove('win-flash','lose-flash','push-flash');$('bigAnnouncement').className='big-announcement';}
+  function getCard(cardId){return document.querySelector(`[data-card-id="${cardId}"]`);}
+  async function animateDealtCard(card,token){
+    const target=getCard(card.id);
+    if(!target || token!==gameToken)return;
+    target.style.visibility='hidden';
+    const r=target.getBoundingClientRect();
+    const shoe=$('shoeStack').getBoundingClientRect();
+    const ghost=document.createElement('div');
+    ghost.className='playing-card back flying-card';
+    ghost.style.width=r.width+'px';ghost.style.height=r.height+'px';
+    ghost.style.left=(shoe.left+shoe.width/2-r.width/2)+'px';
+    ghost.style.top=(shoe.top+shoe.height/2-r.height/2)+'px';
+    fxLayer.appendChild(ghost);
+    const dx=r.left-(shoe.left+shoe.width/2-r.width/2);
+    const dy=r.top-(shoe.top+shoe.height/2-r.height/2);
+    sound('deal');
+    await animateElement(ghost,[
+      {transform:'translate(0,0) rotate(-13deg) scale(.78)',opacity:.85,offset:0},
+      {transform:`translate(${dx*.55}px,${dy*.51-35}px) rotate(12deg) scale(1.04)`,opacity:1,offset:.55},
+      {transform:`translate(${dx}px,${dy}px) rotate(0deg) scale(1)`,opacity:1,offset:1}
+    ],{duration:shortMotion()?0:360,easing:'cubic-bezier(.3,.12,.19,1)',fill:'forwards'});
+    ghost.remove();
+    if(token!==gameToken)return;
+    // render() reconstructs cards, so locate the current element again.
+    const landed=getCard(card.id);
+    if(landed){landed.style.visibility='visible';landed.classList.add('card-landed');}
+    await delay(55);
+  }
+  async function deliverCard(seat,handIndex,token){
+    if(token!==gameToken)return false;
+    const card=draw();
+    if(seat==='dealer')dealer.push(card);else hands[handIndex].cards.push(card);
+    render();
+    await animateDealtCard(card,token);
+    return token===gameToken;
+  }
+  async function flipDealerCard(token){
+    if(reveal || dealer.length<2)return;
+    const second=getCard(dealer[1].id);
+    if(second){await animateElement(second,[{transform:'rotateY(0deg)'},{transform:'rotateY(90deg)'}],{duration:180,easing:'ease-in'});}
+    if(token!==gameToken)return;
+    reveal=true;render();sound('flip');
+    const face=getCard(dealer[1].id);
+    await animateElement(face,[{transform:'rotateY(-90deg)'},{transform:'rotateY(0deg)'}],{duration:230,easing:'ease-out'});
+  }
+  function floatAnnouncement(text,type){
+    const el=$('bigAnnouncement');el.textContent=text;el.className='big-announcement';void el.offsetWidth;
+    el.classList.add('show',type);
+    $('table').classList.remove('win-flash','lose-flash','push-flash');
+    void $('table').offsetWidth;
+    $('table').classList.add(type==='win'?'win-flash':type==='lose'?'lose-flash':'push-flash');
+    window.setTimeout(()=>{el.classList.remove('show');$('table').classList.remove('win-flash','lose-flash','push-flash');},2200);
+  }
+  function confetti(){
+    if(shortMotion())return;
+    const area=$('table').getBoundingClientRect();
+    const colors=['#f6db8e','#fff5c5','#a8e8b3','#d1c1ef','#ffffff'];
+    for(let i=0;i<34;i++){
+      const part=document.createElement('span');part.className='confetti-piece';
+      part.style.left=(area.left+area.width*(.18+Math.random()*.64))+'px';
+      part.style.top=(area.top+area.height*.37)+'px';
+      part.style.background=colors[i%colors.length];fxLayer.appendChild(part);
+      const dx=(Math.random()-.5)*area.width*.88,dy=area.height*(.18+Math.random()*.47),rot=(Math.random()-.5)*1100;
+      const ms=1100+Math.random()*650;
+      part.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:`translate(${dx}px,${dy}px) rotate(${rot}deg)`,opacity:0}],{duration:ms,easing:'cubic-bezier(.12,.42,.57,1)',fill:'forwards'}).finished.catch(()=>{}).finally(()=>part.remove());
+    }
+  }
+  function showSettlementFX(net,wasBlackjack){
+    const pot=$('wagerSpot'), bank=$('balancePill'), house=$('shoeStack');
+    const token=gameToken;
+    if(net>0){
+      sound(wasBlackjack?'blackjack':'win');
+      floatAnnouncement(wasBlackjack?'BLACKJACK!':'YOU WIN!','win');confetti();
+      for(let i=0;i<4;i++)window.setTimeout(()=>{if(token===gameToken)flyChip(pot,bank,100,'settle');},i*95);
+    }else if(net<0){
+      sound('lose');floatAnnouncement('DEALER WINS','lose');
+      for(let i=0;i<3;i++)window.setTimeout(()=>{if(token===gameToken)flyChip(pot,house,50,'settle');},i*110);
+    }else{sound('push');floatAnnouncement(hands.length>1?'EVEN ROUND':'PUSH · 무승부','push');flyChip(pot,bank,50,'settle');}
+  }
+
+  function addBet(amount,chipButton){
+    if(busy||phase!=='betting'||bet+amount>MAX_BET||bet+amount>balance)return;
+    bet+=amount;betMoves.push(amount);render();sound('chip');
+    flyChip(chipButton,$('wagerSpot'),amount);
+  }
+  async function deal(){
+    if(busy||phase!=='betting'||bet<MIN_BET||bet>MAX_BET||bet>balance)return;
+    if(deck.length<60)deck=newShoe();
+    gameToken++;const token=gameToken;
+    busy=true;roundStart=balance;balance-=bet;dealer=[];hands=[makeHand([],bet)];active=0;reveal=false;roundNet=0;phase='dealing';
+    render();sound('chip');
+    $('wagerSpot').classList.add('pot-pulse');
+    await delay(210);
+    for(const [seat,index] of [['player',0],['dealer',0],['player',0],['dealer',0]]){
+      if(!await deliverCard(seat,index,token))return;
+    }
+    if(token!==gameToken)return;
+    busy=false;phase='playing';render();
+    if(score(dealer).total===21||blackjack(hands[0]))dealerTurn(true);
+  }
+  async function hit(){
+    if(phase!=='playing'||busy)return;
+    const token=gameToken,which=active;busy=true;render();
+    if(!await deliverCard('player',which,token))return;
+    busy=false;if(token!==gameToken)return;
+    const h=hands[which],s=score(h.cards).total;
+    if(s>21){psAudio.fx('bust');h.status='bust';advance();}
+    else if(s===21){h.status='stood';advance();}
+    else render();
+  }
+  function stand(){
+    if(phase!=='playing'||busy)return;
+    sound('stand');hands[active].status='stood';advance();
+  }
+  async function doubled(){
+    if(phase!=='playing'||busy)return;
+    const token=gameToken,which=active,h=hands[which];
+    if(h.cards.length!==2||h.splitAces||balance<h.bet)return;
+    busy=true;balance-=h.bet;h.bet*=2;render();sound('double');
+    await flyChip($('balancePill'),$('wagerSpot'),h.bet/2);
+    if(token!==gameToken)return;
+    if(!await deliverCard('player',which,token))return;
+    h.status=score(h.cards).total>21?'bust':'stood';busy=false;advance();
+  }
+  async function split(){
+    if(phase!=='playing'||busy)return;
+    const h=hands[active];if(!canSplit(h))return;
+    const token=gameToken,which=active;
+    busy=true;balance-=h.bet;
+    const card2=h.cards.pop(),next=makeHand([card2],h.bet,true);h.split=true;
+    const aces=h.cards[0].rank==='A';h.splitAces=aces;next.splitAces=aces;
+    hands.splice(active+1,0,next);render();sound('split');
+    await flyChip($('balancePill'),$('wagerSpot'),h.bet);
+    if(token!==gameToken)return;
+    if(!await deliverCard('player',which,token))return;
+    if(!await deliverCard('player',which+1,token))return;
+    busy=false;
+    if(aces){h.status='stood';next.status='stood';advance();return;}
+    if(score(h.cards).total===21){h.status='stood';advance();}else render();
+  }
+  function advance(){
+    const idx=hands.findIndex((h,i)=>i>active&&h.status==='playing');
+    if(idx!==-1){active=idx;if(score(hands[active].cards).total===21){hands[active].status='stood';advance();}else render();}
+    else dealerTurn(false);
+  }
+  async function dealerTurn(naturalCheck=false){
+    if(phase!=='playing')return;
+    const token=gameToken;busy=true;phase='dealer';render();
+    await delay(280);
+    if(token!==gameToken)return;
+    await flipDealerCard(token);
+    if(token!==gameToken)return;
+    // The dealer cannot draw after an initial natural blackjack.
+    if(!naturalCheck && hands.some(h=>h.status!=='bust')){
+      await delay(330);
+      while(token===gameToken&&score(dealer).total<17){
+        if(!await deliverCard('dealer',0,token))return;
+        await delay(180);
+      }
+    }
+    if(token!==gameToken)return;
+    busy=false;settle();
+  }
+  function settle(){
+    if(phase==='roundover')return;
+    reveal=true;const d=score(dealer).total,dealerNatural=dealer.length===2&&d===21;
+    const outcomes=[];
+    for(const h of hands){
+      const p=score(h.cards).total,natural=blackjack(h);let payout=0,outcome;
+      if(p>21)outcome='lose';
+      else if(natural&&!dealerNatural){outcome='win';payout=h.bet*2.5;}
+      else if(dealerNatural&&!natural)outcome='lose';
+      else if(p===d){outcome='push';payout=h.bet;}
+      else if(d>21||p>d){outcome='win';payout=h.bet*2;}
+      else outcome='lose';
+      balance+=payout;h.outcome=outcome;h.net=payout-h.bet;
+      if(outcome==='win')stats.wins++;else if(outcome==='lose')stats.losses++;else stats.pushes++;
+      outcomes.push(outcome);
+    }
+    roundNet=balance-roundStart;stats.rounds++;
+    if(hands.length===1){summaryText=outcomes[0]==='win'?(blackjack(hands[0])?'BLACKJACK! 블랙잭 승리!':'승리하셨습니다!'):outcomes[0]==='lose'?'아쉽게 패배했습니다.':'무승부 · 베팅 반환';}
+    else{const wins=outcomes.filter(x=>x==='win').length,losses=outcomes.filter(x=>x==='lose').length,pushes=outcomes.filter(x=>x==='push').length;summaryText=`승리 ${wins} · 패배 ${losses} · 무승부 ${pushes}`;}
+    history.unshift({text:`${stats.rounds}라운드 · ${hands.length}패`,net:roundNet});history=history.slice(0,5);
+    phase='roundover';persist();render();
+    showSettlementFX(roundNet,hands.length===1&&outcomes[0]==='win'&&blackjack(hands[0]));
+  }
+  function nextRound(){
+    if(phase!=='roundover')return;
+    gameToken++;discardFX();
+    if(balance<MIN_BET){balance=START_BALANCE;stats=defaultStats();history=[];}
+    const previous=bet;bet=Math.min(previous,MAX_BET,Math.floor(balance/10)*10);
+    if(bet<MIN_BET)bet=Math.min(50,Math.floor(balance/10)*10);
+    betMoves=bet?[bet]:[];phase='betting';hands=[];dealer=[];active=0;reveal=false;busy=false;summaryText='';
+    persist();render();sound('chip');
+  }
+  function fullReset(){
+    if(!confirm('보유 칩과 플레이 기록을 모두 초기화하시겠습니까?'))return;
+    gameToken++;discardFX();balance=START_BALANCE;stats=defaultStats();history=[];bet=50;betMoves=[50];
+    phase='betting';dealer=[];hands=[];active=0;reveal=false;busy=false;deck=[];persist();render();sound('chip');
+  }
+
+  $('chips').addEventListener('click',e=>{const btn=e.target.closest('[data-chip]');if(btn)addBet(Number(btn.dataset.chip),btn);});
+  $('undoBet').addEventListener('click',()=>{if(phase==='betting'&&!busy&&betMoves.length){const amount=betMoves.pop();bet-=amount;render();sound('chip');flyChip($('wagerSpot'),document.querySelector(`[data-chip="${amount}"]`)||$('chips'),amount);}});
+  $('clearBet').addEventListener('click',()=>{if(phase==='betting'&&!busy){bet=0;betMoves=[];render();sound('chip');flyChip($('wagerSpot'),$('chips'),50);}});
+  $('dealButton').addEventListener('click',deal);
+  $('hitButton').addEventListener('click',hit);
+  $('standButton').addEventListener('click',stand);
+  $('doubleButton').addEventListener('click',doubled);
+  $('splitButton').addEventListener('click',split);
+  $('nextButton').addEventListener('click',nextRound);
+  $('resetGame').addEventListener('click',fullReset);
+  $('soundToggle').addEventListener('click',toggleSound);
+  const modal=$('rulesModal');
+  const openRules=()=>{modalFocusReturn=document.activeElement;modal.classList.remove('hidden');$('rulesClose').focus();};
+  const closeRules=()=>{modal.classList.add('hidden');modalFocusReturn?.focus();};
+  $('rulesOpen').addEventListener('click',openRules);
+  $('rulesClose').addEventListener('click',closeRules);
+  modal.addEventListener('click',e=>{if(e.target===modal)closeRules();});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&!modal.classList.contains('hidden'))closeRules();
+    if(!modal.classList.contains('hidden')||e.altKey||e.ctrlKey||e.metaKey||e.repeat||['INPUT','TEXTAREA'].includes(document.activeElement?.tagName))return;
+    if(e.key.toLowerCase()==='m'){toggleSound();return;}
+    if(phase==='playing'){
+      if(e.key.toLowerCase()==='h')hit();
+      if(e.key.toLowerCase()==='s')stand();
+      if(e.key.toLowerCase()==='d')doubled();
+    }
+  });
+  updateSoundButton();render();
+psAudio.configure({enabled:()=>soundEnabled,active:()=>true,intensity:()=>false});
+})();
+  </script>
+</body>
+</html>

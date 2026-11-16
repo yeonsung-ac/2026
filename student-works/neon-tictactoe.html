@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NEON GRID — 진화형 틱택토</title>
+<style>
+:root{--bg:#090e1b;--panel:#131c30;--panel2:#19243a;--line:#2a3953;--txt:#f4f8ff;--sub:#91a2c0;--x:#54ddf9;--o:#ff87bb;--gold:#ffc96f;--good:#8cf2b5}*{box-sizing:border-box}body{margin:0;color:var(--txt);font-family:Pretendard,'Noto Sans KR',system-ui,sans-serif;background:radial-gradient(ellipse at 16% 12%,#14365d 0%,transparent 42%),radial-gradient(ellipse at 88% 72%,#361b4c 0%,transparent 46%),var(--bg);min-height:100vh}button,select,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.46}.app{max-width:1180px;margin:auto;padding:34px 22px 48px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.brand{font-size:13px;letter-spacing:.32em;font-weight:900;color:var(--x)}h1{font-size:clamp(28px,4vw,47px);letter-spacing:-.06em;margin:7px 0}.subtitle{color:var(--sub);font-size:14px}.pill{border:1px solid #406286;background:#1b3048;color:#a8e7f7;border-radius:100px;padding:10px 15px;font-size:12px;font-weight:700}.layout{display:grid;grid-template-columns:255px minmax(300px,1fr) 255px;gap:18px;margin-top:26px;align-items:start}.card{border:1px solid var(--line);background:linear-gradient(150deg,#172139e8,#101729ef);border-radius:23px;padding:20px;box-shadow:0 15px 40px #0003}.card h2{font-size:14px;letter-spacing:.04em;margin:0 0 17px}.field{margin:16px 0}.field label{font-size:12px;font-weight:800;color:var(--sub);display:block;margin-bottom:8px}select,input{width:100%;background:#0d1628;color:var(--txt);border:1px solid #354661;border-radius:12px;padding:11px 12px;outline:none}select:focus,input:focus{border-color:var(--x)}.switches{display:grid;grid-template-columns:1fr 1fr;gap:7px}.choice{border:1px solid #354661;border-radius:11px;background:#0e172b;color:#a5b2ca;padding:11px 5px;font-size:12px;font-weight:800}.choice.active{color:#0b1623;background:var(--x);border-color:var(--x)}.btn{border:1px solid #455b77;border-radius:12px;background:#20304d;color:var(--txt);padding:12px 13px;font-weight:800;width:100%;transition:transform .12s,background .12s}.btn:hover:not(:disabled){transform:translateY(-1px);background:#2b4262}.btn.primary{background:linear-gradient(105deg,#55ddfa,#7ca9ff);border:0;color:#071525}.btn.primary:hover{background:#9fe9ff}.btn.danger{background:#35243b;border-color:#6c405b}.buttons{display:grid;gap:9px;margin-top:17px}.help{border-top:1px solid var(--line);margin-top:18px;padding-top:16px;color:var(--sub);font-size:12px;line-height:1.8}.help strong{color:var(--gold)}.center{min-width:0}.status{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.turntag{font-weight:900;font-size:15px}.timer{font-size:20px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--gold)}.arena{position:relative;border:1px solid #374b67;border-radius:22px;padding:clamp(10px,2.2vw,22px);background:linear-gradient(150deg,#192640,#111a30);box-shadow:inset 0 0 38px #243a562b,0 15px 40px #0004}.board{display:grid;gap:9px;aspect-ratio:1;max-width:560px;margin:auto}.cell{position:relative;min-width:0;border:1px solid #344c6d;background:linear-gradient(140deg,#25334f,#18243c);border-radius:15px;display:flex;align-items:center;justify-content:center;color:var(--txt);font-size:clamp(36px,6vw,79px);font-weight:900;line-height:1;transition:background .15s,transform .15s;isolation:isolate}.board.five .cell{font-size:clamp(27px,4vw,51px);border-radius:11px}.cell:not(:disabled):hover{background:#324865;transform:scale(.98)}.cell.x{color:var(--x);text-shadow:0 0 22px #54ddf955}.cell.o{color:var(--o);text-shadow:0 0 22px #ff87bb55}.cell.winning{background:#2f5b59;border-color:var(--good);box-shadow:inset 0 0 18px #74ffc433}.cell.blocked{background:repeating-linear-gradient(135deg,#1e2940,#1e2940 8px,#111b30 8px,#111b30 15px);color:#69809f}.cell.bonus:after{content:'✦';position:absolute;right:8px;top:5px;font-size:14px;color:var(--gold);text-shadow:0 0 13px #ffd16b}.cell.locked:before{content:'🔒';position:absolute;left:7px;top:6px;font-size:13px}.cell.blocked:after{content:'×';font-size:32px;color:#6683a4}.cell:focus-visible{outline:3px solid var(--gold);outline-offset:2px}.below{display:flex;justify-content:space-between;gap:10px;margin-top:15px;color:var(--sub);font-size:12px}.player{padding:14px;border-radius:15px;background:#0d172a;border:1px solid #33445e;margin-bottom:10px}.player.active{border-color:#9dc8ed;background:#1a2d47}.prow{display:flex;align-items:center;justify-content:space-between;gap:6px}.sym{font-size:30px;line-height:1;font-weight:900}.xtext{color:var(--x)}.otext{color:var(--o)}.pname{font-weight:800;font-size:13px;overflow:hidden;text-overflow:ellipsis}.score{font-size:32px;font-weight:900;font-variant-numeric:tabular-nums}.small{font-size:11px;color:var(--sub)}.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.stat{text-align:center;background:#101a2d;border-radius:11px;padding:10px 4px}.stat b{display:block;font-size:21px}.stat span{font-size:10px;color:var(--sub)}.log{list-style:none;padding:0;margin:0;max-height:186px;overflow:auto}.log li{border-top:1px solid #28374e;padding:9px 0;color:var(--sub);font-size:11px;line-height:1.5}.log li:first-child{border-top:0}.toast{margin-top:12px;border-radius:13px;padding:12px;background:#20344b;font-size:13px;color:#d0e9fb;min-height:46px}.modal{position:fixed;inset:0;z-index:5;background:#050911b8;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px)}.modal.open{display:flex}.modalbox{background:linear-gradient(145deg,#263c59,#131d31);border:1px solid #7795b0;border-radius:23px;max-width:390px;width:100%;padding:30px;text-align:center;box-shadow:0 22px 70px #0009}.modalbox h2{font-size:29px;margin:7px 0}.modalbox p{color:#b9cce4;line-height:1.6}.modalbox .btn{margin-top:11px}.footer{text-align:center;color:#6f819e;font-size:11px;margin-top:24px}@media(max-width:1000px){.layout{grid-template-columns:230px 1fr}.right{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:15px}.right>.card{min-width:0}}@media(max-width:650px){.app{padding:21px 12px}.layout{grid-template-columns:1fr;gap:13px;margin-top:16px}.right{grid-column:auto;display:block}.card{padding:16px;border-radius:17px}.board{gap:6px}.cell{border-radius:10px}.top .pill{display:none}.below{font-size:11px}.status{margin-bottom:12px}}
+
+/* The lavender board and yellow pieces echo the portfolio artwork. */
+:root {
+  color-scheme: light;
+  --bg: #fff8eb;
+  --panel: #fffcf5;
+  --line: #d5cde0;
+  --txt: #101629;
+  --sub: #4f465f;
+  --x: #564179;
+  --o: #685100;
+  --gold: #755900;
+  --good: #cfdf9c;
+}
+body { background: var(--bg); }
+.top {
+  min-height: 168px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(92px, 34%);
+  column-gap: 16px;
+  padding: 22px clamp(16px, 3vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #f1e7d3;
+}
+.top::after {
+  content: '';
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  min-height: 130px;
+  border-radius: 10px;
+  background: #d7ad74 url('../grid-afternoon.jpg') 50% 53% / cover no-repeat;
+  background-size: max(135%, 265px) auto;
+}
+.top .pill { justify-self: start; }
+@media (max-width: 650px) {
+  .top::after { grid-row: 1; min-height: 92px; background-size: max(135%, 155px) auto; }
+}
+.top .pill, .toast, .stat, .player, .btn, .btn.danger, select, input, .choice {
+  background: #f3edf8;
+  color: var(--txt);
+  border-color: var(--line);
+}
+.card, .modalbox { background: var(--panel); border-color: var(--line); box-shadow: none; }
+.right .card + .card { margin-top: 16px; }
+.choice.active, .btn.primary, .btn.primary:hover { background: #f3de73; color: var(--txt); border-color: #8b751e; }
+.btn:hover:not(:disabled):not(.primary), .player.active { background: #e9def4; border-color: #78658b; }
+.arena { background: #302644; border-color: #302644; border-radius: 14px; box-shadow: 0 5px 0 #20192d; }
+.cell { background: #b1a0cd; border-color: #8774a5; border-radius: 8px; }
+.cell:not(:disabled):hover { background: #cabbdf; }
+.cell.x, .cell.o { color: #ffec7c; text-shadow: 0 3px 0 #3c324e; }
+.cell.o { color: #fff3ca; }
+.cell.winning { background: #4f6544; box-shadow: none; }
+.cell.blocked { background: repeating-linear-gradient(135deg, #302644 0 8px, #423655 8px 15px); }
+.cell.blocked::after { color: #f2e9fb; }
+.cell.bonus::after { color: #302644; text-shadow: none; }
+.cell:disabled { opacity: 1; }
+#matchInfo { color: var(--gold); }
+.log li { border-color: var(--line); }
+.modalbox p, .footer { color: var(--sub); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid #755900; outline-offset: 2px; }
+@media (min-width: 651px) and (max-width: 1000px) {
+  .right .card + .card { margin-top: 0; }
+}
+</style>
+</head>
+<body>
+<div class="app"><header class="top"><div><div class="brand">✦ NEON GRID / LOCAL PARTY</div><h1>진화형 <span class="xtext">틱</span><span class="otext">택</span>토</h1><div class="subtitle">한 화면, 두 플레이어, 계속 달라지는 승부.</div></div><div class="pill">⚡ 2 PLAYER · OFFLINE</div></header>
+<main class="layout"><aside class="card"><h2>⚙ 게임 설정</h2><div class="field"><label for="nameX">플레이어 X</label><input id="nameX" maxlength="14" value="플레이어 1" aria-label="플레이어 X 이름"></div><div class="field"><label for="nameO">플레이어 O</label><input id="nameO" maxlength="14" value="플레이어 2" aria-label="플레이어 O 이름"></div><div class="field"><label>보드 크기</label><div class="switches"><button class="choice active" data-size="3">3 × 3</button><button class="choice" data-size="5">5 × 5</button></div></div><div class="field"><label for="mode">게임 모드</label><select id="mode"><option value="classic">클래식 · 기본 대전</option><option value="chaos" selected>진화 · 특수 타일</option><option value="blitz">스피드 · 턴 제한</option></select></div><div class="field"><label for="timerSelect">턴 제한 (스피드 모드)</label><select id="timerSelect"><option value="5">5초</option><option value="10" selected>10초</option><option value="15">15초</option><option value="20">20초</option></select></div><div class="buttons"><button id="newRound" class="btn primary">↻ 새 3판 2승 매치</button><button id="resetAll" class="btn danger">기록 초기화</button></div><div class="help"><strong>진화 모드 규칙</strong><br>✦ 황금 칸을 차지하면 추가 점수 +1 (경기 승패와 별도).<br>🔒 잠긴 칸은 해당 위치에 표시된 턴이 지나야 사용 가능.<br>▨ 장애물 칸에는 아무도 둘 수 없어요.<br><br><strong>3판 2승제:</strong> 먼저 2승을 하면 최종 우승! 무승부는 재경기예요.<br><br>3×3은 <strong>3개</strong>, 5×5는 <strong>4개</strong>를 연속으로 놓으면 승리해요.</div></aside>
+<section class="center"><div class="card"><div class="status"><div><div class="small" id="roundLabel">ROUND 1</div><div class="turntag" id="turnLabel">X의 차례</div></div><div style="text-align:right"><div class="small" id="modeLabel">진화 모드</div><div class="timer" id="timer">∞</div></div></div><div class="arena"><div id="board" class="board" role="grid" aria-label="틱택토 게임판"></div></div><div class="below"><span id="goal">연속 3개를 먼저 완성하세요</span><span id="moves">0수 진행</span></div><div class="toast" id="message" aria-live="polite">준비 완료! X부터 시작해요.</div></div></section>
+<aside class="right"><div class="card"><h2>🏆 3판 2승 스코어보드</h2><div id="playerX" class="player active"><div class="prow"><span class="pname" id="displayX">플레이어 1</span><span class="sym xtext">X</span></div><div class="prow"><span class="small">이번 매치 승리</span><span id="winsX" class="score">0</span></div><div class="small">✦ 보너스 점수 <b id="bonusX">0</b></div></div><div id="playerO" class="player"><div class="prow"><span class="pname" id="displayO">플레이어 2</span><span class="sym otext">O</span></div><div class="prow"><span class="small">이번 매치 승리</span><span id="winsO" class="score">0</span></div><div class="small">✦ 보너스 점수 <b id="bonusO">0</b></div></div><div class="small" id="matchInfo" style="margin:10px 2px;font-weight:800">먼저 2승하면 최종 승리!</div><div class="statrow"><div class="stat"><b id="draws">0</b><span>무승부</span></div><div class="stat"><b id="played">0</b><span>완료 경기</span></div><div class="stat"><b id="streak">0</b><span>연승 기록</span></div></div></div><div class="card"><h2>📋 최근 경기</h2><ul id="history" class="log"><li>아직 완료된 경기가 없어요.</li></ul></div></aside></main><div class="footer">NEON GRID · 브라우저에서 바로 실행 · 계정 및 서버 불필요</div></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="resultTitle"><div class="modalbox"><div style="font-size:35px" id="resultEmoji">🏆</div><h2 id="resultTitle">X 승리!</h2><p id="resultDesc"></p><button class="btn primary" id="nextRound">다음 라운드 →</button><button class="btn" id="closeModal">결과 확인</button></div></div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);const boardEl=$('board');const SAVE='neongrid-local-tictactoe-v1';let config={size:3,mode:'chaos',seconds:10};let stats={X:0,O:0,draws:0,played:0,bonusX:0,bonusO:0,lastWinner:null,streak:0,history:[]};try{const old=JSON.parse(localStorage.getItem(SAVE));if(old&&typeof old==='object')stats={...stats,...old}}catch{}
+let matchWins={X:0,O:0},matchFinished=false,completedRounds=0;let board=[],current='X',finished=false,round=1,moves=0,locks=new Map(),winning=[],secondsLeft=0,interval=null,turnSerial=0;
+function names(){return {X:$('nameX').value.trim()||'플레이어 1',O:$('nameO').value.trim()||'플레이어 2'}}
+function persist(){try{localStorage.setItem(SAVE,JSON.stringify(stats))}catch{}}
+function lines(size,goal){let out=[];for(let y=0;y<size;y++)for(let x=0;x<size;x++)for(const [dy,dx] of [[0,1],[1,0],[1,1],[1,-1]]){let yy=y+(goal-1)*dy,xx=x+(goal-1)*dx;if(yy>=0&&yy<size&&xx>=0&&xx<size)out.push(Array.from({length:goal},(_,i)=>(y+i*dy)*size+x+i*dx))}return out}
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function generateTiles(){const n=config.size**2;board=Array.from({length:n},()=>({value:null,kind:'normal'}));locks=new Map();if(config.mode!=='chaos')return;const goal=config.size===3?3:4,allLines=lines(config.size,goal),order=shuffle([...Array(n).keys()]);let blockers=config.size===3?0:2;for(const idx of order){if(!blockers)break;board[idx].kind='blocked';const viable=allLines.filter(line=>line.every(i=>board[i].kind!=='blocked')).length;if(viable<8){board[idx].kind='normal';continue}blockers--}
+const available=shuffle(order.filter(i=>board[i].kind==='normal'));const bonusCount=config.size===3?1:3;for(let j=0;j<bonusCount&&available.length;j++)board[available.pop()].kind='bonus';if(config.size===5&&available.length){let idx=available.pop();board[idx].kind='locked';locks.set(idx,2)} }
+function checkWinner(symbol){for(const line of lines(config.size,config.size===3?3:4))if(line.every(i=>board[i].value===symbol))return line;return null}
+function canPlay(i){return !finished&&board[i]&&!board[i].value&&board[i].kind!=='blocked'&&!(board[i].kind==='locked'&&moves<locks.get(i))}
+function render(){boardEl.style.gridTemplateColumns=`repeat(${config.size},minmax(0,1fr))`;boardEl.className='board'+(config.size===5?' five':'');boardEl.innerHTML='';board.forEach((cell,i)=>{const b=document.createElement('button');b.type='button';b.className='cell'+(cell.value?' '+cell.value.toLowerCase():'')+(cell.kind==='blocked'?' blocked':'')+(cell.kind==='bonus'&&!cell.value?' bonus':'')+(cell.kind==='locked'&&!cell.value&&moves<locks.get(i)?' locked':'')+(winning.includes(i)?' winning':'');b.textContent=cell.value||'';b.disabled=!canPlay(i);let desc=`${Math.floor(i/config.size)+1}행 ${i%config.size+1}열`;if(cell.value)desc+=`, ${cell.value}`;else if(cell.kind==='blocked')desc+=', 장애물';else if(cell.kind==='locked'&&moves<locks.get(i))desc+=', 잠긴 칸';else if(cell.kind==='bonus')desc+=', 보너스 칸';b.setAttribute('aria-label',desc);b.addEventListener('click',()=>play(i));boardEl.appendChild(b)});
+const nm=names();$('displayX').textContent=nm.X;$('displayO').textContent=nm.O;$('winsX').textContent=matchWins.X;$('winsO').textContent=matchWins.O;$('matchInfo').textContent=matchFinished?'매치 종료 · 새 매치를 시작하세요':`먼저 2승! 현재 ${matchWins.X} : ${matchWins.O} · ${completedRounds+1}번째 승부`; $('bonusX').textContent=stats.bonusX;$('bonusO').textContent=stats.bonusO;$('draws').textContent=stats.draws;$('played').textContent=stats.played;$('streak').textContent=stats.streak;$('playerX').classList.toggle('active',current==='X'&&!finished);$('playerO').classList.toggle('active',current==='O'&&!finished);$('roundLabel').textContent=`BEST OF 3 · ROUND ${completedRounds+1}`;$('turnLabel').textContent=finished?'라운드 종료':`${nm[current]} (${current})의 차례`;$('modeLabel').textContent=({classic:'클래식',chaos:'진화 모드',blitz:'스피드 모드'})[config.mode];$('goal').textContent=`${config.size===3?3:4}개 연속 완성 시 승리`;$('moves').textContent=`${moves}수 진행`;updateTimerText();renderHistory()}
+function renderHistory(){const el=$('history');el.replaceChildren();if(!stats.history.length){const li=document.createElement('li');li.textContent='아직 완료된 경기가 없어요.';el.append(li);return}stats.history.slice(0,8).forEach(h=>{const li=document.createElement('li');li.textContent=h;el.append(li)})}
+function updateTimerText(){$('timer').textContent=config.mode==='blitz'&&!finished?secondsLeft+'s':'∞';$('timer').style.color=secondsLeft<=3&&config.mode==='blitz'?'#ff8292':'var(--gold)'}
+function setMessage(t){$('message').textContent=t}
+function stopClock(){if(interval){clearInterval(interval);interval=null}}
+function startClock(){stopClock();if(config.mode!=='blitz'||finished)return;secondsLeft=config.seconds;const serial=++turnSerial;const deadline=Date.now()+config.seconds*1000;updateTimerText();interval=setInterval(()=>{if(serial!==turnSerial||finished){stopClock();return}secondsLeft=Math.max(0,Math.ceil((deadline-Date.now())/1000));updateTimerText();if(Date.now()>=deadline){stopClock();timeoutTurn()}},120)}
+function timeoutTurn(){if(finished)return;const who=current;const playable=board.some((_,i)=>canPlay(i));if(!playable){end(null);return}current=who==='X'?'O':'X';setMessage(`${names()[who]} 시간 초과! 차례가 넘어갔어요.`);render();startClock()}
+function play(i){if(!canPlay(i))return;const who=current;board[i].value=who;moves++;if(board[i].kind==='bonus'){stats['bonus'+who]++;persist();setMessage(`✦ ${names()[who]} 보너스 점수 +1!`)}else setMessage(`${names()[who]}가 ${Math.floor(i/config.size)+1}행 ${i%config.size+1}열에 표시했어요.`);
+winning=checkWinner(who)||[];if(winning.length){end(who);return}if(!board.some((_,j)=>!board[j].value&&board[j].kind!=='blocked'&&!(board[j].kind==='locked'&&moves<locks.get(j)))){end(null);return}current=who==='X'?'O':'X';render();startClock()}
+function end(winner){
+ if(finished)return;
+ finished=true;stopClock();turnSerial++;stats.played++;
+ if(winner){stats[winner]++;matchWins[winner]++;completedRounds++;stats.streak=stats.lastWinner===winner?stats.streak+1:1;stats.lastWinner=winner}
+ else{stats.draws++;stats.lastWinner=null;stats.streak=0}
+ const nm=names();const result=winner?`${nm[winner]} (${winner}) 라운드 승리!`:'무승부!';
+ matchFinished=matchWins.X>=2||matchWins.O>=2;
+ stats.history.unshift(`3판 2승 · ${result} · 매치 ${matchWins.X}:${matchWins.O} · ${config.size}×${config.size}`);stats.history=stats.history.slice(0,15);persist();render();
+ const finalWinner=matchWins.X>=2?'X':matchWins.O>=2?'O':null;
+ $('resultEmoji').textContent=matchFinished?'👑':winner?'🏆':'🤝';
+ $('resultTitle').textContent=matchFinished?`${nm[finalWinner]} 최종 우승!`:result;
+ $('resultDesc').textContent=matchFinished?`최종 스코어 ${matchWins.X} : ${matchWins.O} · 3판 2승 매치가 종료됐어요. 새로운 매치를 시작해 보세요!`:winner?`현재 스코어 ${matchWins.X} : ${matchWins.O}. 먼저 2승하면 최종 우승해요!`:`무승부는 승수에 포함되지 않아요. 같은 승부를 다시 진행해요! (현재 ${matchWins.X} : ${matchWins.O})`;
+ $('nextRound').textContent=matchFinished?'새 매치 시작 →':'다음 라운드 →';
+ setMessage(matchFinished?`👑 ${nm[finalWinner]} 최종 우승! (${matchWins.X}:${matchWins.O})`:result);
+ $('modal').classList.add('open');
+}
+function newRound(resetMatch=false){
+ stopClock();turnSerial++;
+ if(resetMatch||matchFinished){matchWins={X:0,O:0};completedRounds=0;matchFinished=false;round=1}
+ else round++;
+ current=completedRounds%2===0?'X':'O';finished=false;moves=0;winning=[];
+ generateTiles();setMessage(`${names()[current]} (${current})부터 시작해요! 먼저 2승하면 우승!`);
+ render();startClock();$('modal').classList.remove('open');
+}
+function changeSettings(){const s=Number(document.querySelector('[data-size].active').dataset.size);config.size=s;config.mode=$('mode').value;config.seconds=Number($('timerSelect').value);newRound(true)}
+document.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-size]').forEach(x=>x.classList.remove('active'));b.classList.add('active');changeSettings()}));$('mode').addEventListener('change',changeSettings);$('timerSelect').addEventListener('change',()=>{config.seconds=Number($('timerSelect').value);if(config.mode==='blitz')startClock()});$('newRound').addEventListener('click',()=>newRound(true));$('nextRound').addEventListener('click',()=>newRound());$('closeModal').addEventListener('click',()=>$('modal').classList.remove('open'));$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').classList.remove('open')});$('nameX').addEventListener('input',render);$('nameO').addEventListener('input',render);$('resetAll').addEventListener('click',()=>{if(!confirm('모든 승리 기록과 보너스 점수를 초기화할까요?'))return;stats={X:0,O:0,draws:0,played:0,bonusX:0,bonusO:0,lastWinner:null,streak:0,history:[]};persist();newRound(true);});generateTiles();render();startClock();
+})();
+</script>
+</body></html>

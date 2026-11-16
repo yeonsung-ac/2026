@@ -62,16 +62,17 @@
     .showcase-head { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:6px 16px; margin-bottom:16px; }
     .showcase-head h2 { margin:0; font-size:24px; letter-spacing:-.05em; }
     .showcase-head p { margin:0; color:#67728a; font-size:14px; }
-    .works { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:8px 14px; }
-    .works a { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; background:white; border:1px solid rgba(23,35,59,.08); color:inherit; text-decoration:none; transition:transform .15s,box-shadow .15s; }
+    .works { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .works a { display:flex; flex-direction:column; gap:5px; padding:14px 14px 12px; border-radius:16px; background:white; border:1px solid rgba(23,35,59,.08); color:inherit; text-decoration:none; transition:transform .15s,box-shadow .15s; height:100%; }
     .works a:hover { transform:translateY(-2px); box-shadow:0 8px 18px rgba(23,35,59,.12); }
-    .works .no { color:#77839b; font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; }
+    .works .no { color:#77839b; font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; }
     .works span { min-width:0; }
-    .works strong { display:block; font-size:15px; letter-spacing:-.03em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .works small { display:block; color:#77839b; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .works .go { color:var(--accent); font-size:13px; font-weight:800; }
+    .works strong { display:block; font-size:15px; letter-spacing:-.03em; line-height:1.3; }
+    .works small { display:block; color:#77839b; font-size:12px; line-height:1.45; margin-top:2px; }
+    .works .go { color:var(--accent); font-size:13px; font-weight:800; margin-top:auto; padding-top:6px; }
     .works-empty { margin:0; padding:18px; border-radius:14px; background:white; color:#67728a; font-size:14px; text-align:center; }
-    @media (max-width:520px){ .showcase { padding:20px 16px 16px; } }
+    @media (max-width:720px){ .works { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:520px){ .showcase { padding:20px 16px 16px; } .works { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
