@@ -14,4 +14,5 @@ window.STUDENT_WORKS = [
   { title: "쿠로미 스파이더 솔리테어", by: "AI 특강 수강생", note: "쿠로미 카드로 즐기는 스파이더 솔리테어 · 난이도 선택·힌트·되돌리기", url: "student-works/kuromi-solitaire.html", thumb: "assets/thumb-kuromi-solitaire.webp" },
   { title: "네온 그리드 틱택토", by: "AI 특강 수강생", note: "한 화면에서 둘이 겨루는 진화형 틱택토 · 3×3·5×5 보드, 특수 타일과 3판 2선승", url: "student-works/neon-tictactoe.html", thumb: "assets/thumb-neon-tictactoe.webp" },
   { title: "우사기 낚시 여행", by: "AI 특강 수강생", note: "잔잔한 호수에서 낚시하고 물고기를 모아 더 좋은 낚싯대를 얻는 포근한 낚시 게임", url: "student-works/usagi-fishing.html", thumb: "assets/thumb-usagi-fishing.webp" },
+  { title: "파스텔 가든", by: "AI 특강 수강생", note: "파스텔 꽃밭 테마의 편안한 지뢰찾기 · 초·중·고급 난이도와 깃발 모드로 꽃밭 속 지뢰를 피해요", url: "student-works/pastel-garden.html", thumb: "assets/thumb-pastel-garden.webp" },
 ];
